@@ -4,7 +4,23 @@ const cors    = require("cors");
 
 const app = express();
 
-app.use(cors({ origin: process.env.FRONTEND_URL || "*", credentials: true }));
+const allowedOrigins = [
+  "https://tvxbox.com.br",
+  "https://www.tvxbox.com.br",
+  "http://localhost:3000"
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS bloqueado para esta origem: " + origin));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 app.use("/auth",      require("./backend/routes/auth"));
