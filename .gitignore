@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.local
+.env.production
+postgresql_17.exe
+frontend/
+*.log
+dist/
+build/
+coverage/
+.vscode/
+.DS_Store
+Thumbs.db
