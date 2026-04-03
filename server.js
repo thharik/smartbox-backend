@@ -54,6 +54,7 @@ app.use("/progresso", require("./backend/routes/progresso"));
 app.use("/favoritos", require("./backend/routes/favoritos"));
 app.use("/mangas", require("./backend/routes/mangas"));
 app.use("/video", require("./backend/routes/video"));
+app.use("/canais", require("./backend/routes/canais"));
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true, app: "Tvxbox" });
