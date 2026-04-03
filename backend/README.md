@@ -1,6 +1,6 @@
 # Tvxbox — Back-end: Mudanças e Correções
 
-## 🐛 Bugs Corrigidos
+##  Bugs Corrigidos
 
 ### 1. Continuar Assistindo quebrado (`progresso.js`)
 **Causa:** O código fazia INSERT usando colunas `tempo_atual` e `duracao`,
@@ -31,7 +31,7 @@ pode chamar `videoElement.requestFullscreen()` no evento `loadedmetadata`.
 
 ---
 
-## ✨ Novas Funcionalidades
+##  Novas Funcionalidades
 
 ### Mangás (PDFs no B2)
 
@@ -94,7 +94,7 @@ Tipos válidos agora: `Filme | Série | Anime | AoVivo | Manga | Aula`
 
 ---
 
-## 📁 Arquivos Alterados
+##  Arquivos Alterados
 
 | Arquivo          | Status     | O que mudou                                      |
 |------------------|------------|--------------------------------------------------|

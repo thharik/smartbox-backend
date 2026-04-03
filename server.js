@@ -1,26 +1,17 @@
-require("dotenv").config();
 const express = require("express");
-const cors    = require("cors");
+const cors = require("cors");
 
 const app = express();
 
-const allowedOrigins = [
-  "https://tvxbox.com.br",
-  "https://www.tvxbox.com.br",
-  "http://localhost:3000",
-  "http://127.0.0.1:5500",  // live-server local
-  "http://localhost:5500",
-];
-
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS bloqueado para esta origem: " + origin));
-    }
-  },
-  credentials: true,
+  origin: [
+    "https://www.tvxbox.com.br",
+    "https://tvxbox.com.br",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(express.json());
