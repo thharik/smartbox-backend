@@ -2,9 +2,9 @@ require("dotenv").config();
 const { Pool } = require("pg");
 
 const pool = new Pool({
-  host:     process.env.DB_HOST,
-  port:     Number(process.env.DB_PORT),
-  user:     process.env.DB_USER,
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   ssl: { rejectUnauthorized: false },
@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS perfis (
   criado_em  TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Tipos válidos: Filme | Série | Anime | AoVivo | Manga | Aula
 CREATE TABLE IF NOT EXISTS conteudos (
   id            TEXT PRIMARY KEY,
   titulo        TEXT NOT NULL,
@@ -64,7 +63,6 @@ CREATE TABLE IF NOT EXISTS episodios (
   criado_em    TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Capítulos de mangá (PDFs armazenados no B2)
 CREATE TABLE IF NOT EXISTS capitulos (
   id          TEXT PRIMARY KEY,
   conteudo_id TEXT NOT NULL REFERENCES conteudos(id) ON DELETE CASCADE,
@@ -84,19 +82,17 @@ CREATE TABLE IF NOT EXISTS favoritos (
   PRIMARY KEY (perfil_id, conteudo_id)
 );
 
--- CORRIGIDO: coluna current_time (estava como tempo_atual no código antigo)
 CREATE TABLE IF NOT EXISTS progresso (
-  perfil_id     UUID NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,
-  episodio_id   TEXT NOT NULL REFERENCES episodios(id) ON DELETE CASCADE,
-  conteudo_id   TEXT NOT NULL,
-  current_time  INT DEFAULT 0,
-  duration      INT DEFAULT 0,
-  concluido     BOOLEAN DEFAULT FALSE,
-  atualizado_em TIMESTAMPTZ DEFAULT NOW(),
+  perfil_id      UUID NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,
+  episodio_id    TEXT NOT NULL REFERENCES episodios(id) ON DELETE CASCADE,
+  conteudo_id    TEXT NOT NULL,
+  "current_time" INT DEFAULT 0,
+  duration       INT DEFAULT 0,
+  concluido      BOOLEAN DEFAULT FALSE,
+  atualizado_em  TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (perfil_id, episodio_id)
 );
 
--- Progresso de leitura de mangá
 CREATE TABLE IF NOT EXISTS progresso_manga (
   perfil_id     UUID NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,
   capitulo_id   TEXT NOT NULL REFERENCES capitulos(id) ON DELETE CASCADE,
@@ -108,17 +104,14 @@ CREATE TABLE IF NOT EXISTS progresso_manga (
 );
 
 CREATE INDEX IF NOT EXISTS idx_perfis_usuario   ON perfis(usuario_id);
-CREATE INDEX IF NOT EXISTS idx_favoritos_perfil  ON favoritos(perfil_id);
-CREATE INDEX IF NOT EXISTS idx_progresso_perfil  ON progresso(perfil_id);
-CREATE INDEX IF NOT EXISTS idx_ep_temporada      ON episodios(temporada_id);
+CREATE INDEX IF NOT EXISTS idx_favoritos_perfil ON favoritos(perfil_id);
+CREATE INDEX IF NOT EXISTS idx_progresso_perfil ON progresso(perfil_id);
+CREATE INDEX IF NOT EXISTS idx_ep_temporada     ON episodios(temporada_id);
 CREATE INDEX IF NOT EXISTS idx_capitulos_content ON capitulos(conteudo_id);
 CREATE INDEX IF NOT EXISTS idx_prog_manga_perfil ON progresso_manga(perfil_id);
 `;
 
-// Script de migração para bancos que já existem (adiciona apenas o que falta)
 const sqlMigracao = `
--- Migração segura: adiciona novas tabelas sem apagar dados existentes
-
 CREATE TABLE IF NOT EXISTS capitulos (
   id          TEXT PRIMARY KEY,
   conteudo_id TEXT NOT NULL REFERENCES conteudos(id) ON DELETE CASCADE,
@@ -141,29 +134,47 @@ CREATE TABLE IF NOT EXISTS progresso_manga (
   PRIMARY KEY (perfil_id, capitulo_id)
 );
 
--- Corrige nome da coluna em bancos antigos (tempo_atual → current_time)
 DO $$
 BEGIN
   IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_name='progresso' AND column_name='tempo_atual'
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'progresso' AND column_name = 'tempo_atual'
   ) THEN
-    ALTER TABLE progresso RENAME COLUMN tempo_atual TO current_time;
+    ALTER TABLE progresso RENAME COLUMN tempo_atual TO "current_time";
     RAISE NOTICE 'Coluna tempo_atual renomeada para current_time';
+
+  ELSIF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'progresso' AND column_name = 'current_time'
+  ) THEN
+    ALTER TABLE progresso ADD COLUMN "current_time" INT DEFAULT 0;
+    RAISE NOTICE 'Coluna current_time criada';
+
   ELSE
     RAISE NOTICE 'Coluna current_time já existe, nada a fazer';
   END IF;
 END $$;
 
--- Mesma correção para duracao → duration
 DO $$
 BEGIN
   IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_name='progresso' AND column_name='duracao'
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'progresso' AND column_name = 'duracao'
   ) THEN
     ALTER TABLE progresso RENAME COLUMN duracao TO duration;
     RAISE NOTICE 'Coluna duracao renomeada para duration';
+
+  ELSIF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'progresso' AND column_name = 'duration'
+  ) THEN
+    ALTER TABLE progresso ADD COLUMN duration INT DEFAULT 0;
+    RAISE NOTICE 'Coluna duration criada';
+
   ELSE
     RAISE NOTICE 'Coluna duration já existe, nada a fazer';
   END IF;
@@ -194,7 +205,4 @@ async function init() {
   }
 }
 
-// Uso:
-//   node initDb.js           → cria tudo do zero (banco novo)
-//   node initDb.js --migrar  → só adiciona o que falta (banco existente)
 init();
