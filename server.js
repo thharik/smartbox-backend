@@ -13,9 +13,6 @@ const allowedOrigins = [
   "http://127.0.0.1:3000"
 ];
 
-// =========================
-// CORS CORRIGIDO
-// =========================
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -47,33 +44,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// =========================
-// MIDDLEWARES
-// =========================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// =========================
-// ROTAS
-// =========================
-app.use("/auth",      require("./backend/routes/auth"));
-app.use("/perfis",    require("./backend/routes/perfis"));
-app.use("/catalogo",  require("./backend/routes/catalogo"));
+app.use("/auth", require("./backend/routes/auth"));
+app.use("/perfis", require("./backend/routes/perfis"));
+app.use("/catalogo", require("./backend/routes/catalogo"));
 app.use("/progresso", require("./backend/routes/progresso"));
 app.use("/favoritos", require("./backend/routes/favoritos"));
-app.use("/mangas",    require("./backend/routes/mangas"));
-app.use("/video",     require("./backend/routes/video"));
+app.use("/mangas", require("./backend/routes/mangas"));
+app.use("/video", require("./backend/routes/video"));
 
-// =========================
-// HEALTH CHECK
-// =========================
 app.get("/health", (_req, res) => {
   res.json({ ok: true, app: "Tvxbox" });
 });
 
-// =========================
-// ERRO GERAL
-// =========================
 app.use((err, req, res, next) => {
   console.error("Erro no servidor:", err);
   res.status(500).json({
@@ -81,8 +66,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// =========================
-// START
-// =========================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Tvxbox API rodando na porta ${PORT}`));
