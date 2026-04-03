@@ -2,20 +2,17 @@ const express = require("express");
 const router = express.Router();
 
 const canais = [
-  {
-    id: "canal1",
-    nome: "TV Escola",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/TV_Escola_logo.svg/512px-TV_Escola_logo.svg.png",
-    categoria: "Educação",
-    stream_url: "COLOQUE_AQUI_O_LINK_DO_CANAL.m3u8"
-  },
-  {
-    id: "canal2",
-    nome: "Canal Câmara",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/TV_C%C3%A2mara_logo.svg/512px-TV_C%C3%A2mara_logo.svg.png",
-    categoria: "Notícias",
-    stream_url: "COLOQUE_AQUI_OUTRO_LINK.m3u8"
-  }
+  { id: "monster-jam", 
+    titulo: "Monster Jam",   
+    tipo: "AoVivo",
+    poster: "https://i.imgur.com/jxGhINd.png", 
+    video: "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/65bce7f1d77d450008b3a430/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1" },
+    
+  { id: "robot-wars",         titulo: "Robot Wars (MECH+)",      tipo: "AoVivo", poster: "https://i.imgur.com/vGqha3k.png",    video: "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/651581ba6a84140008593586/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1" },
+  { id: "pfl-mma",            titulo: "PFL MMA",                 tipo: "AoVivo", poster: "https://i.imgur.com/zScgLTv.png",    video: "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/654a299cab05240008a12639/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1" },
+  { id: "wrestling-classic",  titulo: "Classic Wrestling",       tipo: "AoVivo", poster: "https://i.imgur.com/QVN5qv3.png",    video: "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/652516fb7971630008a58e74/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1" },
+
+  
 ];
 
 router.get("/", (req, res) => {
