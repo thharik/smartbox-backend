@@ -99,7 +99,7 @@ const conteudos = [
     generos: ["Anime", "Aventura"],
     classificacao: "Livre",
     ano: 2003,
-    temporada_id: "e5555555-5555-5555-5555-555555555555",
+    temporada_id: "a5555555-5555-5555-5555-555555555555",
     numero_temporada: 1,
     episodios: [
       { id: "gash_ep1", titulo: "Konjiki no Gash Bell - Episódio 1", arquivo: "Konjiki_no_Gash_BellEP1.mp4", duracao_seg: 1500, numero: 1 },
@@ -124,7 +124,7 @@ const conteudos = [
     generos: ["Anime", "Fantasia"],
     classificacao: "Livre",
     ano: 2026,
-    temporada_id: "x1111111-1111-1111-1111-111111111111",
+    temporada_id: "f1111111-1111-1111-1111-111111111111",
     numero_temporada: 1,
     episodios: [
       { id: "mata_ep1", titulo: "Mata Korosarete - Episódio 1", arquivo: "MataKorosareteEP1.mp4", duracao_seg: 1500, numero: 1 }
@@ -141,7 +141,7 @@ const conteudos = [
     generos: ["Anime", "Comedia"],
     classificacao: "Livre",
     ano: 2026,
-    temporada_id: "x2222222-2222-2222-2222-222222222222",
+    temporada_id: "f2222222-2222-2222-2222-222222222222",
     numero_temporada: 1,
     episodios: [
       { id: "jidou_ep1", titulo: "Jidou Anabaiki - Episódio 1", arquivo: "Jidou_anabaikiT3EP1.mp4", duracao_seg: 1500, numero: 1 }
@@ -158,7 +158,7 @@ const conteudos = [
     generos: ["Anime", "Slice of Life"],
     classificacao: "Livre",
     ano: 2026,
-    temporada_id: "x3333333-3333-3333-3333-333333333333",
+    temporada_id: "f3333333-3333-3333-3333-333333333333",
     numero_temporada: 1,
     episodios: [
       { id: "maid_ep1", titulo: "Maid-san wa Taberu dake - Episódio 1", arquivo: "Maid-san_wa_Taberu_dakeEP1.mp4", duracao_seg: 1500, numero: 1 }
@@ -175,7 +175,7 @@ const conteudos = [
     generos: ["Anime", "Comedia"],
     classificacao: "Livre",
     ano: 2026,
-    temporada_id: "x4444444-4444-4444-4444-444444444444",
+    temporada_id: "f4444444-4444-4444-4444-444444444444",
     numero_temporada: 1,
     episodios: [
       { id: "ika_ep1", titulo: "Shinryaku Ika Musume - Episódio 1", arquivo: "Shinryaku_Ika_MusumeEP1.mp4", duracao_seg: 1500, numero: 1 }
@@ -192,7 +192,7 @@ const conteudos = [
     generos: ["Anime", "Acao"],
     classificacao: "Livre",
     ano: 2026,
-    temporada_id: "x5555555-5555-5555-5555-555555555555",
+    temporada_id: "f5555555-5555-5555-5555-555555555555",
     numero_temporada: 1,
     episodios: [
       { id: "saikyou_ep1", titulo: "Saikyouno Shokugyou - Episódio 1", arquivo: "SaikyounoShokugyouEP1.mp4", duracao_seg: 1500, numero: 1 }
@@ -209,7 +209,7 @@ const conteudos = [
     generos: ["Anime", "Comedia"],
     classificacao: "Livre",
     ano: 2026,
-    temporada_id: "x6666666-6666-6666-6666-666666666666",
+    temporada_id: "f6666666-6666-6666-6666-666666666666",
     numero_temporada: 1,
     episodios: [
       { id: "kirio_ep1", titulo: "Kirio Fan Club - Episódio 1", arquivo: "KirioFanclubEP1.mp4", duracao_seg: 1500, numero: 1 }
