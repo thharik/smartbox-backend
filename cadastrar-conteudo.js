@@ -14,14 +14,13 @@ const VIDEO_BASE = "https://tvxbox-b2.tharikluan-miguel.workers.dev";
 const POSTER_BASE = "https://tvxbox-b2.tharikluan-miguel.workers.dev";
 
 const conteudos = [
-
   // ===================== BUDDY =====================
   {
     conteudo_id: "buddy",
     titulo: "Buddy",
     tipo: "Anime",
     poster: `${POSTER_BASE}/Buddy.jpg`,
-    descricao: "A série acompanha personagens que enfrentam desafios, amizades inesperadas e situações cheias de aventura. Entre conflitos e momentos emocionantes, a história mostra lutas, parceria e superação.",
+    descricao: "A série acompanha personagens que enfrentam desafios, amizades inesperadas e situações cheias de aventura. Entre conflitos e momentos emocionantes, a história mostra parceria, superação e ação.",
     generos: ["Anime", "Aventura"],
     classificacao: "Livre",
     ano: 2026,
@@ -39,7 +38,7 @@ const conteudos = [
       { id: "buddy_ep9", titulo: "Buddy - Episódio 9", arquivo: "buddyEP9.mp4", duracao_seg: 1736, numero: 9 },
       { id: "buddy_ep10", titulo: "Buddy - Episódio 10", arquivo: "buddyEP10.mp4", duracao_seg: 1531, numero: 10 },
       { id: "buddy_ep11", titulo: "Buddy - Episódio 11", arquivo: "buddyEP11.mp4", duracao_seg: 1327, numero: 11 },
-      { id: "buddy_ep12", titulo: "Buddy - Episódio 12", arquivo: "buddyEP12.mp4", duracao_seg: 2662, numero: 12 }
+      { id: "buddy_ep12", titulo: "Buddy - Episódio 12", arquivo: "buddyEP12.mp4 (2)", duracao_seg: 2662, numero: 12 }
     ]
   },
 
@@ -49,7 +48,7 @@ const conteudos = [
     titulo: "Frieren",
     tipo: "Anime",
     poster: `${POSTER_BASE}/frieren.jpg`,
-    descricao: "Depois do fim de uma grande jornada, Frieren, uma maga elfa de vida longa, segue viajando pelo mundo enquanto aprende mais sobre os sentimentos humanos, a amizade e o valor do tempo.",
+    descricao: "Depois do fim de uma grande jornada, Frieren, uma maga elfa de vida longa, continua viajando pelo mundo enquanto aprende mais sobre os sentimentos humanos, a amizade e o valor do tempo.",
     generos: ["Anime", "Fantasia"],
     classificacao: "Livre",
     ano: 2026,
@@ -89,17 +88,34 @@ const conteudos = [
     ]
   },
 
+  // ===================== ZATCH BELL =====================
+  {
+    conteudo_id: "zatbell",
+    titulo: "Zatch Bell",
+    tipo: "Anime",
+    poster: `${POSTER_BASE}/zatbell.jpg`,
+    descricao: "Kiyo Takamine encontra Zatch Bell, um menino misterioso que participa de uma batalha entre mamodos. Juntos, eles enfrentam inimigos poderosos em uma aventura cheia de ação, amizade e magia.",
+    generos: ["Anime", "Aventura"],
+    classificacao: "Livre",
+    ano: 2003,
+    temporada_id: "d4444444-4444-4444-4444-444444444444",
+    numero_temporada: 1,
+    episodios: [
+      { id: "zatbell_ep1", titulo: "Zatch Bell - Episódio 1", arquivo: "zatbell.mp4", duracao_seg: 4120, numero: 1 }
+    ]
+  },
+
   // ===================== KONJIKI NO GASH BELL =====================
   {
     conteudo_id: "gashbell",
     titulo: "Konjiki no Gash Bell",
     tipo: "Anime",
     poster: `${POSTER_BASE}/zatbell.jpg`,
-    descricao: "Kiyo Takamine encontra Gash Bell, um menino misterioso que participa de uma batalha entre mamodos. Juntos, eles enfrentam inimigos poderosos em uma aventura cheia de ação, amizade e magia.",
+    descricao: "A obra acompanha a jornada de Gash Bell e Kiyo Takamine em batalhas entre mamodos. Com muita emoção, humor e combates marcantes, a série mistura magia, amizade e coragem.",
     generos: ["Anime", "Aventura"],
     classificacao: "Livre",
     ano: 2003,
-    temporada_id: "a5555555-5555-5555-5555-555555555555",
+    temporada_id: "e5555555-5555-5555-5555-555555555555",
     numero_temporada: 1,
     episodios: [
       { id: "gash_ep1", titulo: "Konjiki no Gash Bell - Episódio 1", arquivo: "Konjiki_no_Gash_BellEP1.mp4", duracao_seg: 1500, numero: 1 },
@@ -114,23 +130,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== MATA KOROSARETE =====================
-  {
-    conteudo_id: "mata_korosarete",
-    titulo: "Mata Korosarete",
-    tipo: "Anime",
-    poster: `${POSTER_BASE}/Mata-Korosarete.jpg`,
-    descricao: "A história acompanha acontecimentos intensos em um universo marcado por perigo, sobrevivência e reviravoltas. O protagonista enfrenta situações extremas enquanto tenta compreender seu destino.",
-    generos: ["Anime", "Fantasia"],
-    classificacao: "Livre",
-    ano: 2026,
-    temporada_id: "f1111111-1111-1111-1111-111111111111",
-    numero_temporada: 1,
-    episodios: [
-      { id: "mata_ep1", titulo: "Mata Korosarete - Episódio 1", arquivo: "MataKorosareteEP1.mp4", duracao_seg: 1500, numero: 1 }
-    ]
-  },
-
   // ===================== JIDOU ANABAIKI =====================
   {
     conteudo_id: "jidou",
@@ -141,10 +140,27 @@ const conteudos = [
     generos: ["Anime", "Comedia"],
     classificacao: "Livre",
     ano: 2026,
-    temporada_id: "f2222222-2222-2222-2222-222222222222",
+    temporada_id: "f1111111-1111-1111-1111-111111111111",
     numero_temporada: 1,
     episodios: [
       { id: "jidou_ep1", titulo: "Jidou Anabaiki - Episódio 1", arquivo: "Jidou_anabaikiT3EP1.mp4", duracao_seg: 1500, numero: 1 }
+    ]
+  },
+
+  // ===================== KIRIO FAN CLUB =====================
+  {
+    conteudo_id: "kirio_fan_club",
+    titulo: "Kirio Fan Club",
+    tipo: "Anime",
+    poster: `${POSTER_BASE}/KIRIO_FAN_CLUB_.webp`,
+    descricao: "A série apresenta situações divertidas e exageradas envolvendo admiração, convivência e momentos cômicos em torno de personagens cheios de personalidade.",
+    generos: ["Anime", "Comedia"],
+    classificacao: "Livre",
+    ano: 2026,
+    temporada_id: "f2222222-2222-2222-2222-222222222222",
+    numero_temporada: 1,
+    episodios: [
+      { id: "kirio_ep1", titulo: "Kirio Fan Club - Episódio 1", arquivo: "KirioFanclubEP1.mp4 (2)", duracao_seg: 1500, numero: 1 }
     ]
   },
 
@@ -165,20 +181,20 @@ const conteudos = [
     ]
   },
 
-  // ===================== SHINRYAKU IKA MUSUME =====================
+  // ===================== MATA KOROSARETE =====================
   {
-    conteudo_id: "ika",
-    titulo: "Shinryaku Ika Musume",
+    conteudo_id: "mata_korosarete",
+    titulo: "Mata Korosarete",
     tipo: "Anime",
-    poster: `${POSTER_BASE}/Sikyou_no.jpg`,
-    descricao: "Uma garota-lula chega à superfície com a missão de invadir a humanidade, mas acaba vivendo situações engraçadas e inesperadas. A série mistura comédia, caos e convivência do dia a dia.",
-    generos: ["Anime", "Comedia"],
+    poster: `${POSTER_BASE}/Mata-Korosarete.jpg`,
+    descricao: "A história acompanha acontecimentos intensos em um universo marcado por perigo, sobrevivência e reviravoltas. O protagonista enfrenta situações extremas enquanto tenta compreender seu destino.",
+    generos: ["Anime", "Fantasia"],
     classificacao: "Livre",
     ano: 2026,
     temporada_id: "f4444444-4444-4444-4444-444444444444",
     numero_temporada: 1,
     episodios: [
-      { id: "ika_ep1", titulo: "Shinryaku Ika Musume - Episódio 1", arquivo: "Shinryaku_Ika_MusumeEP1.mp4", duracao_seg: 1500, numero: 1 }
+      { id: "mata_ep1", titulo: "Mata Korosarete - Episódio 1", arquivo: "MataKorosareteEP1.mp4", duracao_seg: 1500, numero: 1 }
     ]
   },
 
@@ -199,23 +215,23 @@ const conteudos = [
     ]
   },
 
-  // ===================== KIRIO FAN CLUB =====================
+  // ===================== SHINRYAKU IKA MUSUME =====================
   {
-    conteudo_id: "kirio_fan_club",
-    titulo: "Kirio Fan Club",
+    conteudo_id: "ika",
+    titulo: "Shinryaku Ika Musume",
     tipo: "Anime",
-    poster: `${POSTER_BASE}/KIRIO_FAN_CLUB_.webp`,
-    descricao: "A série apresenta situações divertidas e exageradas envolvendo admiração, convivência e momentos cômicos em torno de personagens cheios de personalidade.",
+    poster: `${POSTER_BASE}/koori_no.jpeg`,
+    descricao: "Uma garota-lula chega à superfície com a missão de invadir a humanidade, mas acaba vivendo situações engraçadas e inesperadas. A série mistura comédia, caos e convivência do dia a dia.",
     generos: ["Anime", "Comedia"],
     classificacao: "Livre",
     ano: 2026,
     temporada_id: "f6666666-6666-6666-6666-666666666666",
     numero_temporada: 1,
     episodios: [
-      { id: "kirio_ep1", titulo: "Kirio Fan Club - Episódio 1", arquivo: "KirioFanclubEP1.mp4", duracao_seg: 1500, numero: 1 }
+      { id: "ika_ep1", titulo: "Shinryaku Ika Musume - Episódio 1", arquivo: "Shinryaku_Ika_MusumeEP1.mp4", duracao_seg: 1500, numero: 1 },
+      { id: "ika_ep2", titulo: "Shinryaku Ika Musume - Episódio 2", arquivo: "ShinryakuEP2.mp4", duracao_seg: 1500, numero: 2 }
     ]
   }
-
 ];
 
 const capitulos = [];
@@ -225,8 +241,11 @@ async function salvarConteudos() {
 
   try {
     await client.query("BEGIN");
+    console.log("Iniciando salvamento dos conteúdos...");
 
     for (const serie of conteudos) {
+      console.log(`Salvando conteúdo: ${serie.conteudo_id}`);
+
       await client.query(
         `INSERT INTO conteudos (id, titulo, tipo, poster, descricao, generos, classificacao, ano)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
@@ -251,10 +270,14 @@ async function salvarConteudos() {
       );
 
       if (serie.episodios?.length && serie.temporada_id) {
+        console.log(`Salvando temporada: ${serie.temporada_id}`);
+
         await client.query(
           `INSERT INTO temporadas (id, conteudo_id, numero)
            VALUES ($1,$2,$3)
-           ON CONFLICT (conteudo_id, numero) DO NOTHING`,
+           ON CONFLICT (id) DO UPDATE SET
+             conteudo_id = EXCLUDED.conteudo_id,
+             numero = EXCLUDED.numero`,
           [
             serie.temporada_id,
             serie.conteudo_id,
@@ -263,11 +286,14 @@ async function salvarConteudos() {
         );
 
         for (const ep of serie.episodios) {
+          console.log(`Salvando episódio: ${ep.id}`);
+
           await client.query(
             `INSERT INTO episodios
               (id, temporada_id, titulo, descricao, capa, video_url, duracao_seg, numero, intro_inicio, intro_fim)
              VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
              ON CONFLICT (id) DO UPDATE SET
+               temporada_id = EXCLUDED.temporada_id,
                titulo = EXCLUDED.titulo,
                descricao = EXCLUDED.descricao,
                capa = EXCLUDED.capa,
