@@ -37,7 +37,7 @@ const conteudos = [
       { id: "buddy_ep9", titulo: "Buddy - Episódio 9", arquivo: "buddyEP9.mp4", duracao_seg: 1736, numero: 9 },
       { id: "buddy_ep10", titulo: "Buddy - Episódio 10", arquivo: "buddyEP10.mp4", duracao_seg: 1531, numero: 10 },
       { id: "buddy_ep11", titulo: "Buddy - Episódio 11", arquivo: "buddyEP11.mp4", duracao_seg: 1327, numero: 11 },
-      { id: "buddy_ep12", titulo: "Buddy - Episódio 12", arquivo: "buddyEP12.mp4 (2)", duracao_seg: 2662, numero: 12 }
+      { id: "buddy_ep12", titulo: "Buddy - Episódio 12", arquivo: "buddyEP12.mp4", duracao_seg: 1331, numero: 12 }
     ]
   },
 
@@ -153,7 +153,7 @@ const conteudos = [
     temporada_id: "f2222222-2222-2222-2222-222222222222",
     numero_temporada: 1,
     episodios: [
-      { id: "kirio_ep1", titulo: "Kirio Fan Club - Episódio 1", arquivo: "KirioFanclubEP1.mp4 (2)", duracao_seg: 1500, numero: 1 }
+      { id: "kirio_ep1", titulo: "Kirio Fan Club - Episódio 1", arquivo: "KirioFanclubEP1.mp4", duracao_seg: 1500, numero: 1 }
     ]
   },
 
@@ -209,7 +209,7 @@ const conteudos = [
     conteudo_id: "ika",
     titulo: "Shinryaku Ika Musume",
     tipo: "Anime",
-    poster: `${POSTER_BASE}/koori_no.jpeg`,
+    poster: `${POSTER_BASE}/Shinryaku.jpg`,
     descricao: "Uma garota-lula chega à superfície com a missão de invadir a humanidade, mas acaba vivendo situações engraçadas e inesperadas. A série mistura comédia, caos e convivência do dia a dia.",
     generos: ["Anime", "Comedia"],
     classificacao: "Livre",
@@ -219,6 +219,38 @@ const conteudos = [
     episodios: [
       { id: "ika_ep1", titulo: "Shinryaku Ika Musume - Episódio 1", arquivo: "Shinryaku_Ika_MusumeEP1.mp4", duracao_seg: 1500, numero: 1 },
       { id: "ika_ep2", titulo: "Shinryaku Ika Musume - Episódio 2", arquivo: "ShinryakuEP2.mp4", duracao_seg: 1500, numero: 2 }
+    ]
+  },
+
+  {
+    conteudo_id: "saikyouno_ousama",
+    titulo: "Saikyouno Ousama Nidomeno Jinsei wa Nani wo Suru",
+    tipo: "Anime",
+    poster: `${POSTER_BASE}/SaikyounoOusamaNidomenoJinseiwaNaniwoSuru.jpg`,
+    descricao: "Após uma nova oportunidade de vida, o protagonista recomeça sua jornada em um mundo cheio de desafios, magia e descobertas. A série mistura crescimento pessoal, poder e recomeço.",
+    generos: ["Anime", "Fantasia"],
+    classificacao: "Livre",
+    ano: 2026,
+    temporada_id: "f7777777-7777-7777-7777-777777777777",
+    numero_temporada: 1,
+    episodios: [
+      { id: "saikyouno_ousama_ep1", titulo: "Saikyouno Ousama Nidomeno Jinsei wa Nani wo Suru - Episódio 1", arquivo: "SaikyounoOusamaNidomenoJinseiwaNaniwoSuruT1EP1.mp4", duracao_seg: 1500, numero: 1 }
+    ]
+  },
+
+  {
+    conteudo_id: "yomi_no_tsu",
+    titulo: "Yomi no TsuaiO",
+    tipo: "Anime",
+    poster: `${POSTER_BASE}/yumi_no_tsu.jpg`,
+    descricao: "Em uma trama cercada por mistério, ação e forças sobrenaturais, o protagonista enfrenta perigos e situações intensas enquanto busca compreender o mundo ao seu redor.",
+    generos: ["Anime", "Acao"],
+    classificacao: "Livre",
+    ano: 2026,
+    temporada_id: "f8888888-8888-8888-8888-888888888888",
+    numero_temporada: 1,
+    episodios: [
+      { id: "yomi_no_tsu_ep1", titulo: "Yomi no TsuaiO - Episódio 1", arquivo: "Yomi_no_TsuaiOEP1.mp4", duracao_seg: 1500, numero: 1 }
     ]
   }
 ];

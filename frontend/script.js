@@ -51,6 +51,40 @@ let userData = { favoritos: [], continuarAssistindo: [] };
 
 // ─── Carregamento de dados ────────────────────────────────────────────────────
 
+
+// ─── Normalizar dados do backend ──────────────────────────────────────────────
+// O backend retorna video_url; o front usa .video nos episodios
+// Também garante compatibilidade de campos de áudio (dublado/legendado)
+function normalizarCatalogo(data) {
+  function normEp(ep) {
+    // Compatibilidade: backend usa video_url, data.js usa video
+    if (!ep.video && ep.video_url) ep.video = ep.video_url;
+    // Normalizar versões de áudio
+    if (!ep.videoDublado && ep.video_url_dub) ep.videoDublado = ep.video_url_dub;
+    if (!ep.videoLegendado && ep.video_url_leg) ep.videoLegendado = ep.video_url_leg;
+    // Se não tem versões separadas, ambas apontam para o mesmo arquivo
+    if (!ep.videoDublado && !ep.videoLegendado) {
+      ep.videoDublado   = ep.video;
+      ep.videoLegendado = ep.video;
+    }
+    return ep;
+  }
+  function normItem(item) {
+    if (item.temporadas) {
+      item.temporadas = item.temporadas.map(t => ({
+        ...t,
+        episodios: (t.episodios || []).map(normEp)
+      }));
+    }
+    return item;
+  }
+  const cats = ['destaques','animes','series','aulas','mangas','aoVivo'];
+  cats.forEach(cat => {
+    if (data[cat]) data[cat] = data[cat].map(normItem);
+  });
+  return data;
+}
+
 async function carregarCatalogo() {
   const online = navigator.onLine;
 
@@ -58,9 +92,9 @@ async function carregarCatalogo() {
     const data = await apiFetch("/catalogo", { headers: headers() });
 
     if (data) {
-      catalogoData = data;
+      catalogoData = normalizarCatalogo(data);
 
-      // ADICIONADO AQUI
+      // canais ao vivo externos
       const canaisExt = await apiFetch("/canais", { headers: headers() });
       if (canaisExt) {
         catalogoData.aoVivo = [...(catalogoData.aoVivo || []), ...canaisExt];
@@ -74,7 +108,7 @@ async function carregarCatalogo() {
   catalogoData = ls.get("sb_catalogo_cache");
 
   if (!catalogoData && typeof catalogo !== "undefined") {
-    catalogoData = catalogo;
+    catalogoData = normalizarCatalogo(JSON.parse(JSON.stringify(catalogo)));
   }
 
   if (!catalogoData) {
@@ -694,24 +728,20 @@ function renderPlayer() {
   }
 
   // ── TELA CHEIA AUTOMÁTICA ──────────────────────────────────────────────────
-  // Entra em tela cheia assim que o vídeo começa a tocar (primeiro play)
   const shell = document.querySelector(".player-shell");
   videoPlayer.addEventListener("play", () => {
     const alvo = shell || videoPlayer;
     if (!document.fullscreenElement) {
       alvo.requestFullscreen?.().catch(() => {
-        // iOS Safari usa webkitRequestFullscreen
         alvo.webkitRequestFullscreen?.();
       });
     }
-  }, { once: true }); // once: true → só executa na primeira vez
+  }, { once: true });
 
   const params    = new URLSearchParams(location.search);
   const canalId   = params.get("canal");
   const serieId   = params.get("serie");
   const categoria = params.get("categoria");
-  const tempNum   = parseInt(params.get("temporada"));
-  const episodioId= params.get("episodio");
   const autoplay  = params.get("autoplay") === "1";
 
   // Canal ao vivo
@@ -729,17 +759,234 @@ function renderPlayer() {
   const item  = lista.find(c => c.id === serieId);
   if (!item) { playerInfo.innerHTML = "<h1>Não encontrado.</h1>"; return; }
 
-  const temporada = item.temporadas.find(t => t.numero === tempNum);
-  const episodio  = temporada?.episodios.find(e => e.id === episodioId);
-  if (!episodio)  { playerInfo.innerHTML = "<h1>Episódio não encontrado.</h1>"; return; }
+  // ── Estado atual (pode mudar ao trocar episódio/temporada) ────────────────
+  let tempNumAtual   = parseInt(params.get("temporada")) || item.temporadas?.[0]?.numero || 1;
+  let episodioIdAtual= params.get("episodio") || item.temporadas?.[0]?.episodios?.[0]?.id;
+  let audioModo      = ls.get("sb_audio_modo") || "dublado"; // "dublado" | "legendado"
 
-  playerInfo.innerHTML = `<h1>${item.titulo}</h1><p>${episodio.titulo} — ${episodio.descricao || ""}</p>`;
-  videoPlayer.src = episodio.video;
-  videoPlayer.load();
+  // Obtém episódio atual
+  function getEpisodioAtual() {
+    const temp = item.temporadas.find(t => t.numero === tempNumAtual);
+    return temp?.episodios.find(e => e.id === episodioIdAtual) || null;
+  }
 
-  videoPlayer.addEventListener("loadedmetadata", () => {
-    if (autoplay) videoPlayer.play().catch(() => {});
-  }, { once: true });
+  // Carrega o vídeo do episódio atual no modo de áudio selecionado
+  function carregarVideo(ep) {
+    if (!ep) { playerInfo.innerHTML = "<h1>Episódio não encontrado.</h1>"; return; }
+
+    // Determina a URL correta baseado no modo de áudio
+    let videoUrl = ep.video; // fallback universal
+    if (audioModo === "legendado" && ep.videoLegendado) {
+      videoUrl = ep.videoLegendado;
+    } else if (audioModo === "dublado" && ep.videoDublado) {
+      videoUrl = ep.videoDublado;
+    }
+
+    playerInfo.innerHTML = `
+      <h1>${item.titulo}</h1>
+      <p>${ep.titulo}${ep.descricao ? " — " + ep.descricao : ""}</p>
+    `;
+    videoPlayer.src = videoUrl;
+    videoPlayer.load();
+    videoPlayer.addEventListener("loadedmetadata", () => {
+      if (autoplay) videoPlayer.play().catch(() => {});
+    }, { once: true });
+
+    // Atualiza grade de episódios
+    renderEpisodiosBar();
+    atualizarBotaoProximo();
+  }
+
+  // ── Injetar barra de controles abaixo do player ───────────────────────────
+  function injetarControlesPlayer() {
+    // Remove controles antigos se existirem
+    const antigo = document.getElementById("playerControlesBar");
+    if (antigo) antigo.remove();
+
+    const bar = document.createElement("div");
+    bar.id = "playerControlesBar";
+    bar.style.cssText = `
+      background:#111; padding:20px 24px; border-top:1px solid #222;
+      max-width:1400px; margin:0 auto;
+    `;
+
+    // Linha 1: Temporadas + áudio
+    const linha1 = document.createElement("div");
+    linha1.style.cssText = "display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;";
+
+    // Seletor de temporadas (só mostra se tem mais de uma)
+    if (item.temporadas.length > 1) {
+      const labelTemp = document.createElement("span");
+      labelTemp.textContent = "Temporada:";
+      labelTemp.style.cssText = "color:#aaa;font-size:14px;font-weight:600;";
+
+      const selectTemp = document.createElement("select");
+      selectTemp.id = "playerTempSelect";
+      selectTemp.style.cssText = `
+        background:#222;color:#fff;border:1px solid #444;
+        padding:8px 14px;border-radius:8px;font-size:14px;cursor:pointer;
+      `;
+      item.temporadas.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.numero;
+        opt.textContent = `Temporada ${t.numero}`;
+        if (t.numero === tempNumAtual) opt.selected = true;
+        selectTemp.appendChild(opt);
+      });
+      selectTemp.addEventListener("change", () => {
+        tempNumAtual = parseInt(selectTemp.value);
+        const primeiraTemp = item.temporadas.find(t => t.numero === tempNumAtual);
+        episodioIdAtual = primeiraTemp?.episodios?.[0]?.id;
+        carregarVideo(getEpisodioAtual());
+      });
+
+      linha1.appendChild(labelTemp);
+      linha1.appendChild(selectTemp);
+    }
+
+    // Espaçador
+    const spacer = document.createElement("div");
+    spacer.style.flex = "1";
+    linha1.appendChild(spacer);
+
+    // Botões dublado / legendado
+    const audioBtns = document.createElement("div");
+    audioBtns.style.cssText = "display:flex;gap:8px;";
+
+    ["dublado","legendado"].forEach(modo => {
+      const btn = document.createElement("button");
+      btn.dataset.audio = modo;
+      btn.textContent = modo === "dublado" ? "🔊 Dublado" : "💬 Legendado";
+      btn.style.cssText = `
+        padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;
+        font-weight:600;border:1px solid #444;transition:all .2s;
+        background:${audioModo === modo ? "#e50914" : "#222"};
+        color:#fff;border-color:${audioModo === modo ? "#e50914" : "#444"};
+      `;
+      btn.addEventListener("click", () => {
+        audioModo = modo;
+        ls.set("sb_audio_modo", audioModo);
+        audioBtns.querySelectorAll("button").forEach(b => {
+          const ativo = b.dataset.audio === audioModo;
+          b.style.background = ativo ? "#e50914" : "#222";
+          b.style.borderColor = ativo ? "#e50914" : "#444";
+        });
+        const ep = getEpisodioAtual();
+        // Troca fonte do vídeo mantendo posição atual
+        const tempoAtual = videoPlayer.currentTime;
+        let videoUrl = ep.video;
+        if (audioModo === "legendado" && ep.videoLegendado) videoUrl = ep.videoLegendado;
+        else if (audioModo === "dublado" && ep.videoDublado) videoUrl = ep.videoDublado;
+        videoPlayer.src = videoUrl;
+        videoPlayer.load();
+        videoPlayer.addEventListener("loadedmetadata", () => {
+          videoPlayer.currentTime = tempoAtual;
+          videoPlayer.play().catch(() => {});
+        }, { once: true });
+      });
+      audioBtns.appendChild(btn);
+    });
+
+    linha1.appendChild(audioBtns);
+    bar.appendChild(linha1);
+
+    // Linha 2: Grade de episódios
+    const linha2 = document.createElement("div");
+    linha2.id = "playerEpisodiosGrid";
+    linha2.style.cssText = "display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;";
+    linha2.style.cssText += "scrollbar-width:thin;scrollbar-color:#333 transparent;";
+    bar.appendChild(linha2);
+
+    // Inserir a barra após .player-main
+    const playerMain = document.querySelector(".player-main");
+    if (playerMain) {
+      playerMain.insertAdjacentElement("afterend", bar);
+    }
+  }
+
+  // ── Renderizar grade de episódios ─────────────────────────────────────────
+  function renderEpisodiosBar() {
+    const grid = document.getElementById("playerEpisodiosGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    const temp = item.temporadas.find(t => t.numero === tempNumAtual);
+    if (!temp) return;
+
+    temp.episodios.forEach((ep, idx) => {
+      const btn = document.createElement("button");
+      const ativo = ep.id === episodioIdAtual;
+      btn.style.cssText = `
+        min-width:120px;max-width:150px;padding:10px 12px;
+        border-radius:10px;cursor:pointer;text-align:left;
+        border:2px solid ${ativo ? "#e50914" : "#2a2a2a"};
+        background:${ativo ? "#2a0a0a" : "#1a1a1a"};
+        color:${ativo ? "#fff" : "#ccc"};
+        flex-shrink:0;transition:all .2s;font-size:13px;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      `;
+      btn.innerHTML = `
+        <div style="font-weight:bold;margin-bottom:3px;color:${ativo ? "#e50914" : "#888"}">EP ${ep.numero || idx + 1}</div>
+        <div style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ep.titulo}</div>
+      `;
+      btn.addEventListener("click", () => {
+        episodioIdAtual = ep.id;
+        carregarVideo(ep);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      btn.addEventListener("mouseenter", () => {
+        if (ep.id !== episodioIdAtual) {
+          btn.style.borderColor = "#555";
+          btn.style.background = "#222";
+        }
+      });
+      btn.addEventListener("mouseleave", () => {
+        if (ep.id !== episodioIdAtual) {
+          btn.style.borderColor = "#2a2a2a";
+          btn.style.background = "#1a1a1a";
+        }
+      });
+      grid.appendChild(btn);
+    });
+
+    // Scrollar até o episódio ativo
+    setTimeout(() => {
+      const btns = grid.querySelectorAll("button");
+      const temp2 = item.temporadas.find(t => t.numero === tempNumAtual);
+      if (temp2) {
+        const idx = temp2.episodios.findIndex(e => e.id === episodioIdAtual);
+        if (btns[idx]) btns[idx].scrollIntoView({ inline: "center", behavior: "smooth" });
+      }
+    }, 100);
+  }
+
+  // ── Botão próximo episódio ────────────────────────────────────────────────
+  function atualizarBotaoProximo() {
+    const proximo = encontrarProximo(item, tempNumAtual, episodioIdAtual);
+    if (btnNext) {
+      if (proximo) {
+        btnNext.classList.remove("hidden");
+        btnNext.onclick = () => {
+          episodioIdAtual = proximo.episodio.id;
+          tempNumAtual    = proximo.temporada;
+          // Atualizar select de temporada se existir
+          const sel = document.getElementById("playerTempSelect");
+          if (sel) sel.value = tempNumAtual;
+          carregarVideo(proximo.episodio);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+      } else {
+        btnNext.classList.add("hidden");
+      }
+    }
+  }
+
+  // ── Inicializar ───────────────────────────────────────────────────────────
+  injetarControlesPlayer();
+
+  const epInicial = getEpisodioAtual();
+  if (!epInicial) { playerInfo.innerHTML = "<h1>Episódio não encontrado.</h1>"; return; }
+  carregarVideo(epInicial);
 
   // Skip intro
   if (btnSkip) {
@@ -749,18 +996,6 @@ function renderPlayer() {
     };
   }
 
-  // Próximo episódio
-  const proximo = encontrarProximo(item, tempNum, episodio.id);
-  if (btnNext) {
-    if (proximo) {
-      btnNext.onclick = () => {
-        window.location.href = `assistir.html?serie=${encodeURIComponent(item.id)}&categoria=${encodeURIComponent(categoria)}&temporada=${proximo.temporada}&episodio=${encodeURIComponent(proximo.episodio.id)}&autoplay=1`;
-      };
-    } else {
-      btnNext.style.display = "none";
-    }
-  }
-
   // Salvar progresso
   let saveTimer = null;
   function salvar() {
@@ -768,7 +1003,7 @@ function renderPlayer() {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
       salvarProgresso({
-        episodioId:  episodio.id,
+        episodioId:  episodioIdAtual,
         conteudoId:  item.id,
         currentTime: Math.floor(videoPlayer.currentTime),
         duration:    Math.floor(videoPlayer.duration),
@@ -782,6 +1017,7 @@ function renderPlayer() {
       const restante = videoPlayer.duration - videoPlayer.currentTime;
       btnSkip.classList.toggle("hidden", restante <= 60);
     }
+    const proximo = encontrarProximo(item, tempNumAtual, episodioIdAtual);
     if (btnNext && proximo) {
       const restante = videoPlayer.duration - videoPlayer.currentTime;
       btnNext.classList.toggle("hidden", restante > 60);

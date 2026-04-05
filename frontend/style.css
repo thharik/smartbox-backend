@@ -225,3 +225,21 @@ a { text-decoration: none; color: white; }
   .continuar-card { grid-template-columns: 1fr; }
   .continuar-card img { height: 200px; width: 100%; }
 }
+
+/* ── Barra de episódios / controles do player ── */
+#playerControlesBar {
+  width: 100%;
+  background: #111;
+  padding: 20px 24px;
+  border-top: 1px solid #222;
+}
+
+#playerEpisodiosGrid::-webkit-scrollbar { height: 6px; }
+#playerEpisodiosGrid::-webkit-scrollbar-thumb { background: #333; border-radius: 999px; }
+#playerEpisodiosGrid::-webkit-scrollbar-track { background: transparent; }
+
+#playerTempSelect:focus { outline: none; border-color: #e50914; }
+
+@media (max-width: 768px) {
+  #playerControlesBar { padding: 14px 16px; }
+}
