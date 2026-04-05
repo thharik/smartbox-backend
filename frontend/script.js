@@ -4,18 +4,18 @@ const ls = {
   set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
   del: k => localStorage.removeItem(k),
 };
-
+ 
 const API = "https://tvxbox-backend-1.onrender.com";
-
+ 
 function getToken()    { return ls.get("sb_token"); }
 function getPerfilId() { return ls.get("sb_perfil_id"); }
-
+ 
 function headers(comPerfil = false) {
   const h = { "Content-Type": "application/json", "Authorization": `Bearer ${getToken()}` };
   if (comPerfil) h["x-perfil-id"] = getPerfilId();
   return h;
 }
-
+ 
 async function apiFetch(path, opts = {}) {
   try {
     const r = await fetch(API + path, opts);
@@ -25,7 +25,7 @@ async function apiFetch(path, opts = {}) {
     return null;
   }
 }
-
+ 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 function logout() {
   ls.del("sb_token");
@@ -33,7 +33,7 @@ function logout() {
   ls.del("sb_perfil_nome");
   window.location.href = "login.html";
 }
-
+ 
 function verificarLogin() {
   const pagina = window.location.pathname;
   const livres = ["/login.html", "/cadastro.html"];
@@ -44,14 +44,14 @@ function verificarLogin() {
   return true;
 }
 verificarLogin();
-
+ 
 // ─── Estado global ────────────────────────────────────────────────────────────
 let catalogoData = null;
 let userData = { favoritos: [], continuarAssistindo: [] };
-
+ 
 // ─── Carregamento de dados ────────────────────────────────────────────────────
-
-
+ 
+ 
 // ─── Normalizar dados do backend ──────────────────────────────────────────────
 // O backend retorna video_url; o front usa .video nos episodios
 // Também garante compatibilidade de campos de áudio (dublado/legendado)
@@ -84,33 +84,65 @@ function normalizarCatalogo(data) {
   });
   return data;
 }
-
+ 
+// ─── Lista de canais ao vivo embutida (fallback garantido) ───────────────────
+// Esses canais sempre aparecem, mesmo sem backend ou internet.
+const CANAIS_BUILTIN = [
+  { id: "trt-spor",        titulo: "TRT Spor (Turquia)",      tipo: "AoVivo", poster: "https://i.imgur.com/N2wGZyf.png",    video: "https://tv-trtspor1.medya.trt.com.tr/master.m3u8" },
+  { id: "trt-spor2",       titulo: "TRT Spor 2 (Turquia)",    tipo: "AoVivo", poster: "https://i.imgur.com/ysKteM8.png",    video: "https://tv-trtspor2.medya.trt.com.tr/master.m3u8" },
+  { id: "orf-sport",       titulo: "ORF Sport+ (Áustria)",    tipo: "AoVivo", poster: "https://i.imgur.com/MVNZ4gf.png",    video: "https://orfs.mdn.ors.at/out/u/orfs/q8c/manifest.m3u8" },
+  { id: "sportitalia",     titulo: "Sportitalia Plus",        tipo: "AoVivo", poster: "https://i.imgur.com/hu56Ya5.png",    video: "https://sportsitalia-samsungitaly.amagi.tv/playlist.m3u8" },
+  { id: "stadium-us",      titulo: "Stadium (EUA)",            tipo: "AoVivo", poster: "https://i.imgur.com/6ae9E8d.png",    video: "https://bcovlive-a.akamaihd.net/e64d564b9275484f85981d8c146fb915/us-east-1/5994000126001/profile_1/976f34cf5a614518b7b539cbf9812080/chunklist_ssaiV.m3u8" },
+  { id: "sport-pluto",     titulo: "Sport (Pluto TV)",         tipo: "AoVivo", poster: "https://i.imgur.com/o2psAYW.png",    video: "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/608030eff4b6f70007e1684c/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1" },
+  { id: "deport-tv",       titulo: "DeporTV (Argentina)",      tipo: "AoVivo", poster: "https://i.imgur.com/iyYLNRt.png",    video: "https://5fb24b460df87.streamlock.net/live-cont.ar/deportv/playlist.m3u8" },
+  { id: "alkass-one",      titulo: "Alkass One (Catar)",       tipo: "AoVivo", poster: "https://i.imgur.com/10mmlha.png",    video: "https://www.tvkaista.net/stream-forwarder/get.php?x=AlkassOne" },
+  { id: "alkass-two",      titulo: "Alkass Two (Catar)",       tipo: "AoVivo", poster: "https://i.imgur.com/8w61kFX.png",    video: "https://www.tvkaista.net/stream-forwarder/get.php?x=AlkassTwo" },
+  { id: "cbc-sport-az",    titulo: "CBC Sport (Azerbaijão)",   tipo: "AoVivo", poster: "https://upload.wikimedia.org/wikipedia/az/0/04/CBC_Sport_TV_loqo.png", video: "https://mn-nl.mncdn.com/cbcsports_live/cbcsports/playlist.m3u8" },
+  { id: "anime-pluto",     titulo: "Anime (Pluto TV)",         tipo: "AoVivo", poster: "https://i.imgur.com/rhVF0eC.png",    video: "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/65b90daed77d450008a43345/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1" },
+  { id: "animax-jp",       titulo: "Animax (Japão)",           tipo: "AoVivo", poster: "https://i.imgur.com/jO0qUvj.png",    video: "https://stream01.willfonk.com/live_playlist.m3u8?cid=BS236&r=FHD&ccode=JP&m=d0:20:20:04:35:cc&t=0d6938cb3dcf4b79848bc1753a59daf1" },
+  { id: "dubai-sport1",    titulo: "Dubai Sports 1",           tipo: "AoVivo", poster: "https://www.lyngsat.com/logo/tv/dd/dubai-sports-ae.png", video: "https://dmitnthfr.cdn.mgmlcdn.com/dubaisports/smil:dubaisports.stream.smil/chunklist.m3u8" },
+  { id: "abu-dhabi-sport1",titulo: "Abu Dhabi Sports 1",       tipo: "AoVivo", poster: "https://i.imgur.com/7cNke07.png",    video: "https://vo-live.cdb.cdn.orange.com/Content/Channel/AbuDhabiSportsChannel1/HLS/index.m3u8" },
+  { id: "racing-com-au",   titulo: "Racing.com (Austrália)",   tipo: "AoVivo", poster: "https://i.imgur.com/pma0OCf.png",    video: "https://racingvic-i.akamaized.net/hls/live/598695/racingvic/1500.m3u8" },
+  { id: "pfl-mma",         titulo: "PFL MMA",                  tipo: "AoVivo", poster: "https://i.imgur.com/zScgLTv.png",    video: "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/654a299cab05240008a12639/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1" },
+];
+ 
+function mesclarCanais(base, extras) {
+  // Mescla sem duplicar por id
+  const ids = new Set(base.map(c => c.id));
+  return [...base, ...extras.filter(c => !ids.has(c.id))];
+}
+ 
 async function carregarCatalogo() {
   const online = navigator.onLine;
-
+ 
   if (online) {
     const data = await apiFetch("/catalogo", { headers: headers() });
-
+ 
     if (data) {
       catalogoData = normalizarCatalogo(data);
-
-      // canais ao vivo externos
+ 
+      // Tenta buscar canais extras do backend
       const canaisExt = await apiFetch("/canais", { headers: headers() });
-      if (canaisExt) {
-        catalogoData.aoVivo = [...(catalogoData.aoVivo || []), ...canaisExt];
-      }
-
+      const extras = Array.isArray(canaisExt) ? canaisExt : [];
+ 
+      // Sempre mescla com a lista embutida (CANAIS_BUILTIN)
+      catalogoData.aoVivo = mesclarCanais(
+        mesclarCanais(catalogoData.aoVivo || [], CANAIS_BUILTIN),
+        extras
+      );
+ 
       ls.set("sb_catalogo_cache", catalogoData);
       return;
     }
   }
-
+ 
+  // Fallback: cache local
   catalogoData = ls.get("sb_catalogo_cache");
-
+ 
   if (!catalogoData && typeof catalogo !== "undefined") {
     catalogoData = normalizarCatalogo(JSON.parse(JSON.stringify(catalogo)));
   }
-
+ 
   if (!catalogoData) {
     catalogoData = {
       destaques: [],
@@ -121,37 +153,40 @@ async function carregarCatalogo() {
       aulas: []
     };
   }
+ 
+  // Mesmo offline, garante os canais embutidos
+  catalogoData.aoVivo = mesclarCanais(catalogoData.aoVivo || [], CANAIS_BUILTIN);
 }
-
+ 
 async function carregarUserData() {
   if (!getPerfilId()) return;
-
+ 
   const [favs, continuar] = await Promise.all([
     apiFetch("/favoritos", { headers: headers(true) }),
     apiFetch("/progresso/continuar", { headers: headers(true) }),
   ]);
-
+ 
   if (favs) userData.favoritos = favs.map(f => f.id || f.conteudo_id);
   if (continuar) userData.continuarAssistindo = continuar;
 }
-
+ 
 // ─── Múltiplos perfis ─────────────────────────────────────────────────────────
 async function mostrarTelaPerfis() {
   const perfis = await apiFetch("/perfis", { headers: headers() });
   if (!perfis) return;
-
+ 
   if (perfis.length === 1 && !perfis[0].tem_pin) {
     selecionarPerfil(perfis[0]);
     return;
   }
-
+ 
   const overlay = document.createElement("div");
   overlay.id = "perfilOverlay";
   overlay.style.cssText = `
     position:fixed;inset:0;background:#111;z-index:9999;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
   `;
-
+ 
   overlay.innerHTML = `
     <h1 style="font-size:28px;color:#fff;font-weight:500">Quem está assistindo?</h1>
     <div id="perfilGrid" style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center"></div>
@@ -160,7 +195,7 @@ async function mostrarTelaPerfis() {
       padding:10px 24px;border-radius:8px;cursor:pointer;font-size:14px;
     ">Gerenciar perfis</button>
   `;
-
+ 
   const grid = overlay.querySelector("#perfilGrid");
   perfis.forEach(p => {
     const btn = document.createElement("button");
@@ -185,7 +220,7 @@ async function mostrarTelaPerfis() {
     });
     grid.appendChild(btn);
   });
-
+ 
   if (perfis.length < 4) {
     const btnNovo = document.createElement("button");
     btnNovo.style.cssText = `
@@ -202,11 +237,11 @@ async function mostrarTelaPerfis() {
     btnNovo.addEventListener("click", () => abrirModalCriarPerfil(overlay));
     grid.appendChild(btnNovo);
   }
-
+ 
   overlay.querySelector("#btnGerenciarPerfis").addEventListener("click", () => abrirModalCriarPerfil(overlay));
   document.body.appendChild(overlay);
 }
-
+ 
 function pedirPin(perfil, overlay) {
   const modal = document.createElement("div");
   modal.style.cssText = `
@@ -236,7 +271,7 @@ function pedirPin(perfil, overlay) {
   });
   overlay.appendChild(modal);
 }
-
+ 
 function abrirModalCriarPerfil(overlay) {
   const modal = document.createElement("div");
   modal.style.cssText = `
@@ -281,21 +316,21 @@ function abrirModalCriarPerfil(overlay) {
   });
   overlay.appendChild(modal);
 }
-
+ 
 function selecionarPerfil(perfil) {
   ls.set("sb_perfil_id", perfil.id);
   ls.set("sb_perfil_nome", perfil.nome);
 }
-
+ 
 // ─── Cards com preview ao passar o mouse ─────────────────────────────────────
 let previewTimeout = null;
 let previewEl = null;
-
+ 
 function criarPreview(item, cardEl) {
   removerPreview();
   previewEl = document.createElement("div");
   previewEl.className = "card-preview";
-
+ 
   const temVideo = item.temporadas?.[0]?.episodios?.[0]?.video;
   previewEl.innerHTML = `
     <div class="preview-media">
@@ -317,7 +352,7 @@ function criarPreview(item, cardEl) {
   document.body.appendChild(previewEl);
   posicionarPreview(cardEl);
 }
-
+ 
 function posicionarPreview(cardEl) {
   if (!previewEl) return;
   const rect  = cardEl.getBoundingClientRect();
@@ -327,55 +362,55 @@ function posicionarPreview(cardEl) {
   const top   = rect.bottom + window.scrollY + 6;
   previewEl.style.cssText = `left:${left}px;top:${top}px;width:${pw}px;`;
 }
-
+ 
 function removerPreview() {
   if (previewEl) { previewEl.remove(); previewEl = null; }
   clearTimeout(previewTimeout);
 }
-
+ 
 // ─── Criar card ───────────────────────────────────────────────────────────────
 function criarCard(item, onClick) {
   const card = document.createElement("div");
   card.className = "poster-card";
   card.dataset.titulo = (item.titulo || "").toLowerCase();
   card.dataset.tipo   = item.tipo || "";
-
+ 
   card.innerHTML = `
     <img src="${item.poster || "assets/posters/placeholder.jpg"}" alt="${item.titulo}" loading="lazy">
     <div class="info"><h3>${item.titulo}</h3><p>${item.tipo || ""}</p></div>
   `;
   card.addEventListener("click", onClick);
-
+ 
   if (window.matchMedia("(hover:hover)").matches) {
     card.addEventListener("mouseenter", () => {
       previewTimeout = setTimeout(() => criarPreview(item, card), 500);
     });
     card.addEventListener("mouseleave", removerPreview);
   }
-
+ 
   return card;
 }
-
+ 
 // ─── Renderizar rows ──────────────────────────────────────────────────────────
 function renderRow(idContainer, lista, tipoClique) {
   const container = document.getElementById(idContainer);
   if (!container) return;
-
+ 
   container.innerHTML = "";
   lista.forEach(item => {
     let acao = () =>
       window.location.href = `detalhe.html?id=${encodeURIComponent(item.id)}&categoria=${encodeURIComponent(idContainer)}`;
-
+ 
     if (tipoClique === "aoVivo") {
       acao = () => item.video
         ? (window.location.href = `assistir.html?canal=${encodeURIComponent(item.id)}`)
         : alert("Vídeo não configurado.");
     }
-
+ 
     container.appendChild(criarCard(item, acao));
   });
 }
-
+ 
 function buscarListaPorCategoria(cat) {
   if (!catalogoData) return [];
   const mapa = {
@@ -387,19 +422,19 @@ function buscarListaPorCategoria(cat) {
   };
   return catalogoData[mapa[cat]] || [];
 }
-
+ 
 // ─── Favoritos ────────────────────────────────────────────────────────────────
 function itemEhFavorito(id) {
   return userData.favoritos.includes(id);
 }
-
+ 
 async function alternarFavorito(itemId) {
   const res = await apiFetch("/favoritos/toggle", {
     method: "POST",
     headers: headers(true),
     body: JSON.stringify({ conteudoId: itemId })
   });
-
+ 
   if (res !== null) {
     if (res.favoritado) userData.favoritos.push(itemId);
     else userData.favoritos = userData.favoritos.filter(x => x !== itemId);
@@ -411,15 +446,15 @@ async function alternarFavorito(itemId) {
     ls.set("sb_fav_cache", favs);
     userData.favoritos = favs;
   }
-
+ 
   atualizarBotaoFavorito(itemId);
   renderFavoritos();
 }
-
+ 
 function atualizarBotaoFavorito(id) {
   const btn = document.getElementById("btnFavoritoDetalhe");
   if (!btn) return;
-
+ 
   if (itemEhFavorito(id)) {
     btn.classList.add("active");
     btn.textContent = "✓ Na minha lista";
@@ -428,12 +463,12 @@ function atualizarBotaoFavorito(id) {
     btn.textContent = "+ Minha lista";
   }
 }
-
+ 
 function renderFavoritos() {
   const box = document.getElementById("favoritosBox");
   const row = document.getElementById("favoritosRow");
   if (!box || !row) return;
-
+ 
   const todos = [
     ...(catalogoData?.destaques || []),
     ...(catalogoData?.animes || []),
@@ -441,17 +476,17 @@ function renderFavoritos() {
     ...(catalogoData?.aulas || []),
     ...(catalogoData?.aoVivo || []),
   ];
-
+ 
   const itens = todos.filter(i => userData.favoritos.includes(i.id));
   row.innerHTML = "";
-
+ 
   if (!itens.length) {
     box.classList.add("hidden");
     return;
   }
-
+ 
   box.classList.remove("hidden");
-
+ 
   itens.forEach(item => {
     // Canais ao vivo vão direto pro player; outros vão pro detalhe
     const ehCanal = (catalogoData?.aoVivo || []).find(x => x.id === item.id);
@@ -463,18 +498,18 @@ function renderFavoritos() {
       ));
       return;
     }
-
+ 
     const cat = (catalogoData.destaques || []).find(x => x.id === item.id) ? "rowDestaques"
               : (catalogoData.animes || []).find(x => x.id === item.id) ? "rowAnimes"
               : (catalogoData.aulas || []).find(x => x.id === item.id) ? "rowAulas"
               : "rowSeries";
-
+ 
     row.appendChild(criarCard(item, () =>
       window.location.href = `detalhe.html?id=${encodeURIComponent(item.id)}&categoria=${encodeURIComponent(cat)}`
     ));
   });
 }
-
+ 
 // ─── Salvar progresso ─────────────────────────────────────────────────────────
 async function salvarProgresso(payload) {
   const res = await apiFetch("/progresso", {
@@ -482,18 +517,18 @@ async function salvarProgresso(payload) {
     headers: headers(true),
     body: JSON.stringify(payload)
   });
-
+ 
   if (!res) {
     const fila = ls.get("sb_fila_sync") || [];
     fila.push({ ...payload, ts: Date.now() });
     ls.set("sb_fila_sync", fila);
   }
 }
-
+ 
 window.addEventListener("online", async () => {
   const fila = ls.get("sb_fila_sync") || [];
   if (!fila.length) return;
-
+ 
   for (const item of fila) {
     await apiFetch("/progresso", {
       method: "POST",
@@ -501,36 +536,36 @@ window.addEventListener("online", async () => {
       body: JSON.stringify(item)
     });
   }
-
+ 
   ls.del("sb_fila_sync");
 });
-
+ 
 // ─── Continuar assistindo ─────────────────────────────────────────────────────
 function renderContinuarAssistindo() {
   const box  = document.getElementById("continuarBox");
   const card = document.getElementById("continuarCard");
   if (!box || !card) return;
-
+ 
   const lista = userData.continuarAssistindo || [];
   if (!lista.length) {
     box.classList.add("hidden");
     return;
   }
-
+ 
   card.innerHTML = "";
-
+ 
   lista.forEach(item => {
     const pct = item.duration > 0
       ? Math.min(100, Math.round((item.current_time / item.duration) * 100))
       : 0;
-
+ 
     const cat = (catalogoData?.destaques || []).find(x => x.id === item.conteudo_id) ? "rowDestaques"
              : (catalogoData?.animes || []).find(x => x.id === item.conteudo_id) ? "rowAnimes"
              : (catalogoData?.aulas || []).find(x => x.id === item.conteudo_id) ? "rowAulas"
              : "rowSeries";
-
+ 
     const link = `assistir.html?serie=${encodeURIComponent(item.conteudo_id)}&categoria=${encodeURIComponent(cat)}&temporada=1&episodio=${encodeURIComponent(item.episodio_id)}&autoplay=1`;
-
+ 
     const bloco = document.createElement("div");
     bloco.className = "continuar-card";
     bloco.innerHTML = `
@@ -544,66 +579,66 @@ function renderContinuarAssistindo() {
     `;
     card.appendChild(bloco);
   });
-
+ 
   box.classList.remove("hidden");
 }
-
+ 
 // ─── Home ─────────────────────────────────────────────────────────────────────
 function renderHome() {
   if (!catalogoData) return;
-
+ 
   renderRow("rowDestaques", catalogoData.destaques || [], "detalhe");
   renderRow("rowAnimes", catalogoData.animes || [], "detalhe");
   renderRow("rowSeries", catalogoData.series || [], "detalhe");
   renderCanaisAoVivo("lista-canais", catalogoData.aoVivo || []);
-
+ 
   iniciarBusca();
   iniciarFiltros();
   renderContinuarAssistindo();
   renderFavoritos();
 }
-
+ 
 // ─── Páginas específicas ──────────────────────────────────────────────────────
 function renderAulasPage() {
   if (!document.getElementById("rowAulas")) return;
   renderRow("rowAulas", catalogoData?.aulas || [], "detalhe");
 }
-
+ 
 function renderMangasPage() {
   const row = document.getElementById("rowMangas");
   if (!row) return;
-
+ 
   const mangas = catalogoData?.mangas || [];
   mangas.forEach(manga => {
     const card = criarCard(manga, () => abrirCapitulosManga(manga));
     row.appendChild(card);
   });
 }
-
-
+ 
+ 
 async function abrirCapitulosManga(manga) {
   const capBox   = document.getElementById("capitulosBox");
   const capGrid  = document.getElementById("capitulosGrid");
   const titulo   = document.getElementById("mangaSelecionadoTitulo");
   const btnVoltar= document.getElementById("btnVoltarMangas");
   if (!capBox || !capGrid) return;
-
+ 
   titulo.textContent = manga.titulo;
   capGrid.innerHTML  = "<p style='color:#888'>Carregando capítulos...</p>";
   capBox.classList.remove("hidden");
   window.scrollTo({ top: capBox.offsetTop - 80, behavior: "smooth" });
-
+ 
   // Busca capítulos do back-end
   const capitulos = await apiFetch(`/mangas/${manga.id}/capitulos`, { headers: headers() });
   // Fallback: capítulos que vieram no catálogo
   const lista = capitulos || manga.capitulos || [];
-
+ 
   capGrid.innerHTML = "";
   if (!lista.length) {
     capGrid.innerHTML = "<p style='color:#888'>Nenhum capítulo disponível.</p>";
     return;
   }
-
+ 
   lista.forEach(cap => {
     const card = document.createElement("div");
     card.className = "capitulo-card";
@@ -614,33 +649,33 @@ async function abrirCapitulosManga(manga) {
     card.addEventListener("click", () => abrirLeitorManga(cap, manga));
     capGrid.appendChild(card);
   });
-
+ 
   btnVoltar.addEventListener("click", () => {
     capBox.classList.add("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, { once: true });
 }
-
+ 
 function abrirLeitorManga(cap, manga) {
   const overlay = document.getElementById("mangaReaderOverlay");
   const frame   = document.getElementById("readerFrame");
   const titulo  = document.getElementById("readerTitulo");
   const btnFechar = document.getElementById("btnReaderFechar");
   if (!overlay || !frame) return;
-
+ 
   // O PDF é servido pela rota /video/pdf/:fileName do back-end
   const pdfUrl = cap.pdfUrl?.startsWith("http")
     ? cap.pdfUrl
     : `${API}/video/pdf/${cap.pdfUrl}`;
-
+ 
   titulo.textContent = `${manga.titulo} — Cap. ${cap.numero}: ${cap.titulo}`;
   frame.src = pdfUrl;
   overlay.classList.add("ativo");
   document.body.style.overflow = "hidden";
-
+ 
   // Tenta entrar em tela cheia
   overlay.requestFullscreen?.().catch(() => {});
-
+ 
   btnFechar.onclick = () => {
     overlay.classList.remove("ativo");
     frame.src = "";
@@ -648,49 +683,49 @@ function abrirLeitorManga(cap, manga) {
     if (document.fullscreenElement) document.exitFullscreen?.();
   };
 }
-
+ 
 // ─── Detalhe ─────────────────────────────────────────────────────────────────
 function renderDetalhe() {
   const box = document.getElementById("detalheConteudo");
   if (!box) return;
-
+ 
   const id  = new URLSearchParams(location.search).get("id");
   const cat = new URLSearchParams(location.search).get("categoria");
   const lista = buscarListaPorCategoria(cat);
   const item  = lista.find(c => c.id === id);
-
+ 
   if (!item) { box.innerHTML = "<h1>Não encontrado.</h1>"; return; }
-
+ 
   box.innerHTML = `
     <img src="${item.poster || ""}" alt="${item.titulo}">
     <div><h1>${item.titulo}</h1><p>${item.descricao || ""}</p></div>
   `;
-
+ 
   const btnFav  = document.getElementById("btnFavoritoDetalhe");
   const btnPlay = document.getElementById("btnAssistirDetalhe");
   const tempBox = document.getElementById("temporadaBox");
   const tempSel = document.getElementById("temporadaSelect");
   const epGrid  = document.getElementById("episodiosGrid");
-
+ 
   atualizarBotaoFavorito(item.id);
   if (btnFav) btnFav.onclick = () => alternarFavorito(item.id);
-
+ 
   const primeiraTemp = item.temporadas?.[0];
   const primeiroEp   = primeiraTemp?.episodios?.[0];
-
+ 
   if (btnPlay) {
     btnPlay.onclick = () => {
       if (!primeiroEp?.video) { alert("Adicione um vídeo."); return; }
       window.location.href = `assistir.html?serie=${encodeURIComponent(item.id)}&categoria=${encodeURIComponent(cat)}&temporada=${primeiraTemp.numero}&episodio=${encodeURIComponent(primeiroEp.id)}&autoplay=1`;
     };
   }
-
+ 
   if (item.tipo === "Filme" || item.tipo === "Anime") {
     if (tempBox) tempBox.style.display = "none";
     if (epGrid)  epGrid.innerHTML = "";
     return;
   }
-
+ 
   if (tempBox) tempBox.style.display = "block";
   if (tempSel) {
     tempSel.innerHTML = "";
@@ -700,7 +735,7 @@ function renderDetalhe() {
       tempSel.appendChild(opt);
     });
   }
-
+ 
   function mostrarEps(num) {
     const temp = item.temporadas.find(t => t.numero == num);
     if (!epGrid || !temp) return;
@@ -716,21 +751,40 @@ function renderDetalhe() {
       epGrid.appendChild(c);
     });
   }
-
+ 
   mostrarEps(item.temporadas[0]?.numero);
   if (tempSel) tempSel.addEventListener("change", e => mostrarEps(e.target.value));
 }
-
+ 
 // ─── Player ───────────────────────────────────────────────────────────────────
+// ─── Carregar vídeo com suporte a HLS (.m3u8) ────────────────────────────────
+let hlsInstance = null;
+function carregarVideoHLS(videoEl, src) {
+  if (!src) return;
+  // Destruir instância anterior se existir
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+ 
+  const ehHLS = src.includes(".m3u8");
+  if (ehHLS && typeof Hls !== "undefined" && Hls.isSupported()) {
+    hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true });
+    hlsInstance.loadSource(src);
+    hlsInstance.attachMedia(videoEl);
+  } else {
+    // MP4 normal ou navegador com suporte nativo a HLS (Safari/iOS)
+    videoEl.src = src;
+    videoEl.load();
+  }
+}
+ 
 function renderPlayer() {
   const playerInfo  = document.getElementById("playerInfo");
   const videoPlayer = document.getElementById("videoPlayer");
   const btnSkip     = document.getElementById("btnSkipIntro");
   const btnNext     = document.getElementById("btnNextEpisode");
   const clickZone   = document.getElementById("videoClickZone");
-
+ 
   if (!playerInfo || !videoPlayer) return;
-
+ 
   // Pause/play ao clicar na área
   if (clickZone) {
     clickZone.addEventListener("click", () => {
@@ -738,7 +792,7 @@ function renderPlayer() {
       else videoPlayer.pause();
     });
   }
-
+ 
   // ── TELA CHEIA AUTOMÁTICA ──────────────────────────────────────────────────
   const shell = document.querySelector(".player-shell");
   videoPlayer.addEventListener("play", () => {
@@ -749,13 +803,13 @@ function renderPlayer() {
       });
     }
   }, { once: true });
-
+ 
   const params    = new URLSearchParams(location.search);
   const canalId   = params.get("canal");
   const serieId   = params.get("serie");
   const categoria = params.get("categoria");
   const autoplay  = params.get("autoplay") === "1";
-
+ 
   // Canal ao vivo
   if (canalId) {
     const canal = (catalogoData?.aoVivo || []).find(c => c.id === canalId);
@@ -765,7 +819,7 @@ function renderPlayer() {
       const jaExiste = (catalogoData.aoVivo || []).find(c => c.id === canal.id);
       if (!jaExiste) catalogoData.aoVivo = [...(catalogoData.aoVivo || []), canal];
     }
-
+ 
     function renderInfoCanal() {
       const favAtivo = itemEhFavorito(canal.id);
       playerInfo.innerHTML = `
@@ -789,32 +843,33 @@ function renderPlayer() {
       });
     }
     renderInfoCanal();
-
-    videoPlayer.src = canal.video;
-    videoPlayer.load();
-    if (autoplay) videoPlayer.play().catch(() => {});
+ 
+    carregarVideoHLS(videoPlayer, canal.video);
+    if (autoplay) {
+      videoPlayer.addEventListener("canplay", () => videoPlayer.play().catch(() => {}), { once: true });
+    }
     return;
   }
-
+ 
   const lista = buscarListaPorCategoria(categoria);
   const item  = lista.find(c => c.id === serieId);
   if (!item) { playerInfo.innerHTML = "<h1>Não encontrado.</h1>"; return; }
-
+ 
   // ── Estado atual (pode mudar ao trocar episódio/temporada) ────────────────
   let tempNumAtual   = parseInt(params.get("temporada")) || item.temporadas?.[0]?.numero || 1;
   let episodioIdAtual= params.get("episodio") || item.temporadas?.[0]?.episodios?.[0]?.id;
   let audioModo      = ls.get("sb_audio_modo") || "dublado"; // "dublado" | "legendado"
-
+ 
   // Obtém episódio atual
   function getEpisodioAtual() {
     const temp = item.temporadas.find(t => t.numero === tempNumAtual);
     return temp?.episodios.find(e => e.id === episodioIdAtual) || null;
   }
-
+ 
   // Carrega o vídeo do episódio atual no modo de áudio selecionado
   function carregarVideo(ep) {
     if (!ep) { playerInfo.innerHTML = "<h1>Episódio não encontrado.</h1>"; return; }
-
+ 
     // Determina a URL correta baseado no modo de áudio
     let videoUrl = ep.video; // fallback universal
     if (audioModo === "legendado" && ep.videoLegendado) {
@@ -822,45 +877,44 @@ function renderPlayer() {
     } else if (audioModo === "dublado" && ep.videoDublado) {
       videoUrl = ep.videoDublado;
     }
-
+ 
     playerInfo.innerHTML = `
       <h1>${item.titulo}</h1>
       <p>${ep.titulo}${ep.descricao ? " — " + ep.descricao : ""}</p>
     `;
-    videoPlayer.src = videoUrl;
-    videoPlayer.load();
+    carregarVideoHLS(videoPlayer, videoUrl);
     videoPlayer.addEventListener("loadedmetadata", () => {
       if (autoplay) videoPlayer.play().catch(() => {});
     }, { once: true });
-
+ 
     // Atualiza grade de episódios
     renderEpisodiosBar();
     atualizarBotaoProximo();
   }
-
+ 
   // ── Injetar barra de controles abaixo do player ───────────────────────────
   function injetarControlesPlayer() {
     // Remove controles antigos se existirem
     const antigo = document.getElementById("playerControlesBar");
     if (antigo) antigo.remove();
-
+ 
     const bar = document.createElement("div");
     bar.id = "playerControlesBar";
     bar.style.cssText = `
       background:#111; padding:20px 24px; border-top:1px solid #222;
       max-width:1400px; margin:0 auto;
     `;
-
+ 
     // Linha 1: Temporadas + áudio
     const linha1 = document.createElement("div");
     linha1.style.cssText = "display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;";
-
+ 
     // Seletor de temporadas (só mostra se tem mais de uma)
     if (item.temporadas.length > 1) {
       const labelTemp = document.createElement("span");
       labelTemp.textContent = "Temporada:";
       labelTemp.style.cssText = "color:#aaa;font-size:14px;font-weight:600;";
-
+ 
       const selectTemp = document.createElement("select");
       selectTemp.id = "playerTempSelect";
       selectTemp.style.cssText = `
@@ -880,20 +934,20 @@ function renderPlayer() {
         episodioIdAtual = primeiraTemp?.episodios?.[0]?.id;
         carregarVideo(getEpisodioAtual());
       });
-
+ 
       linha1.appendChild(labelTemp);
       linha1.appendChild(selectTemp);
     }
-
+ 
     // Espaçador
     const spacer = document.createElement("div");
     spacer.style.flex = "1";
     linha1.appendChild(spacer);
-
+ 
     // Botões dublado / legendado
     const audioBtns = document.createElement("div");
     audioBtns.style.cssText = "display:flex;gap:8px;";
-
+ 
     ["dublado","legendado"].forEach(modo => {
       const btn = document.createElement("button");
       btn.dataset.audio = modo;
@@ -927,33 +981,33 @@ function renderPlayer() {
       });
       audioBtns.appendChild(btn);
     });
-
+ 
     linha1.appendChild(audioBtns);
     bar.appendChild(linha1);
-
+ 
     // Linha 2: Grade de episódios
     const linha2 = document.createElement("div");
     linha2.id = "playerEpisodiosGrid";
     linha2.style.cssText = "display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;";
     linha2.style.cssText += "scrollbar-width:thin;scrollbar-color:#333 transparent;";
     bar.appendChild(linha2);
-
+ 
     // Inserir a barra após .player-main
     const playerMain = document.querySelector(".player-main");
     if (playerMain) {
       playerMain.insertAdjacentElement("afterend", bar);
     }
   }
-
+ 
   // ── Renderizar grade de episódios ─────────────────────────────────────────
   function renderEpisodiosBar() {
     const grid = document.getElementById("playerEpisodiosGrid");
     if (!grid) return;
     grid.innerHTML = "";
-
+ 
     const temp = item.temporadas.find(t => t.numero === tempNumAtual);
     if (!temp) return;
-
+ 
     temp.episodios.forEach((ep, idx) => {
       const btn = document.createElement("button");
       const ativo = ep.id === episodioIdAtual;
@@ -989,7 +1043,7 @@ function renderPlayer() {
       });
       grid.appendChild(btn);
     });
-
+ 
     // Scrollar até o episódio ativo
     setTimeout(() => {
       const btns = grid.querySelectorAll("button");
@@ -1000,7 +1054,7 @@ function renderPlayer() {
       }
     }, 100);
   }
-
+ 
   // ── Botão próximo episódio ────────────────────────────────────────────────
   function atualizarBotaoProximo() {
     const proximo = encontrarProximo(item, tempNumAtual, episodioIdAtual);
@@ -1021,14 +1075,14 @@ function renderPlayer() {
       }
     }
   }
-
+ 
   // ── Inicializar ───────────────────────────────────────────────────────────
   injetarControlesPlayer();
-
+ 
   const epInicial = getEpisodioAtual();
   if (!epInicial) { playerInfo.innerHTML = "<h1>Episódio não encontrado.</h1>"; return; }
   carregarVideo(epInicial);
-
+ 
   // Skip intro
   if (btnSkip) {
     btnSkip.classList.remove("hidden");
@@ -1036,7 +1090,7 @@ function renderPlayer() {
       videoPlayer.currentTime = Math.min(videoPlayer.currentTime + 60, videoPlayer.duration - 1);
     };
   }
-
+ 
   // Salvar progresso
   let saveTimer = null;
   function salvar() {
@@ -1051,7 +1105,7 @@ function renderPlayer() {
       });
     }, 500);
   }
-
+ 
   videoPlayer.addEventListener("timeupdate", () => {
     salvar();
     if (btnSkip) {
@@ -1064,10 +1118,10 @@ function renderPlayer() {
       btnNext.classList.toggle("hidden", restante > 60);
     }
   });
-
+ 
   videoPlayer.addEventListener("pause", salvar);
 }
-
+ 
 function encontrarProximo(item, tempNum, epId) {
   const temp = item.temporadas.find(t => t.numero === tempNum);
   if (!temp) return null;
@@ -1079,7 +1133,7 @@ function encontrarProximo(item, tempNum, epId) {
     return { temporada: proxTemp.numero, episodio: proxTemp.episodios[0] };
   return null;
 }
-
+ 
 // ─── Ao Vivo ──────────────────────────────────────────────────────────────────
 // ─── Renderizar canais Ao Vivo (index + página ao-vivo) ─────────────────────
 // Aceita um containerId e a lista de canais.
@@ -1088,25 +1142,25 @@ function renderCanaisAoVivo(containerId, lista) {
   const grid = document.getElementById(containerId);
   if (!grid) return;
   grid.innerHTML = "";
-
+ 
   lista.forEach(item => {
     // Wrapper do card para posicionar botão de fav
     const wrap = document.createElement("div");
     wrap.style.cssText = "position:relative;display:inline-block;";
-
+ 
     const card = criarCard(item, () => {
       if (item.video)
         window.location.href = `assistir.html?canal=${encodeURIComponent(item.id)}`;
       else
         alert("Vídeo não configurado.");
     });
-
+ 
     // Botão favorito flutuante no canto do card
     const btnFav = document.createElement("button");
     btnFav.className = "canal-fav-btn";
     btnFav.title = "Adicionar à minha lista";
     atualizarEstiloBtnFavCanal(btnFav, item.id);
-
+ 
     btnFav.addEventListener("click", async (e) => {
       e.stopPropagation();
       // Adiciona ao aoVivo do catálogo para que renderFavoritos encontre
@@ -1119,13 +1173,13 @@ function renderCanaisAoVivo(containerId, lista) {
       atualizarEstiloBtnFavCanal(btnFav, item.id);
       renderFavoritos();
     });
-
+ 
     wrap.appendChild(card);
     wrap.appendChild(btnFav);
     grid.appendChild(wrap);
   });
 }
-
+ 
 function atualizarEstiloBtnFavCanal(btn, id) {
   const fav = itemEhFavorito(id);
   btn.textContent = fav ? "✓" : "+";
@@ -1139,11 +1193,11 @@ function atualizarEstiloBtnFavCanal(btn, id) {
     box-shadow:0 2px 8px rgba(0,0,0,.5);
   `;
 }
-
+ 
 function renderAoVivoPage() {
   renderCanaisAoVivo("canaisGrid", catalogoData?.aoVivo || []);
 }
-
+ 
 // ─── Busca e filtros ──────────────────────────────────────────────────────────
 function iniciarBusca() {
   const input = document.getElementById("searchInput");
@@ -1155,7 +1209,7 @@ function iniciarBusca() {
     );
   });
 }
-
+ 
 function iniciarFiltros() {
   const botoes = document.querySelectorAll(".filter-btn");
   if (!botoes.length) return;
@@ -1167,7 +1221,7 @@ function iniciarFiltros() {
       .forEach(c => c.classList.toggle("hidden", f !== "todos" && c.dataset.tipo !== f));
   }));
 }
-
+ 
 // ─── Menu mobile ─────────────────────────────────────────────────────────────
 function iniciarMenuMobile() {
   const toggle = document.getElementById("menuToggle");
@@ -1185,7 +1239,7 @@ function iniciarMenuMobile() {
     }
   });
 }
-
+ 
 // ─── Usuário no header ────────────────────────────────────────────────────────
 function configurarUsuario() {
   const nome    = document.getElementById("usuarioNome");
@@ -1193,15 +1247,15 @@ function configurarUsuario() {
   if (nome)    nome.textContent = ls.get("sb_perfil_nome") || localStorage.getItem("usuarioEmail") || "";
   if (btnSair) btnSair.addEventListener("click", logout);
 }
-
+ 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 (async function init() {
   await carregarCatalogo();
-
+ 
   const temPerfil = !!getPerfilId();
   const naHome    = !!(document.getElementById("rowDestaques"));
   if (!temPerfil && naHome) await mostrarTelaPerfis();
-
+ 
   await carregarUserData();
   configurarUsuario();
   renderHome();
