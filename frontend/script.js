@@ -720,7 +720,9 @@ function renderDetalhe() {
     };
   }
  
-  if (item.tipo === "Filme" || item.tipo === "Anime") {
+  // Filmes com episódio único não precisam mostrar grade de episódios
+  const totalEps = item.temporadas?.reduce((s, t) => s + (t.episodios?.length || 0), 0) || 0;
+  if (item.tipo === "Filme" && totalEps <= 1) {
     if (tempBox) tempBox.style.display = "none";
     if (epGrid)  epGrid.innerHTML = "";
     return;
