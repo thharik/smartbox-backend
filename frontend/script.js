@@ -439,6 +439,7 @@ function renderFavoritos() {
     ...(catalogoData?.animes || []),
     ...(catalogoData?.series || []),
     ...(catalogoData?.aulas || []),
+    ...(catalogoData?.aoVivo || []),
   ];
 
   const itens = todos.filter(i => userData.favoritos.includes(i.id));
@@ -452,6 +453,17 @@ function renderFavoritos() {
   box.classList.remove("hidden");
 
   itens.forEach(item => {
+    // Canais ao vivo vão direto pro player; outros vão pro detalhe
+    const ehCanal = (catalogoData?.aoVivo || []).find(x => x.id === item.id);
+    if (ehCanal) {
+      row.appendChild(criarCard(item, () =>
+        item.video
+          ? (window.location.href = `assistir.html?canal=${encodeURIComponent(item.id)}`)
+          : alert("Vídeo não configurado.")
+      ));
+      return;
+    }
+
     const cat = (catalogoData.destaques || []).find(x => x.id === item.id) ? "rowDestaques"
               : (catalogoData.animes || []).find(x => x.id === item.id) ? "rowAnimes"
               : (catalogoData.aulas || []).find(x => x.id === item.id) ? "rowAulas"
@@ -543,7 +555,7 @@ function renderHome() {
   renderRow("rowDestaques", catalogoData.destaques || [], "detalhe");
   renderRow("rowAnimes", catalogoData.animes || [], "detalhe");
   renderRow("rowSeries", catalogoData.series || [], "detalhe");
-  renderRow("rowAoVivo", catalogoData.aoVivo || [], "aoVivo");
+  renderCanaisAoVivo("lista-canais", catalogoData.aoVivo || []);
 
   iniciarBusca();
   iniciarFiltros();
@@ -748,7 +760,36 @@ function renderPlayer() {
   if (canalId) {
     const canal = (catalogoData?.aoVivo || []).find(c => c.id === canalId);
     if (!canal) { playerInfo.innerHTML = "<h1>Canal não encontrado.</h1>"; return; }
-    playerInfo.innerHTML = `<h1>${canal.titulo}</h1><p>${canal.descricao || ""}</p>`;
+    // Garantir que o canal está no aoVivo do catálogo (para favoritar)
+    if (catalogoData) {
+      const jaExiste = (catalogoData.aoVivo || []).find(c => c.id === canal.id);
+      if (!jaExiste) catalogoData.aoVivo = [...(catalogoData.aoVivo || []), canal];
+    }
+
+    function renderInfoCanal() {
+      const favAtivo = itemEhFavorito(canal.id);
+      playerInfo.innerHTML = `
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div>
+            <h1>${canal.titulo}</h1>
+            <p>${canal.descricao || ""}</p>
+          </div>
+          <button id="btnFavCanal" style="
+            padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-weight:bold;
+            background:${favAtivo ? "#e50914" : "#2a2a2a"};color:#fff;
+            border:1px solid ${favAtivo ? "#e50914" : "#444"};font-size:14px;
+            transition:all .2s;
+          ">${favAtivo ? "✓ Na minha lista" : "+ Minha lista"}</button>
+        </div>
+      `;
+      document.getElementById("btnFavCanal")?.addEventListener("click", async () => {
+        await alternarFavorito(canal.id);
+        renderInfoCanal();
+        renderFavoritos();
+      });
+    }
+    renderInfoCanal();
+
     videoPlayer.src = canal.video;
     videoPlayer.load();
     if (autoplay) videoPlayer.play().catch(() => {});
@@ -1040,16 +1081,67 @@ function encontrarProximo(item, tempNum, epId) {
 }
 
 // ─── Ao Vivo ──────────────────────────────────────────────────────────────────
-function renderAoVivoPage() {
-  const grid = document.getElementById("canaisGrid");
+// ─── Renderizar canais Ao Vivo (index + página ao-vivo) ─────────────────────
+// Aceita um containerId e a lista de canais.
+// Mostra card com botão de favorito e abre o player ao clicar.
+function renderCanaisAoVivo(containerId, lista) {
+  const grid = document.getElementById(containerId);
   if (!grid) return;
-  (catalogoData?.aoVivo || []).forEach(item =>
-    grid.appendChild(criarCard(item, () =>
-      item.video
-        ? (window.location.href = `assistir.html?canal=${encodeURIComponent(item.id)}`)
-        : alert("Vídeo não configurado.")
-    ))
-  );
+  grid.innerHTML = "";
+
+  lista.forEach(item => {
+    // Wrapper do card para posicionar botão de fav
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "position:relative;display:inline-block;";
+
+    const card = criarCard(item, () => {
+      if (item.video)
+        window.location.href = `assistir.html?canal=${encodeURIComponent(item.id)}`;
+      else
+        alert("Vídeo não configurado.");
+    });
+
+    // Botão favorito flutuante no canto do card
+    const btnFav = document.createElement("button");
+    btnFav.className = "canal-fav-btn";
+    btnFav.title = "Adicionar à minha lista";
+    atualizarEstiloBtnFavCanal(btnFav, item.id);
+
+    btnFav.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      // Adiciona ao aoVivo do catálogo para que renderFavoritos encontre
+      const jaNosCat = (catalogoData?.aoVivo || []).find(c => c.id === item.id);
+      if (!jaNosCat && catalogoData) {
+        catalogoData.aoVivo = catalogoData.aoVivo || [];
+        catalogoData.aoVivo.push(item);
+      }
+      await alternarFavorito(item.id);
+      atualizarEstiloBtnFavCanal(btnFav, item.id);
+      renderFavoritos();
+    });
+
+    wrap.appendChild(card);
+    wrap.appendChild(btnFav);
+    grid.appendChild(wrap);
+  });
+}
+
+function atualizarEstiloBtnFavCanal(btn, id) {
+  const fav = itemEhFavorito(id);
+  btn.textContent = fav ? "✓" : "+";
+  btn.style.cssText = `
+    position:absolute;top:8px;right:8px;
+    width:30px;height:30px;border-radius:50%;
+    border:none;cursor:pointer;font-size:16px;font-weight:bold;
+    display:flex;align-items:center;justify-content:center;
+    background:${fav ? "#e50914" : "rgba(0,0,0,.65)"};
+    color:#fff;z-index:10;transition:background .2s,transform .15s;
+    box-shadow:0 2px 8px rgba(0,0,0,.5);
+  `;
+}
+
+function renderAoVivoPage() {
+  renderCanaisAoVivo("canaisGrid", catalogoData?.aoVivo || []);
 }
 
 // ─── Busca e filtros ──────────────────────────────────────────────────────────
