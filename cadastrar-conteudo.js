@@ -14,13 +14,12 @@ const VIDEO_BASE = "https://tvxbox-b2.tharikluan-miguel.workers.dev";
 const POSTER_BASE = "https://tvxbox-b2.tharikluan-miguel.workers.dev";
 
 const conteudos = [
-  // ===================== BUDDY =====================
   {
     conteudo_id: "buddy",
     titulo: "Buddy",
     tipo: "Anime",
     poster: `${POSTER_BASE}/Buddy.jpg`,
-    descricao: "A série acompanha personagens que enfrentam desafios, amizades inesperadas e situações cheias de aventura. Entre conflitos e momentos emocionantes, a história mostra parceria, superação e ação.",
+    descricao: "A série acompanha personagens que enfrentam desafios, amizades inesperadas e situações cheias de aventura. Entre conflitos e momentos emocionantes, a história mostra parceria, ação e superação.",
     generos: ["Anime", "Aventura"],
     classificacao: "Livre",
     ano: 2026,
@@ -42,13 +41,12 @@ const conteudos = [
     ]
   },
 
-  // ===================== FRIEREN =====================
   {
     conteudo_id: "frieren",
     titulo: "Frieren",
     tipo: "Anime",
     poster: `${POSTER_BASE}/frieren.jpg`,
-    descricao: "Depois do fim de uma grande jornada, Frieren, uma maga elfa de vida longa, continua viajando pelo mundo enquanto aprende mais sobre os sentimentos humanos, a amizade e o valor do tempo.",
+    descricao: "Depois do fim de uma grande jornada, Frieren, uma maga elfa de vida longa, continua viajando pelo mundo enquanto aprende mais sobre amizade, memórias e o valor do tempo.",
     generos: ["Anime", "Fantasia"],
     classificacao: "Livre",
     ano: 2026,
@@ -61,7 +59,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== KINGDOM =====================
   {
     conteudo_id: "kingdom",
     titulo: "Kingdom",
@@ -88,7 +85,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== ZATCH BELL =====================
   {
     conteudo_id: "zatbell",
     titulo: "Zatch Bell",
@@ -105,7 +101,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== KONJIKI NO GASH BELL =====================
   {
     conteudo_id: "gashbell",
     titulo: "Konjiki no Gash Bell",
@@ -130,7 +125,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== JIDOU ANABAIKI =====================
   {
     conteudo_id: "jidou",
     titulo: "Jidou Anabaiki",
@@ -147,7 +141,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== KIRIO FAN CLUB =====================
   {
     conteudo_id: "kirio_fan_club",
     titulo: "Kirio Fan Club",
@@ -164,7 +157,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== MAID-SAN WA TABERU DAKE =====================
   {
     conteudo_id: "maid",
     titulo: "Maid-san wa Taberu dake",
@@ -181,7 +173,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== MATA KOROSARETE =====================
   {
     conteudo_id: "mata_korosarete",
     titulo: "Mata Korosarete",
@@ -198,7 +189,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== SAIKYOU NO SHOKUGYOU =====================
   {
     conteudo_id: "saikyou",
     titulo: "Saikyouno Shokugyou",
@@ -215,7 +205,6 @@ const conteudos = [
     ]
   },
 
-  // ===================== SHINRYAKU IKA MUSUME =====================
   {
     conteudo_id: "ika",
     titulo: "Shinryaku Ika Musume",
@@ -272,18 +261,30 @@ async function salvarConteudos() {
       if (serie.episodios?.length && serie.temporada_id) {
         console.log(`Salvando temporada: ${serie.temporada_id}`);
 
-        await client.query(
-          `INSERT INTO temporadas (id, conteudo_id, numero)
-           VALUES ($1,$2,$3)
-           ON CONFLICT (id) DO UPDATE SET
-             conteudo_id = EXCLUDED.conteudo_id,
-             numero = EXCLUDED.numero`,
-          [
-            serie.temporada_id,
-            serie.conteudo_id,
-            serie.numero_temporada
-          ]
+        let temporadaIdReal;
+
+        const temporadaExistente = await client.query(
+          `SELECT id
+           FROM temporadas
+           WHERE conteudo_id = $1 AND numero = $2
+           LIMIT 1`,
+          [serie.conteudo_id, serie.numero_temporada]
         );
+
+        if (temporadaExistente.rows.length > 0) {
+          temporadaIdReal = temporadaExistente.rows[0].id;
+          console.log(`Temporada já existe. Usando ID: ${temporadaIdReal}`);
+        } else {
+          const novaTemporada = await client.query(
+            `INSERT INTO temporadas (id, conteudo_id, numero)
+             VALUES ($1, $2, $3)
+             RETURNING id`,
+            [serie.temporada_id, serie.conteudo_id, serie.numero_temporada]
+          );
+
+          temporadaIdReal = novaTemporada.rows[0].id;
+          console.log(`Temporada criada com ID: ${temporadaIdReal}`);
+        }
 
         for (const ep of serie.episodios) {
           console.log(`Salvando episódio: ${ep.id}`);
@@ -304,7 +305,7 @@ async function salvarConteudos() {
                intro_fim = EXCLUDED.intro_fim`,
             [
               ep.id,
-              serie.temporada_id,
+              temporadaIdReal,
               ep.titulo,
               ep.titulo,
               serie.poster,
