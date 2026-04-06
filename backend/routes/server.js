@@ -1,13 +1,15 @@
 require("dotenv").config();
 const express = require("express");
-const cors    = require("cors");
+const cors = require("cors");
 
 const app = express();
 
 const allowedOrigins = [
   "https://tvxbox.com.br",
   "https://www.tvxbox.com.br",
-  "http://localhost:3000"
+  "http://localhost:3000",
+  "http://127.0.0.1:5500",
+  "http://localhost:5500",
 ];
 
 app.use(cors({
@@ -18,19 +20,32 @@ app.use(cors({
       callback(new Error("CORS bloqueado para esta origem: " + origin));
     }
   },
-  credentials: true
+  credentials: true,
 }));
+
+// ── IMPORTANTE: webhook do Stripe precisa do body RAW antes do express.json()
+app.use(
+  "/assinatura/webhook",
+  express.raw({ type: "application/json" }),
+  require("./routes/assinatura")
+);
 
 app.use(express.json());
 
-app.use("/auth",      require("./backend/routes/auth"));
-app.use("/perfis",    require("./backend/routes/perfis"));
-app.use("/catalogo",  require("./backend/routes/catalogo"));
-app.use("/progresso", require("./backend/routes/progresso"));
-app.use("/favoritos", require("./backend/routes/favoritos"));
-app.use("/video",     require("./backend/routes/video"));
+// ── Rotas ──────────────────────────────────────────────────────────────────
+app.use("/auth", require("./routes/auth"));
+app.use("/perfis", require("./routes/perfis"));
+app.use("/catalogo", require("./routes/catalogo"));
+app.use("/progresso", require("./routes/progresso"));
+app.use("/favoritos", require("./routes/favoritos"));
+app.use("/mangas", require("./routes/mangas"));
+app.use("/canais", require("./routes/canais"));
+app.use("/video", require("./routes/video"));
+app.use("/assinatura", require("./routes/assinatura"));
 
-app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/health", (_req, res) => {
+  res.json({ ok: true, app: "Tvxbox" });
+});
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`SmartBox rodando na porta ${PORT}`));
+app.listen(PORT, () => console.log(`Tvxbox API rodando na porta ${PORT}`));

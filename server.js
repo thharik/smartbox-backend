@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const cors    = require("cors");
+const cors = require("cors");
 
 const app = express();
 
@@ -23,19 +23,29 @@ app.use(cors({
   credentials: true,
 }));
 
+// ── IMPORTANTE: webhook do Stripe precisa do body RAW antes do express.json()
+app.use(
+  "/assinatura/webhook",
+  express.raw({ type: "application/json" }),
+  require("./backend/routes/assinatura")
+);
+
 app.use(express.json());
 
 // ── Rotas ──────────────────────────────────────────────────────────────────
-app.use("/auth",      require("./backend/routes/auth"));
-app.use("/perfis",    require("./backend/routes/perfis"));
-app.use("/catalogo",  require("./backend/routes/catalogo"));
+app.use("/auth", require("./backend/routes/auth"));
+app.use("/perfis", require("./backend/routes/perfis"));
+app.use("/catalogo", require("./backend/routes/catalogo"));
 app.use("/progresso", require("./backend/routes/progresso"));
 app.use("/favoritos", require("./backend/routes/favoritos"));
-app.use("/mangas",    require("./backend/routes/mangas"));
-app.use("/canais",    require("./backend/routes/canais"));   // ← NOVO
-app.use("/video",     require("./backend/routes/video"));
+app.use("/mangas", require("./backend/routes/mangas"));
+app.use("/canais", require("./backend/routes/canais"));
+app.use("/video", require("./backend/routes/video"));
+app.use("/assinatura", require("./backend/routes/assinatura"));
 
-app.get("/health", (_req, res) => res.json({ ok: true, app: "Tvxbox" }));
+app.get("/health", (_req, res) => {
+  res.json({ ok: true, app: "Tvxbox" });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Tvxbox API rodando na porta ${PORT}`));

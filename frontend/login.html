@@ -9,87 +9,51 @@
   <meta name="theme-color" content="#141414">
   <link rel="apple-touch-icon" href="pwa/icon-192.png">
   <style>
-    /* ── Preview slideshow de fundo ── */
-    .auth-bg-slideshow {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
+    .auth-bg-slideshow { position:fixed;inset:0;z-index:0;overflow:hidden; }
+    .auth-bg-slideshow .slide { position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s ease; }
+    .auth-bg-slideshow .slide.ativo { opacity:1; }
+    .preview-cards { position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden; }
+    .preview-float-card { position:absolute;width:130px;border-radius:10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.7);opacity:0;transform:translateY(20px) scale(0.92);animation:floatIn 0.7s ease forwards; }
+    .preview-float-card img { width:100%;display:block;aspect-ratio:2/3;object-fit:cover; }
+    @keyframes floatIn { to { opacity:0.85;transform:translateY(0) scale(1); } }
+    .preview-left-fade { position:fixed;inset:0;z-index:2;background:linear-gradient(to right,rgba(10,10,10,0.15) 0%,rgba(10,10,10,0.55) 55%,rgba(10,10,10,0.97) 78%,rgba(10,10,10,1) 100%); }
+    .auth-page { background:transparent; }
+    .auth-overlay { display:none; }
+    .auth-container { position:relative;z-index:10; }
+
+    /* Banner de aviso de assinatura */
+    #bannerAssinatura {
+      display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999;
+      background:linear-gradient(135deg,#b30000,#e50914);
+      color:#fff; padding:16px 24px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      box-shadow:0 -4px 20px rgba(0,0,0,.5);
     }
-    .auth-bg-slideshow .slide {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      opacity: 0;
-      transition: opacity 1.2s ease;
+    #bannerAssinatura p { margin:0; font-size:15px; font-weight:600; }
+    #bannerAssinatura button {
+      background:#fff; color:#e50914; border:none; border-radius:8px;
+      padding:10px 20px; font-weight:700; cursor:pointer; font-size:14px;
+      white-space:nowrap; flex-shrink:0;
     }
-    .auth-bg-slideshow .slide.ativo {
-      opacity: 1;
-    }
-    /* Cards flutuantes que aparecem sobre o fundo */
-    .preview-cards {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .preview-float-card {
-      position: absolute;
-      width: 130px;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 8px 28px rgba(0,0,0,.7);
-      opacity: 0;
-      transform: translateY(20px) scale(0.92);
-      animation: floatIn 0.7s ease forwards;
-    }
-    .preview-float-card img {
-      width: 100%;
-      display: block;
-      aspect-ratio: 2/3;
-      object-fit: cover;
-    }
-    @keyframes floatIn {
-      to { opacity: 0.85; transform: translateY(0) scale(1); }
-    }
-    /* Gradiente que escurece a esquerda (onde ficam os cards) */
-    .preview-left-fade {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      background: linear-gradient(
-        to right,
-        rgba(10,10,10,0.15) 0%,
-        rgba(10,10,10,0.55) 55%,
-        rgba(10,10,10,0.97) 78%,
-        rgba(10,10,10,1)    100%
-      );
-    }
-    /* Garante que o conteúdo do auth fica acima de tudo */
-    .auth-page { background: transparent; }
-    .auth-overlay { display: none; }
-    .auth-container { position: relative; z-index: 10; }
+    #bannerAssinatura button:hover { opacity:.9; }
   </style>
 </head>
 <body>
 
-  <!-- Slideshow de fundo com posters -->
   <div class="auth-bg-slideshow" id="bgSlideshow"></div>
-
-  <!-- Cards flutuantes de posters -->
   <div class="preview-cards" id="previewCards"></div>
-
-  <!-- Gradiente de fade -->
   <div class="preview-left-fade"></div>
+
+  <!-- Banner de assinatura necessária (aparece só quando login OK mas sem assinatura) -->
+  <div id="bannerAssinatura">
+    <p>⚠️ Sua conta precisa de uma assinatura ativa para acessar o conteúdo.</p>
+    <button id="btnAssinarAgora">Assinar agora — $2/mês</button>
+  </div>
 
   <div class="auth-page">
     <div class="auth-overlay"></div>
-
     <div class="auth-container">
 
-      <!-- Lado esquerdo: marca + Pix -->
       <div class="auth-left">
         <div class="brand-box">
           <h1>TVXBOX</h1>
@@ -98,40 +62,27 @@
 
         <div class="support-card">
           <h2>Ajude a melhorar o app</h2>
-          <p class="support-text">
-            O valor arrecadado será usado para melhorar o app, adicionar novidades,
-            corrigir problemas e deixar a experiência cada vez melhor para todos.
-          </p>
-
+          <p class="support-text">O valor arrecadado será usado para melhorar o app, adicionar novidades, corrigir problemas e deixar a experiência cada vez melhor para todos.</p>
           <div class="pix-box">
             <div class="pix-qr">
               <img src="assets/posteris/WhatsApp Image 2026-03-25 at 10.40.19.jpeg" alt="QR Code Pix" id="pixQrImage">
             </div>
-
             <div class="pix-info">
               <p class="pix-title">Pagamento via Pix</p>
-              <p class="pix-description">
-                Aponte a câmera do seu banco para o QR Code ou copie a chave Pix abaixo.
-              </p>
-
+              <p class="pix-description">Aponte a câmera do seu banco para o QR Code ou copie a chave Pix abaixo.</p>
               <div class="pix-code-box">
                 <input type="text" id="pixCode" readonly value="82408b72-9d4f-4c2f-8391-96b789f18ea8">
                 <button type="button" id="copyPixBtn">Copiar Pix</button>
               </div>
-
-              <p class="pix-note">
-                Você escolhe o valor que quer pagar. Este app foi criado para ser acessível a todos.
-              </p>
+              <p class="pix-note">Você escolhe o valor que quer pagar. Este app foi criado para ser acessível a todos.</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Lado direito: formulário de login -->
       <div class="auth-right">
         <div class="auth-box">
           <h2>Entrar</h2>
-
           <form id="loginForm">
             <div class="input-group">
               <label for="loginEmail">E-mail</label>
@@ -143,9 +94,7 @@
             </div>
             <button type="submit" class="main-btn">Entrar</button>
           </form>
-
           <p id="loginMensagem" class="mensagem"></p>
-
           <div class="auth-links">
             <span>Ainda não tem conta?</span>
             <a href="cadastro.html">Criar conta</a>
@@ -160,39 +109,42 @@
   <script src="pwa/register-sw.js"></script>
 
   <script>
-    // ── Preview slideshow na tela de login ───────────────────────────────────
-    // Busca posters do catálogo para mostrar como preview animado de fundo
-    (async function initPreview() {
-      const API = "https://tvxbox-backend-1.onrender.com";
-      let itens = [];
+    const BACKEND = "https://tvxbox-backend-1.onrender.com";
 
+    // ── Verificar se voltou de assinatura cancelada ───────────────────────────
+    if (new URLSearchParams(location.search).get("assinatura") === "cancelada") {
+      document.getElementById("loginMensagem").textContent = "Pagamento cancelado. Faça login e tente novamente.";
+    }
+
+    // ── Botão "Assinar agora" ─────────────────────────────────────────────────
+    document.getElementById("btnAssinarAgora")?.addEventListener("click", async () => {
+      const token = localStorage.getItem("sb_token")?.replace(/"/g,"");
+      if (!token) return;
       try {
-        const r = await fetch(API + "/catalogo", {
-          headers: { "Authorization": "Bearer " + (JSON.parse(localStorage.getItem("sb_token")) || "") }
+        const r = await fetch(BACKEND + "/assinatura/checkout", {
+          method: "POST",
+          headers: { "Content-Type":"application/json", "Authorization":"Bearer " + token }
         });
+        const data = await r.json();
+        if (data.ja_ativo) { window.location.href = "index.html"; return; }
+        if (data.url) window.location.href = data.url;
+      } catch { alert("Erro ao abrir página de pagamento. Tente novamente."); }
+    });
+
+    // ── Slideshow de fundo ────────────────────────────────────────────────────
+    (async function initPreview() {
+      let itens = [];
+      try {
+        const token = localStorage.getItem("sb_token")?.replace(/"/g,"") || "";
+        const r = await fetch(BACKEND + "/catalogo", { headers: { "Authorization":"Bearer " + token } });
         if (r.ok) {
           const data = await r.json();
-          itens = [
-            ...(data.destaques || []),
-            ...(data.animes    || []),
-            ...(data.series    || []),
-            ...(data.mangas    || []),
-          ].filter(i => i.poster);
+          itens = [...(data.destaques||[]),...(data.animes||[]),...(data.series||[]),...(data.mangas||[])].filter(i => i.poster);
         }
       } catch {}
 
-      // Fallback: usa posters que já estejam em data.js (carregado antes deste script)
-      if (!itens.length && typeof catalogo !== "undefined") {
-        itens = [
-          ...(catalogo.destaques || []),
-          ...(catalogo.animes    || []),
-          ...(catalogo.series    || []),
-        ].filter(i => i.poster);
-      }
-
       if (!itens.length) return;
 
-      // ── Slideshow de fundo ──────────────────────────────────────────────
       const bgEl = document.getElementById("bgSlideshow");
       itens.forEach((item, i) => {
         const slide = document.createElement("div");
@@ -200,7 +152,6 @@
         slide.style.backgroundImage = `url('${item.poster}')`;
         bgEl.appendChild(slide);
       });
-
       let atualSlide = 0;
       const slides = bgEl.querySelectorAll(".slide");
       setInterval(() => {
@@ -209,48 +160,28 @@
         slides[atualSlide].classList.add("ativo");
       }, 4000);
 
-      // ── Cards flutuantes ─────────────────────────────────────────────────
       const cardsEl = document.getElementById("previewCards");
-      // Posições predefinidas (lado esquerdo da tela)
       const posicoes = [
-        { left: "2%",  top: "8%"  },
-        { left: "16%", top: "5%"  },
-        { left: "30%", top: "10%" },
-        { left: "7%",  top: "45%" },
-        { left: "22%", top: "42%" },
-        { left: "35%", top: "48%" },
-        { left: "4%",  top: "72%" },
-        { left: "18%", top: "70%" },
-        { left: "32%", top: "75%" },
+        { left:"2%",top:"8%" },{ left:"16%",top:"5%" },{ left:"30%",top:"10%" },
+        { left:"7%",top:"45%" },{ left:"22%",top:"42%" },{ left:"35%",top:"48%" },
+        { left:"4%",top:"72%" },{ left:"18%",top:"70%" },{ left:"32%",top:"75%" },
       ];
-
-      // Embaralha para variar
       const embaralhados = [...itens].sort(() => Math.random() - 0.5).slice(0, posicoes.length);
-
       embaralhados.forEach((item, i) => {
         const card = document.createElement("div");
         card.className = "preview-float-card";
-        card.style.left           = posicoes[i].left;
-        card.style.top            = posicoes[i].top;
+        card.style.left = posicoes[i].left; card.style.top = posicoes[i].top;
         card.style.animationDelay = `${i * 0.18}s`;
         card.innerHTML = `<img src="${item.poster}" alt="${item.titulo}" loading="lazy">`;
         cardsEl.appendChild(card);
       });
-
-      // A cada 6s troca alguns cards aleatoriamente
       setInterval(() => {
-        const cards     = cardsEl.querySelectorAll(".preview-float-card");
-        const idxTrocar = Math.floor(Math.random() * cards.length);
-        const novoItem  = itens[Math.floor(Math.random() * itens.length)];
-        const card      = cards[idxTrocar];
-        card.style.opacity   = "0";
-        card.style.transform = "translateY(20px) scale(0.92)";
-        card.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-        setTimeout(() => {
-          card.querySelector("img").src = novoItem.poster;
-          card.style.opacity   = "0.85";
-          card.style.transform = "translateY(0) scale(1)";
-        }, 500);
+        const cards = cardsEl.querySelectorAll(".preview-float-card");
+        const idx   = Math.floor(Math.random() * cards.length);
+        const novo  = itens[Math.floor(Math.random() * itens.length)];
+        const card  = cards[idx];
+        card.style.opacity = "0"; card.style.transform = "translateY(20px) scale(0.92)"; card.style.transition = "opacity 0.5s ease,transform 0.5s ease";
+        setTimeout(() => { card.querySelector("img").src = novo.poster; card.style.opacity="0.85"; card.style.transform="translateY(0) scale(1)"; }, 500);
       }, 6000);
     })();
   </script>
