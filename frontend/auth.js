@@ -63,10 +63,11 @@ if (loginForm) {
       const assinatura = await rs.json();
  
       if (!assinatura.ativa) {
-        // Assinatura inativa — mostra banner com botão de pagar
         msg.textContent = "";
         const banner = document.getElementById("bannerAssinatura");
-        if (banner) banner.style.display = "flex";
+        if (banner) {
+          banner.style.display = "flex";  // mostra o banner corretamente
+        }
         return;
       }
  

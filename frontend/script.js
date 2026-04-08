@@ -105,18 +105,23 @@ async function carregarCatalogo() {
     const data = await apiFetch("/catalogo", { headers: headers() });
     if (data) {
       catalogoData = normalizarCatalogo(data);
-      const canaisExt = await apiFetch("/canais", { headers: headers() });
-      const extras = Array.isArray(canaisExt) ? canaisExt : [];
-      catalogoData.aoVivo = mesclarCanais(mesclarCanais(catalogoData.aoVivo || [], CANAIS_BUILTIN), extras);
+      // Garante que canais builtin aparecem sempre, independente do backend
+      catalogoData.aoVivo = mesclarCanais(catalogoData.aoVivo || [], CANAIS_BUILTIN);
+      // Adiciona canais extras do /canais (não bloqueia se falhar)
+      try {
+        const canaisExt = await apiFetch("/canais", { headers: headers() });
+        const extras = Array.isArray(canaisExt) ? canaisExt : [];
+        catalogoData.aoVivo = mesclarCanais(catalogoData.aoVivo, extras);
+      } catch { /* ignora */ }
       ls.set("sb_catalogo_cache", catalogoData);
       return;
     }
   }
+  // Fallback: cache local ou objeto vazio
   catalogoData = ls.get("sb_catalogo_cache");
-  if (!catalogoData && typeof catalogo !== "undefined")
-    catalogoData = normalizarCatalogo(JSON.parse(JSON.stringify(catalogo)));
   if (!catalogoData)
     catalogoData = { destaques:[], animes:[], series:[], aoVivo:[], mangas:[], aulas:[] };
+  // Sempre mescla os canais builtin no fallback também
   catalogoData.aoVivo = mesclarCanais(catalogoData.aoVivo || [], CANAIS_BUILTIN);
 }
 
@@ -389,16 +394,19 @@ window.addEventListener("online", async () => {
 });
 
 // ─── Continuar assistindo ─────────────────────────────────────────────────────
-// CORRIGIDO: busca categoria correta via buscarItemEmTodoCatalogo
 function renderContinuarAssistindo() {
   const box  = document.getElementById("continuarBox");
-  const card = document.getElementById("continuarCard");
-  if (!box || !card) return;
+  const row  = document.getElementById("continuarCard");
+  if (!box || !row) return;
 
-  const lista = userData.continuarAssistindo || [];
+  // Ordena: mais recente primeiro (o backend já retorna assim, mas garantimos)
+  const lista = [...(userData.continuarAssistindo || [])];
   if (!lista.length) { box.classList.add("hidden"); return; }
 
-  card.innerHTML = "";
+  row.innerHTML = "";
+  // O container agora é horizontal (poster-row)
+  row.className = "continuar-row";
+
   lista.forEach(item => {
     const pct = item.duration > 0 ? Math.min(100, Math.round((item.current_time / item.duration) * 100)) : 0;
     const { cat } = buscarItemEmTodoCatalogo(item.conteudo_id);
@@ -407,20 +415,25 @@ function renderContinuarAssistindo() {
 
     const restanteSeg = item.duration - item.current_time;
     const restanteMin = Math.max(0, Math.round(restanteSeg / 60));
-    const restanteTxt = restanteMin > 1 ? `${restanteMin} min restantes` : "";
+    const restanteTxt = restanteMin > 1 ? `${restanteMin}min restantes` : "Quase finalizado";
 
     const bloco = document.createElement("div");
-    bloco.className = "continuar-card";
+    bloco.className = "continuar-mini-card";
     bloco.innerHTML = `
-      <img src="${item.poster || item.capa || "assets/posters/placeholder.jpg"}" alt="${item.titulo || ""}">
-      <div class="continuar-info">
-        <h3>${item.titulo || "Sem título"}</h3>
-        <p>${item.ep_titulo || ""}${restanteTxt ? " · " + restanteTxt : ""}</p>
-        <a href="${link}">▶ Continuar</a>
-        <div class="continuar-progress"><div class="continuar-progress-fill" style="width:${pct}%"></div></div>
-      </div>
+      <a href="${link}" class="continuar-mini-link">
+        <div class="continuar-mini-thumb">
+          <img src="${item.poster || item.capa || "assets/posters/placeholder.jpg"}" alt="${item.titulo || ""}">
+          <div class="continuar-mini-overlay">▶</div>
+        </div>
+        <div class="continuar-mini-info">
+          <div class="continuar-mini-progress"><div class="continuar-mini-fill" style="width:${pct}%"></div></div>
+          <p class="continuar-mini-titulo">${item.titulo || "Sem título"}</p>
+          <p class="continuar-mini-ep">${item.ep_titulo || ""}</p>
+          <p class="continuar-mini-resto">${restanteTxt}</p>
+        </div>
+      </a>
     `;
-    card.appendChild(bloco);
+    row.appendChild(bloco);
   });
   box.classList.remove("hidden");
 }
@@ -489,7 +502,6 @@ function abrirLeitorManga(cap, manga) {
 }
 
 // ─── Detalhe ─────────────────────────────────────────────────────────────────
-// CORRIGIDO: fallback busca em todo catálogo; exibe corretamente episódios com progresso
 function renderDetalhe() {
   const box = document.getElementById("detalheConteudo");
   if (!box) return;
@@ -509,6 +521,7 @@ function renderDetalhe() {
 
   const btnFav  = document.getElementById("btnFavoritoDetalhe");
   const btnPlay = document.getElementById("btnAssistirDetalhe");
+  const audioBox= document.getElementById("audioSelectorBox");
   const tempBox = document.getElementById("temporadaBox");
   const tempSel = document.getElementById("temporadaSelect");
   const epGrid  = document.getElementById("episodiosGrid");
@@ -517,12 +530,36 @@ function renderDetalhe() {
   const primeiraTemp = item.temporadas?.[0];
   const primeiroEp   = primeiraTemp?.episodios?.[0];
 
+  // Detecta se o conteúdo tem áudio separado (dub ≠ leg)
+  const temAudio = (item.temporadas || []).some(t =>
+    (t.episodios || []).some(e => e.videoDublado && e.videoLegendado && e.videoDublado !== e.videoLegendado)
+  );
+
+  // Selector de áudio
+  let audioModo = ls.get("sb_audio_modo") || "dublado";
+  if (audioBox) {
+    if (temAudio) {
+      audioBox.style.display = "flex";
+      audioBox.querySelectorAll(".audio-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.audio === audioModo);
+        btn.addEventListener("click", () => {
+          audioModo = btn.dataset.audio;
+          ls.set("sb_audio_modo", audioModo);
+          audioBox.querySelectorAll(".audio-btn").forEach(b => b.classList.toggle("active", b.dataset.audio === audioModo));
+        });
+      });
+    } else {
+      audioBox.style.display = "none";
+    }
+  }
+
   atualizarBotaoFavorito(item.id);
   if (btnFav)  btnFav.onclick = () => alternarFavorito(item.id);
   if (btnPlay) btnPlay.onclick = () => {
-    if (!primeiroEp)       { alert("Nenhum episódio disponível."); return; }
-    if (!primeiroEp.video) { alert("Vídeo não configurado."); return; }
-    window.location.href = `assistir.html?serie=${encodeURIComponent(item.id)}&categoria=${encodeURIComponent(catReal)}&temporada=${primeiraTemp.numero}&episodio=${encodeURIComponent(primeiroEp.id)}&autoplay=1`;
+    if (!primeiroEp) { alert("Nenhum episódio disponível."); return; }
+    const src = audioModo === "legendado" ? primeiroEp.videoLegendado : primeiroEp.videoDublado;
+    if (!src && !primeiroEp.video) { alert("Vídeo não configurado."); return; }
+    window.location.href = `assistir.html?serie=${encodeURIComponent(item.id)}&categoria=${encodeURIComponent(catReal)}&temporada=${primeiraTemp.numero}&episodio=${encodeURIComponent(primeiroEp.id)}&audio=${audioModo}&autoplay=1`;
   };
 
   // Filmes com 1 ep não precisam de grade
@@ -533,7 +570,6 @@ function renderDetalhe() {
     return;
   }
 
-  // CORRIGIDO: só mostra selector se há temporadas com episódios
   const tempsComEps = (item.temporadas || []).filter(t => t.episodios?.length > 0);
   if (!tempsComEps.length) {
     if (tempBox) tempBox.style.display = "none";
@@ -556,9 +592,8 @@ function renderDetalhe() {
     if (!epGrid || !temp) return;
     epGrid.innerHTML = "";
     temp.episodios.forEach((ep, idx) => {
-      const c   = document.createElement("div");
+      const c = document.createElement("div");
       c.className = "ep-card";
-      // Mostra progresso individual do episódio
       const prog = (userData.continuarAssistindo || []).find(p => p.episodio_id === ep.id);
       const pct  = prog?.duration > 0 ? Math.min(100, Math.round((prog.current_time / prog.duration) * 100)) : 0;
       c.innerHTML = `
@@ -567,8 +602,9 @@ function renderDetalhe() {
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
       `;
       c.addEventListener("click", () => {
-        if (!ep.video) { alert("Sem vídeo configurado."); return; }
-        window.location.href = `assistir.html?serie=${encodeURIComponent(item.id)}&categoria=${encodeURIComponent(catReal)}&temporada=${num}&episodio=${encodeURIComponent(ep.id)}&autoplay=1`;
+        const src = audioModo === "legendado" ? ep.videoLegendado : ep.videoDublado;
+        if (!src && !ep.video) { alert("Sem vídeo configurado."); return; }
+        window.location.href = `assistir.html?serie=${encodeURIComponent(item.id)}&categoria=${encodeURIComponent(catReal)}&temporada=${num}&episodio=${encodeURIComponent(ep.id)}&audio=${audioModo}&autoplay=1`;
       });
       epGrid.appendChild(c);
     });
@@ -697,7 +733,8 @@ function renderPlayer() {
 
   let tempNumAtual    = parseInt(params.get("temporada")) || item.temporadas?.[0]?.numero || 1;
   let episodioIdAtual = params.get("episodio") || item.temporadas?.[0]?.episodios?.[0]?.id;
-  let audioModo       = ls.get("sb_audio_modo") || "dublado";
+  let audioModo = params.get("audio") || ls.get("sb_audio_modo") || "dublado";
+  ls.set("sb_audio_modo", audioModo);
 
   function getEpisodioAtual() {
     return item.temporadas.find(t => t.numero === tempNumAtual)?.episodios.find(e => e.id === episodioIdAtual) || null;
