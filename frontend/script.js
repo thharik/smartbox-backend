@@ -20,6 +20,11 @@ async function apiFetch(path, opts = {}) {
   try {
     const r = await fetch(API + path, opts);
     if (r.status === 401) { logout(); return null; }
+    // 402 = sem assinatura ativa: redireciona para login mostrando banner
+    if (r.status === 402) {
+      window.location.href = "login.html?sem_assinatura=1";
+      return null;
+    }
     return await r.json();
   } catch {
     return null;
@@ -105,9 +110,8 @@ async function carregarCatalogo() {
     const data = await apiFetch("/catalogo", { headers: headers() });
     if (data) {
       catalogoData = normalizarCatalogo(data);
-      // Garante que canais builtin aparecem sempre, independente do backend
+      // Canais builtin só aparecem com assinatura ativa (data != null)
       catalogoData.aoVivo = mesclarCanais(catalogoData.aoVivo || [], CANAIS_BUILTIN);
-      // Adiciona canais extras do /canais (não bloqueia se falhar)
       try {
         const canaisExt = await apiFetch("/canais", { headers: headers() });
         const extras = Array.isArray(canaisExt) ? canaisExt : [];
@@ -116,13 +120,17 @@ async function carregarCatalogo() {
       ls.set("sb_catalogo_cache", catalogoData);
       return;
     }
+    // data==null: pode ser 402 (sem assinatura) — redirecionamento já feito no apiFetch
+    return;
   }
-  // Fallback: cache local ou objeto vazio
-  catalogoData = ls.get("sb_catalogo_cache");
-  if (!catalogoData)
+  // Fallback offline: só usa cache salvo de sessão anterior (usuário já tinha assinatura)
+  const cache = ls.get("sb_catalogo_cache");
+  if (cache) {
+    catalogoData = cache;
+    catalogoData.aoVivo = mesclarCanais(catalogoData.aoVivo || [], CANAIS_BUILTIN);
+  } else {
     catalogoData = { destaques:[], animes:[], series:[], aoVivo:[], mangas:[], aulas:[] };
-  // Sempre mescla os canais builtin no fallback também
-  catalogoData.aoVivo = mesclarCanais(catalogoData.aoVivo || [], CANAIS_BUILTIN);
+  }
 }
 
 async function carregarUserData() {

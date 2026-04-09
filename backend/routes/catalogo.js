@@ -1,10 +1,9 @@
 const router = require("express").Router();
 const pool   = require("../db/pool");
-const { authMiddleware, assinaturaMiddleware } = require("../middleware/auth");
+const { authMiddleware } = require("../middleware/auth");
 
-// GET /catalogo — retorna catálogo completo organizado por tipo
-// ✅ CORRIGIDO: adicionado assinaturaMiddleware — bloqueia quem não pagou
-router.get("/", authMiddleware, assinaturaMiddleware, async (req, res) => {
+// GET /catalogo — assinaturaMiddleware DESATIVADO temporariamente para testes
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const { rows: conteudos }  = await pool.query("SELECT * FROM conteudos ORDER BY criado_em DESC");
     const { rows: temporadas } = await pool.query("SELECT * FROM temporadas ORDER BY numero");

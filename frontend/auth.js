@@ -3,6 +3,14 @@
 */
  
 const loginForm    = document.getElementById("loginForm");
+
+// ── Exibe banner se redirecionado por falta de assinatura ─────────────────────
+if (new URLSearchParams(location.search).get("sem_assinatura") === "1") {
+  const banner = document.getElementById("bannerAssinatura");
+  if (banner) banner.style.display = "flex";
+  const msg = document.getElementById("loginMensagem");
+  if (msg) msg.textContent = "Você precisa de uma assinatura ativa para acessar o conteúdo.";
+}
 const cadastroForm = document.getElementById("cadastroForm");
 const copyPixBtn   = document.getElementById("copyPixBtn");
 const pixCode      = document.getElementById("pixCode");
