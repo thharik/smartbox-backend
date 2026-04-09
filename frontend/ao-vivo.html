@@ -78,28 +78,6 @@
     async function carregarCanais() {
       const grid = document.getElementById("canaisGrid");
 
-      // Verifica assinatura primeiro
-      const ativa = await verificarAssinatura();
-      if (!ativa) {
-        grid.innerHTML = `
-          <div style="
-            width:100%; padding:40px 24px; text-align:center;
-            background:#1b1b1b; border-radius:14px; color:#ccc;
-          ">
-            <p style="font-size:20px; font-weight:bold; color:#fff; margin-bottom:12px">
-              Assinatura necessária
-            </p>
-            <p style="margin-bottom:20px; color:#aaa;">
-              Para assistir aos canais ao vivo, você precisa ter uma assinatura ativa.
-            </p>
-            <button onclick="assinar()" style="
-              background:#e50914; color:#fff; border:none; border-radius:10px;
-              padding:14px 28px; font-size:16px; font-weight:bold; cursor:pointer;
-            ">Assinar agora</button>
-          </div>`;
-        return;
-      }
-
       // Busca lista de canais
       try {
         const r = await fetch(BACKEND + "/canais", {
@@ -129,7 +107,7 @@
           card.addEventListener("click", () => {
             // Salva o canal selecionado e abre o player
             localStorage.setItem("canalAtual", JSON.stringify(canal));
-            window.location.href = `player.html?canal=${canal.id}`;
+            window.location.href = `assistir.html?canal=${encodeURIComponent(canal.id)}`;
           });
           grid.appendChild(card);
         });
