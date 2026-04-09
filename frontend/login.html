@@ -21,13 +21,22 @@
     .auth-overlay { display:none; }
     .auth-container { position:relative;z-index:10; }
 
-    /* Banner de aviso de assinatura */
+    /* ── Banner de assinatura ── */
     #bannerAssinatura {
-      display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999;
-      background:linear-gradient(135deg,#b30000,#e50914);
-      color:#fff; padding:16px 24px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      box-shadow:0 -4px 20px rgba(0,0,0,.5);
+      display: none; /* começa oculto — JS exibe quando necessário */
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 9999;
+      background: linear-gradient(135deg, #b30000, #e50914);
+      color: #fff;
+      padding: 16px 24px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,.5);
+    }
+    #bannerAssinatura.visivel {
+      display: flex; /* JS adiciona esta classe para exibir */
     }
     #bannerAssinatura p { margin:0; font-size:15px; font-weight:600; }
     #bannerAssinatura button {
@@ -44,9 +53,9 @@
   <div class="preview-cards" id="previewCards"></div>
   <div class="preview-left-fade"></div>
 
-  <!-- Banner de assinatura necessária (aparece só quando login OK mas sem assinatura) -->
+  <!-- Banner: aparece só quando login OK mas sem assinatura ativa -->
   <div id="bannerAssinatura">
-    <p>ATENÇAO Sua conta precisa de uma assinatura ativa para acessar o conteúdo.</p>
+    <p>⚠️ Sua conta precisa de uma assinatura ativa para acessar o conteúdo.</p>
     <button id="btnAssinarAgora">Assinar agora — $2/mês</button>
   </div>
 
@@ -92,7 +101,7 @@
               <label for="loginSenha">Senha</label>
               <input type="password" id="loginSenha" placeholder="Digite sua senha" required>
             </div>
-            <button type="submit" class="main-btn">Entrar</button>
+            <button type="submit" class="main-btn" id="btnLogin">Entrar</button>
           </form>
           <p id="loginMensagem" class="mensagem"></p>
           <div class="auth-links">
@@ -105,11 +114,18 @@
     </div>
   </div>
 
-  <script src="auth.js"></script>
   <script src="pwa/register-sw.js"></script>
-
   <script>
     const BACKEND = "https://tvxbox-backend-1.onrender.com";
+
+    // ── Copiar chave Pix ─────────────────────────────────────────────────────
+    document.getElementById("copyPixBtn")?.addEventListener("click", () => {
+      const val = document.getElementById("pixCode").value;
+      navigator.clipboard.writeText(val).then(() => {
+        document.getElementById("copyPixBtn").textContent = "Copiado!";
+        setTimeout(() => { document.getElementById("copyPixBtn").textContent = "Copiar Pix"; }, 2000);
+      });
+    });
 
     // ── Verificar se voltou de assinatura cancelada ───────────────────────────
     if (new URLSearchParams(location.search).get("assinatura") === "cancelada") {
@@ -118,12 +134,12 @@
 
     // ── Botão "Assinar agora" ─────────────────────────────────────────────────
     document.getElementById("btnAssinarAgora")?.addEventListener("click", async () => {
-      const token = localStorage.getItem("sb_token")?.replace(/"/g,"");
+      const token = localStorage.getItem("sb_token")?.replace(/"/g, "");
       if (!token) return;
       try {
         const r = await fetch(BACKEND + "/assinatura/checkout", {
           method: "POST",
-          headers: { "Content-Type":"application/json", "Authorization":"Bearer " + token }
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }
         });
         const data = await r.json();
         if (data.ja_ativo) { window.location.href = "index.html"; return; }
@@ -131,15 +147,72 @@
       } catch { alert("Erro ao abrir página de pagamento. Tente novamente."); }
     });
 
-    // ── Slideshow de fundo ────────────────────────────────────────────────────
+    // ── Login com verificação de assinatura ──────────────────────────────────
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg     = document.getElementById("loginMensagem");
+      const btnLogin = document.getElementById("btnLogin");
+      const email   = document.getElementById("loginEmail").value.trim();
+      const senha   = document.getElementById("loginSenha").value;
+
+      msg.textContent = "Entrando...";
+      btnLogin.disabled = true;
+
+      try {
+        // 1. Fazer login
+        const r = await fetch(BACKEND + "/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, senha })
+        });
+        const data = await r.json();
+
+        if (!r.ok) {
+          msg.textContent = data.mensagem || "E-mail ou senha incorretos.";
+          btnLogin.disabled = false;
+          return;
+        }
+
+        // Salvar token e email
+        localStorage.setItem("sb_token", data.token);
+        localStorage.setItem("sb_email", email);
+
+        msg.textContent = "Login feito! Verificando assinatura...";
+
+        // 2. Verificar assinatura
+        const rAssin = await fetch(BACKEND + "/assinatura/status", {
+          headers: { "Authorization": "Bearer " + data.token }
+        });
+        const assin = await rAssin.json();
+
+        if (assin.ativa) {
+          // Assinatura ativa → vai para o catálogo
+          window.location.href = "index.html";
+        } else {
+          // Sem assinatura → fica na tela de login e exibe o banner
+          msg.textContent = "Login feito! Mas você ainda não tem assinatura ativa.";
+          document.getElementById("bannerAssinatura").classList.add("visivel");
+          btnLogin.disabled = false;
+        }
+
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "Erro de conexão. Tente novamente.";
+        btnLogin.disabled = false;
+      }
+    });
+
+    // ── Slideshow de fundo (sem token, usa catálogo público se disponível) ───
     (async function initPreview() {
       let itens = [];
       try {
-        const token = localStorage.getItem("sb_token")?.replace(/"/g,"") || "";
-        const r = await fetch(BACKEND + "/catalogo", { headers: { "Authorization":"Bearer " + token } });
-        if (r.ok) {
-          const data = await r.json();
-          itens = [...(data.destaques||[]),...(data.animes||[]),...(data.series||[]),...(data.mangas||[])].filter(i => i.poster);
+        const token = localStorage.getItem("sb_token")?.replace(/"/g, "") || "";
+        if (token) {
+          const r = await fetch(BACKEND + "/catalogo", { headers: { "Authorization": "Bearer " + token } });
+          if (r.ok) {
+            const data = await r.json();
+            itens = [...(data.destaques||[]),...(data.animes||[]),...(data.series||[]),...(data.mangas||[])].filter(i => i.poster);
+          }
         }
       } catch {}
 

@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const pool   = require("../db/pool");
-const { authMiddleware } = require("../middleware/auth");
+const { authMiddleware, assinaturaMiddleware } = require("../middleware/auth");
 
 // GET /catalogo — retorna catálogo completo organizado por tipo
-router.get("/", authMiddleware, async (req, res) => {
+// ✅ CORRIGIDO: adicionado assinaturaMiddleware — bloqueia quem não pagou
+router.get("/", authMiddleware, assinaturaMiddleware, async (req, res) => {
   try {
     const { rows: conteudos }  = await pool.query("SELECT * FROM conteudos ORDER BY criado_em DESC");
     const { rows: temporadas } = await pool.query("SELECT * FROM temporadas ORDER BY numero");
@@ -43,7 +44,6 @@ router.get("/", authMiddleware, async (req, res) => {
       });
     });
 
-    // YouTube removido — tipos suportados: Filme, Anime, Série, AoVivo, Manga, Aula
     const cat = {
       destaques: [],
       animes:    [],

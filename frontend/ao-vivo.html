@@ -29,12 +29,136 @@
   </header>
 
   <main class="container">
-    <h1 class="section-title">Canais ao vivo</h1>
+    <h1 class="section-title" style="margin-bottom:24px">Canais ao vivo</h1>
     <div id="canaisGrid" class="poster-row"></div>
   </main>
 
-  <script src="data.js"></script>
-  <script src="script.js"></script>
   <script src="pwa/register-sw.js"></script>
+  <script>
+    const BACKEND = "https://tvxbox-backend-1.onrender.com";
+
+    // ── Proteção: redireciona se não logado ──────────────────────────────────
+    const token = localStorage.getItem("sb_token")?.replace(/"/g, "");
+    if (!token) { window.location.href = "login.html"; }
+
+    // ── Nome do usuário no header ────────────────────────────────────────────
+    const emailSalvo = localStorage.getItem("sb_email")?.replace(/"/g, "");
+    if (emailSalvo) {
+      document.getElementById("usuarioNome").textContent = emailSalvo.split("@")[0];
+    }
+
+    // ── Botão sair ───────────────────────────────────────────────────────────
+    document.getElementById("btnSair").addEventListener("click", () => {
+      localStorage.removeItem("sb_token");
+      localStorage.removeItem("sb_email");
+      window.location.href = "login.html";
+    });
+
+    // ── Menu mobile ──────────────────────────────────────────────────────────
+    document.getElementById("menuToggle").addEventListener("click", function () {
+      const nav = document.getElementById("mainNav");
+      const aberto = nav.classList.toggle("nav-aberto");
+      this.setAttribute("aria-expanded", aberto);
+    });
+
+    // ── Verificar assinatura antes de mostrar canais ─────────────────────────
+    async function verificarAssinatura() {
+      try {
+        const r = await fetch(BACKEND + "/assinatura/status", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        const data = await r.json();
+        return data.ativa === true;
+      } catch {
+        return false;
+      }
+    }
+
+    // ── Renderizar canais ────────────────────────────────────────────────────
+    async function carregarCanais() {
+      const grid = document.getElementById("canaisGrid");
+
+      // Verifica assinatura primeiro
+      const ativa = await verificarAssinatura();
+      if (!ativa) {
+        grid.innerHTML = `
+          <div style="
+            width:100%; padding:40px 24px; text-align:center;
+            background:#1b1b1b; border-radius:14px; color:#ccc;
+          ">
+            <p style="font-size:20px; font-weight:bold; color:#fff; margin-bottom:12px">
+              Assinatura necessária
+            </p>
+            <p style="margin-bottom:20px; color:#aaa;">
+              Para assistir aos canais ao vivo, você precisa ter uma assinatura ativa.
+            </p>
+            <button onclick="assinar()" style="
+              background:#e50914; color:#fff; border:none; border-radius:10px;
+              padding:14px 28px; font-size:16px; font-weight:bold; cursor:pointer;
+            ">Assinar agora</button>
+          </div>`;
+        return;
+      }
+
+      // Busca lista de canais
+      try {
+        const r = await fetch(BACKEND + "/canais", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+
+        if (!r.ok) throw new Error("Erro ao buscar canais");
+        const canais = await r.json();
+
+        if (!canais.length) {
+          grid.innerHTML = `<p style="color:#aaa">Nenhum canal disponível no momento.</p>`;
+          return;
+        }
+
+        grid.innerHTML = "";
+        canais.forEach(canal => {
+          const card = document.createElement("div");
+          card.className = "poster-card";
+          card.style.cursor = "pointer";
+          card.innerHTML = `
+            <img src="${canal.poster || ''}" alt="${canal.titulo}" loading="lazy"
+                 onerror="this.src='assets/placeholder.png'">
+            <div class="info">
+              <h3>${canal.titulo}</h3>
+              <p style="color:#e50914;font-size:12px;font-weight:bold;">● AO VIVO</p>
+            </div>`;
+          card.addEventListener("click", () => {
+            // Salva o canal selecionado e abre o player
+            localStorage.setItem("canalAtual", JSON.stringify(canal));
+            window.location.href = `player.html?canal=${canal.id}`;
+          });
+          grid.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = `<p style="color:#e50914">Erro ao carregar canais. Tente novamente.</p>`;
+      }
+    }
+
+    // ── Redireciona para checkout do Stripe ──────────────────────────────────
+    async function assinar() {
+      try {
+        const r = await fetch(BACKEND + "/assinatura/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        });
+        const data = await r.json();
+        if (data.ja_ativo) { location.reload(); return; }
+        if (data.url) window.location.href = data.url;
+      } catch {
+        alert("Erro ao abrir página de pagamento. Tente novamente.");
+      }
+    }
+
+    carregarCanais();
+  </script>
 </body>
 </html>

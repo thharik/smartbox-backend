@@ -404,8 +404,6 @@ function renderContinuarAssistindo() {
   if (!lista.length) { box.classList.add("hidden"); return; }
 
   row.innerHTML = "";
-  // O container agora é horizontal (poster-row)
-  row.className = "continuar-row";
 
   lista.forEach(item => {
     const pct = item.duration > 0 ? Math.min(100, Math.round((item.current_time / item.duration) * 100)) : 0;

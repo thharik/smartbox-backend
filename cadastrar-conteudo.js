@@ -480,7 +480,7 @@ async function salvarConteudos() {
     }
 
     await client.query("COMMIT");
-    console.log("✅ Conteúdos salvos com sucesso!");
+    console.log(" Conteúdos salvos com sucesso!");
   } catch (erro) {
     await client.query("ROLLBACK");
     console.error("❌ Erro ao salvar conteúdos:", erro.message);
