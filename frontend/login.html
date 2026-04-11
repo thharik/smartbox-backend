@@ -20,75 +20,58 @@
     .auth-page { background:transparent; }
     .auth-overlay { display:none; }
     .auth-container { position:relative;z-index:10; }
-
-    /* ── Banner de assinatura ── */
     #bannerAssinatura {
-      display: none; /* começa oculto — JS exibe quando necessário */
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 9999;
-      background: linear-gradient(135deg, #b30000, #e50914);
-      color: #fff;
-      padding: 16px 24px;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      box-shadow: 0 -4px 20px rgba(0,0,0,.5);
+      display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999;
+      background:linear-gradient(135deg,#b30000,#e50914); color:#fff;
+      padding:16px 24px; align-items:center; justify-content:space-between;
+      gap:12px; box-shadow:0 -4px 20px rgba(0,0,0,.5);
     }
-    #bannerAssinatura.visivel {
-      display: flex; /* JS adiciona esta classe para exibir */
-    }
+    #bannerAssinatura.visivel { display:flex; }
     #bannerAssinatura p { margin:0; font-size:15px; font-weight:600; }
     #bannerAssinatura button {
       background:#fff; color:#e50914; border:none; border-radius:8px;
       padding:10px 20px; font-weight:700; cursor:pointer; font-size:14px;
       white-space:nowrap; flex-shrink:0;
     }
-    #bannerAssinatura button:hover { opacity:.9; }
   </style>
 </head>
 <body>
-
   <div class="auth-bg-slideshow" id="bgSlideshow"></div>
   <div class="preview-cards" id="previewCards"></div>
   <div class="preview-left-fade"></div>
-
-  <!-- Banner: aparece só quando login OK mas sem assinatura ativa -->
+ 
   <div id="bannerAssinatura">
-    <p>⚠️ Sua conta precisa de uma assinatura ativa para acessar o conteúdo.</p>
-    <button id="btnAssinarAgora">Assinar agora — $2/mês</button>
+    <p>Sua conta precisa de uma assinatura ativa para acessar o conteudo.</p>
+    <button id="btnAssinarAgora">Assinar agora</button>
   </div>
-
+ 
   <div class="auth-page">
     <div class="auth-overlay"></div>
     <div class="auth-container">
-
       <div class="auth-left">
         <div class="brand-box">
           <h1>TVXBOX</h1>
-          <p class="brand-subtitle">Filmes, séries, animes e mangás em uma experiência simples e bonita.</p>
+          <p class="brand-subtitle">Filmes, series, animes e mangas em uma experiencia simples e bonita.</p>
         </div>
-
         <div class="support-card">
           <h2>Ajude a melhorar o app</h2>
-          <p class="support-text">O valor arrecadado será usado para melhorar o app, adicionar novidades, corrigir problemas e deixar a experiência cada vez melhor para todos.</p>
+          <p class="support-text">O valor arrecadado sera usado para melhorar o app, adicionar novidades e deixar a experiencia cada vez melhor para todos.</p>
           <div class="pix-box">
             <div class="pix-qr">
-              <img src="assets/posteris/WhatsApp Image 2026-03-25 at 10.40.19.jpeg" alt="QR Code Pix" id="pixQrImage">
+              <img src="assets/posteris/WhatsApp Image 2026-03-25 at 10.40.19.jpeg" alt="QR Code Pix">
             </div>
             <div class="pix-info">
               <p class="pix-title">Pagamento via Pix</p>
-              <p class="pix-description">Aponte a câmera do seu banco para o QR Code ou copie a chave Pix abaixo.</p>
+              <p class="pix-description">Aponte a camera do seu banco para o QR Code ou copie a chave Pix abaixo.</p>
               <div class="pix-code-box">
                 <input type="text" id="pixCode" readonly value="82408b72-9d4f-4c2f-8391-96b789f18ea8">
                 <button type="button" id="copyPixBtn">Copiar Pix</button>
               </div>
-              <p class="pix-note">Você escolhe o valor que quer pagar. Este app foi criado para ser acessível a todos.</p>
+              <p class="pix-note">Voce escolhe o valor que quer pagar.</p>
             </div>
           </div>
         </div>
       </div>
-
       <div class="auth-right">
         <div class="auth-box">
           <h2>Entrar</h2>
@@ -105,36 +88,29 @@
           </form>
           <p id="loginMensagem" class="mensagem"></p>
           <div class="auth-links">
-            <span>Ainda não tem conta?</span>
+            <span>Ainda nao tem conta?</span>
             <a href="cadastro.html">Criar conta</a>
           </div>
         </div>
       </div>
-
     </div>
   </div>
-
+ 
   <script src="pwa/register-sw.js"></script>
   <script>
     const BACKEND = "https://tvxbox-backend-1.onrender.com";
-
-    // ── Copiar chave Pix ─────────────────────────────────────────────────────
-    document.getElementById("copyPixBtn")?.addEventListener("click", () => {
-      const val = document.getElementById("pixCode").value;
-      navigator.clipboard.writeText(val).then(() => {
+ 
+    // Copiar Pix
+    document.getElementById("copyPixBtn").addEventListener("click", () => {
+      navigator.clipboard.writeText(document.getElementById("pixCode").value).then(() => {
         document.getElementById("copyPixBtn").textContent = "Copiado!";
         setTimeout(() => { document.getElementById("copyPixBtn").textContent = "Copiar Pix"; }, 2000);
       });
     });
-
-    // ── Verificar se voltou de assinatura cancelada ───────────────────────────
-    if (new URLSearchParams(location.search).get("assinatura") === "cancelada") {
-      document.getElementById("loginMensagem").textContent = "Pagamento cancelado. Faça login e tente novamente.";
-    }
-
-    // ── Botão "Assinar agora" ─────────────────────────────────────────────────
-    document.getElementById("btnAssinarAgora")?.addEventListener("click", async () => {
-      const token = localStorage.getItem("sb_token")?.replace(/"/g, "");
+ 
+    // Assinar agora
+    document.getElementById("btnAssinarAgora").addEventListener("click", async () => {
+      const token = JSON.parse(localStorage.getItem("sb_token") || "null");
       if (!token) return;
       try {
         const r = await fetch(BACKEND + "/assinatura/checkout", {
@@ -144,118 +120,99 @@
         const data = await r.json();
         if (data.ja_ativo) { window.location.href = "index.html"; return; }
         if (data.url) window.location.href = data.url;
-      } catch { alert("Erro ao abrir página de pagamento. Tente novamente."); }
+      } catch { alert("Erro ao abrir pagamento."); }
     });
-
-    // ── Login com verificação de assinatura ──────────────────────────────────
+ 
+    // Login
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const msg     = document.getElementById("loginMensagem");
-      const btnLogin = document.getElementById("btnLogin");
-      const email   = document.getElementById("loginEmail").value.trim();
-      const senha   = document.getElementById("loginSenha").value;
-
+      const msg = document.getElementById("loginMensagem");
+      const btn = document.getElementById("btnLogin");
+      const email = document.getElementById("loginEmail").value.trim();
+      const senha = document.getElementById("loginSenha").value;
+ 
       msg.textContent = "Entrando...";
-      btnLogin.disabled = true;
-
+      btn.disabled = true;
+ 
       try {
-        // 1. Fazer login
         const r = await fetch(BACKEND + "/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, senha })
         });
         const data = await r.json();
-
+ 
         if (!r.ok) {
           msg.textContent = data.mensagem || "E-mail ou senha incorretos.";
-          btnLogin.disabled = false;
+          btn.disabled = false;
           return;
         }
-
-        // Salvar token e email
-        localStorage.setItem("sb_token", data.token);
-        localStorage.setItem("sb_email", email);
-
-        msg.textContent = "Login feito! Verificando assinatura...";
-
-        // 2. Verificar assinatura
+ 
+        // Salva token igual ao que o script.js espera
+        localStorage.setItem("sb_token", JSON.stringify(data.token));
+        localStorage.setItem("usuarioEmail", email);
+        localStorage.removeItem("sb_perfil_id");
+        localStorage.removeItem("sb_perfil_nome");
+ 
+        msg.textContent = "Verificando assinatura...";
+ 
         const rAssin = await fetch(BACKEND + "/assinatura/status", {
           headers: { "Authorization": "Bearer " + data.token }
         });
         const assin = await rAssin.json();
-
+ 
         if (assin.ativa) {
-          // Assinatura ativa → vai para o catálogo
           window.location.href = "index.html";
         } else {
-          // Sem assinatura → fica na tela de login e exibe o banner
-          msg.textContent = "Login feito! Mas você ainda não tem assinatura ativa.";
+          msg.textContent = "Login feito! Mas voce ainda nao tem assinatura ativa.";
           document.getElementById("bannerAssinatura").classList.add("visivel");
-          btnLogin.disabled = false;
+          btn.disabled = false;
         }
-
       } catch (err) {
-        console.error(err);
-        msg.textContent = "Erro de conexão. Tente novamente.";
-        btnLogin.disabled = false;
+        msg.textContent = "Erro de conexao. Tente novamente.";
+        btn.disabled = false;
       }
     });
-
-    // ── Slideshow de fundo (sem token, usa catálogo público se disponível) ───
-    (async function initPreview() {
-      let itens = [];
+ 
+    // Slideshow de fundo
+    (async function() {
       try {
-        const token = localStorage.getItem("sb_token")?.replace(/"/g, "") || "";
-        if (token) {
-          const r = await fetch(BACKEND + "/catalogo", { headers: { "Authorization": "Bearer " + token } });
-          if (r.ok) {
-            const data = await r.json();
-            itens = [...(data.destaques||[]),...(data.animes||[]),...(data.series||[]),...(data.mangas||[])].filter(i => i.poster);
-          }
-        }
+        const token = JSON.parse(localStorage.getItem("sb_token") || "null");
+        if (!token) return;
+        const r = await fetch(BACKEND + "/catalogo", { headers: { "Authorization": "Bearer " + token } });
+        if (!r.ok) return;
+        const data = await r.json();
+        const itens = [...(data.destaques||[]),...(data.animes||[]),...(data.series||[]),...(data.mangas||[])].filter(i => i.poster);
+        if (!itens.length) return;
+        const bgEl = document.getElementById("bgSlideshow");
+        itens.forEach((item, i) => {
+          const slide = document.createElement("div");
+          slide.className = "slide" + (i === 0 ? " ativo" : "");
+          slide.style.backgroundImage = "url('" + item.poster + "')";
+          bgEl.appendChild(slide);
+        });
+        const slides = bgEl.querySelectorAll(".slide");
+        let cur = 0;
+        setInterval(() => {
+          slides[cur].classList.remove("ativo");
+          cur = (cur + 1) % slides.length;
+          slides[cur].classList.add("ativo");
+        }, 4000);
+        const cardsEl = document.getElementById("previewCards");
+        const pos = [
+          {left:"2%",top:"8%"},{left:"16%",top:"5%"},{left:"30%",top:"10%"},
+          {left:"7%",top:"45%"},{left:"22%",top:"42%"},{left:"35%",top:"48%"},
+          {left:"4%",top:"72%"},{left:"18%",top:"70%"},{left:"32%",top:"75%"}
+        ];
+        [...itens].sort(()=>Math.random()-.5).slice(0,pos.length).forEach((item,i) => {
+          const card = document.createElement("div");
+          card.className = "preview-float-card";
+          card.style.left = pos[i].left; card.style.top = pos[i].top;
+          card.style.animationDelay = (i * 0.18) + "s";
+          card.innerHTML = '<img src="' + item.poster + '" loading="lazy">';
+          cardsEl.appendChild(card);
+        });
       } catch {}
-
-      if (!itens.length) return;
-
-      const bgEl = document.getElementById("bgSlideshow");
-      itens.forEach((item, i) => {
-        const slide = document.createElement("div");
-        slide.className = "slide" + (i === 0 ? " ativo" : "");
-        slide.style.backgroundImage = `url('${item.poster}')`;
-        bgEl.appendChild(slide);
-      });
-      let atualSlide = 0;
-      const slides = bgEl.querySelectorAll(".slide");
-      setInterval(() => {
-        slides[atualSlide].classList.remove("ativo");
-        atualSlide = (atualSlide + 1) % slides.length;
-        slides[atualSlide].classList.add("ativo");
-      }, 4000);
-
-      const cardsEl = document.getElementById("previewCards");
-      const posicoes = [
-        { left:"2%",top:"8%" },{ left:"16%",top:"5%" },{ left:"30%",top:"10%" },
-        { left:"7%",top:"45%" },{ left:"22%",top:"42%" },{ left:"35%",top:"48%" },
-        { left:"4%",top:"72%" },{ left:"18%",top:"70%" },{ left:"32%",top:"75%" },
-      ];
-      const embaralhados = [...itens].sort(() => Math.random() - 0.5).slice(0, posicoes.length);
-      embaralhados.forEach((item, i) => {
-        const card = document.createElement("div");
-        card.className = "preview-float-card";
-        card.style.left = posicoes[i].left; card.style.top = posicoes[i].top;
-        card.style.animationDelay = `${i * 0.18}s`;
-        card.innerHTML = `<img src="${item.poster}" alt="${item.titulo}" loading="lazy">`;
-        cardsEl.appendChild(card);
-      });
-      setInterval(() => {
-        const cards = cardsEl.querySelectorAll(".preview-float-card");
-        const idx   = Math.floor(Math.random() * cards.length);
-        const novo  = itens[Math.floor(Math.random() * itens.length)];
-        const card  = cards[idx];
-        card.style.opacity = "0"; card.style.transform = "translateY(20px) scale(0.92)"; card.style.transition = "opacity 0.5s ease,transform 0.5s ease";
-        setTimeout(() => { card.querySelector("img").src = novo.poster; card.style.opacity="0.85"; card.style.transform="translateY(0) scale(1)"; }, 500);
-      }, 6000);
     })();
   </script>
 </body>
