@@ -306,6 +306,13 @@ function renderRow(idContainer, lista, tipoClique) {
   const container = document.getElementById(idContainer);
   if (!container) return;
   container.innerHTML = "";
+  // Esconde a section pai se não houver itens
+  const section = container.closest("section");
+  if (!lista.length) {
+    if (section) section.style.display = "none";
+    return;
+  }
+  if (section) section.style.display = "";
   lista.forEach(item => {
     let acao = () => window.location.href = `detalhe.html?id=${encodeURIComponent(item.id)}&categoria=${encodeURIComponent(idContainer)}`;
     if (tipoClique === "aoVivo") {
