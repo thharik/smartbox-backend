@@ -116,6 +116,30 @@ const conteudos = [
     classificacao: "14",
     ano: 2003,
     temporadas: []
+  },
+
+  {
+    conteudo_id: "jojolion",
+    titulo: "JojoLion",
+    tipo: "Manga",
+    poster: `${POSTER_BASE}/jojolion.jpg`,
+    descricao: "A oitava parte de JoJo's Bizarre Adventure. Em Morioh, uma cidade estranha após um terremoto, Josuke Higashikata desperta sem memórias e com poderes misteriosos.",
+    generos: ["Manga", "Ação", "Mistério", "Sobrenatural"],
+    classificacao: "14",
+    ano: 2011,
+    temporadas: []
+  },
+
+  {
+    conteudo_id: "jojolands",
+    titulo: "The JoJoLands",
+    tipo: "Manga",
+    poster: `${POSTER_BASE}/jojolands.webp`,
+    descricao: "A nona parte de JoJo's Bizarre Adventure. Jodio Joestar, um jovem do Havaí, embarca em uma jornada para acumular riqueza em um mundo governado por leis próprias.",
+    generos: ["Manga", "Ação", "Aventura", "Sobrenatural"],
+    classificacao: "14",
+    ano: 2023,
+    temporadas: []
   }
 ];
 
@@ -203,7 +227,44 @@ const capitulos = [
   { id: "gintama_vol_63", conteudo_id: "gintama", numero: 63, titulo: "Gintama - Volume 63", pdf_url: `${PDF_BASE}/GINTAMAVOL.63.pdf`, capa: `${POSTER_BASE}/gintama.avif`, paginas: 0 },
   { id: "gintama_vol_68", conteudo_id: "gintama", numero: 68, titulo: "Gintama - Volume 68", pdf_url: `${PDF_BASE}/GINTAMAVOL.68.pdf`, capa: `${POSTER_BASE}/gintama.avif`, paginas: 0 },
   { id: "gintama_vol_69", conteudo_id: "gintama", numero: 69, titulo: "Gintama - Volume 69", pdf_url: `${PDF_BASE}/GINTAMAVOL.69.pdf`, capa: `${POSTER_BASE}/gintama.avif`, paginas: 0 },
-  { id: "gintama_vol_76", conteudo_id: "gintama", numero: 76, titulo: "Gintama - Volume 76", pdf_url: `${PDF_BASE}/GINTAMAVOL.76.pdf`, capa: `${POSTER_BASE}/gintama.avif`, paginas: 0 }
+  { id: "gintama_vol_76", conteudo_id: "gintama", numero: 76, titulo: "Gintama - Volume 76", pdf_url: `${PDF_BASE}/GINTAMAVOL.76.pdf`, capa: `${POSTER_BASE}/gintama.avif`, paginas: 0 },
+
+  // JojoLion
+  { id: "jojolion_vol_01", conteudo_id: "jojolion", numero: 1,  titulo: "JojoLion - Volume 01", pdf_url: `${PDF_BASE}/JojoLion1.pdf`,  capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_02", conteudo_id: "jojolion", numero: 2,  titulo: "JojoLion - Volume 02", pdf_url: `${PDF_BASE}/JojoLion2.pdf`,  capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_03", conteudo_id: "jojolion", numero: 3,  titulo: "JojoLion - Volume 03", pdf_url: `${PDF_BASE}/JojoLion3.pdf`,  capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_04", conteudo_id: "jojolion", numero: 4,  titulo: "JojoLion - Volume 04", pdf_url: `${PDF_BASE}/JojoLion4.pdf`,  capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_05", conteudo_id: "jojolion", numero: 5,  titulo: "JojoLion - Volume 05", pdf_url: `${PDF_BASE}/JojoLion5.pdf`,  capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_06", conteudo_id: "jojolion", numero: 6,  titulo: "JojoLion - Volume 06", pdf_url: `${PDF_BASE}/JojoLion6.pdf`,  capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_07", conteudo_id: "jojolion", numero: 7,  titulo: "JojoLion - Volume 07", pdf_url: `${PDF_BASE}/JojoLion7.pdf`,  capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_08", conteudo_id: "jojolion", numero: 8,  titulo: "JojoLion - Volume 08", pdf_url: `${PDF_BASE}/JojoLion8.pdf`,  capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_09", conteudo_id: "jojolion", numero: 9,  titulo: "JojoLion - Volume 09", pdf_url: `${PDF_BASE}/JojoLion9.pdf`,  capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_10", conteudo_id: "jojolion", numero: 10, titulo: "JojoLion - Volume 10", pdf_url: `${PDF_BASE}/JojoLion10.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_11", conteudo_id: "jojolion", numero: 11, titulo: "JojoLion - Volume 11", pdf_url: `${PDF_BASE}/JojoLion11.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_12", conteudo_id: "jojolion", numero: 12, titulo: "JojoLion - Volume 12", pdf_url: `${PDF_BASE}/JojoLion12.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_13", conteudo_id: "jojolion", numero: 13, titulo: "JojoLion - Volume 13", pdf_url: `${PDF_BASE}/JojoLion13.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_14", conteudo_id: "jojolion", numero: 14, titulo: "JojoLion - Volume 14", pdf_url: `${PDF_BASE}/JojoLion14.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_15", conteudo_id: "jojolion", numero: 15, titulo: "JojoLion - Volume 15", pdf_url: `${PDF_BASE}/JojoLion15.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_16", conteudo_id: "jojolion", numero: 16, titulo: "JojoLion - Volume 16", pdf_url: `${PDF_BASE}/JojoLion16.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_17", conteudo_id: "jojolion", numero: 17, titulo: "JojoLion - Volume 17", pdf_url: `${PDF_BASE}/JojoLion17.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_18", conteudo_id: "jojolion", numero: 18, titulo: "JojoLion - Volume 18", pdf_url: `${PDF_BASE}/JojoLion18.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_19", conteudo_id: "jojolion", numero: 19, titulo: "JojoLion - Volume 19", pdf_url: `${PDF_BASE}/JojoLion19.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_20", conteudo_id: "jojolion", numero: 20, titulo: "JojoLion - Volume 20", pdf_url: `${PDF_BASE}/JojoLion20.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_21", conteudo_id: "jojolion", numero: 21, titulo: "JojoLion - Volume 21", pdf_url: `${PDF_BASE}/JojoLion21.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_22", conteudo_id: "jojolion", numero: 22, titulo: "JojoLion - Volume 22", pdf_url: `${PDF_BASE}/JojoLion22.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_23", conteudo_id: "jojolion", numero: 23, titulo: "JojoLion - Volume 23", pdf_url: `${PDF_BASE}/JojoLion23.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_24", conteudo_id: "jojolion", numero: 24, titulo: "JojoLion - Volume 24", pdf_url: `${PDF_BASE}/JojoLion24.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_25", conteudo_id: "jojolion", numero: 25, titulo: "JojoLion - Volume 25", pdf_url: `${PDF_BASE}/JojoLion25.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_26", conteudo_id: "jojolion", numero: 26, titulo: "JojoLion - Volume 26", pdf_url: `${PDF_BASE}/JojoLion26.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+  { id: "jojolion_vol_27", conteudo_id: "jojolion", numero: 27, titulo: "JojoLion - Volume 27", pdf_url: `${PDF_BASE}/JojoLion27.pdf`, capa: `${POSTER_BASE}/jojolion.jpg`, paginas: 0 },
+
+  // The JoJoLands
+  { id: "jojolands_vol_01", conteudo_id: "jojolands", numero: 1, titulo: "The JoJoLands - Volume 01", pdf_url: `${PDF_BASE}/JOJOLANDSVOL.01.pdf`, capa: `${POSTER_BASE}/jojolands.webp`, paginas: 0 },
+  { id: "jojolands_vol_02", conteudo_id: "jojolands", numero: 2, titulo: "The JoJoLands - Volume 02", pdf_url: `${PDF_BASE}/JOJOLANDSVOL.02.pdf`, capa: `${POSTER_BASE}/jojolands.webp`, paginas: 0 },
+  { id: "jojolands_vol_03", conteudo_id: "jojolands", numero: 3, titulo: "The JoJoLands - Volume 03", pdf_url: `${PDF_BASE}/JOJOLANDSVOL.03.pdf`, capa: `${POSTER_BASE}/jojolands.webp`, paginas: 0 },
+  { id: "jojolands_vol_04", conteudo_id: "jojolands", numero: 4, titulo: "The JoJoLands - Volume 04", pdf_url: `${PDF_BASE}/JOJOLANDSVOL.04.pdf`, capa: `${POSTER_BASE}/jojolands.webp`, paginas: 0 },
+  { id: "jojolands_vol_05", conteudo_id: "jojolands", numero: 5, titulo: "The JoJoLands - Volume 05", pdf_url: `${PDF_BASE}/JOJOLANDSVOL.05.pdf`, capa: `${POSTER_BASE}/jojolands.webp`, paginas: 0 },
+  { id: "jojolands_vol_06", conteudo_id: "jojolands", numero: 6, titulo: "The JoJoLands - Volume 06", pdf_url: `${PDF_BASE}/JOJOLANDSVOL.06.pdf`, capa: `${POSTER_BASE}/jojolands.webp`, paginas: 0 }
 ];
 
 async function salvarConteudos() {
