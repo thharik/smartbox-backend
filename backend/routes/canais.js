@@ -20,6 +20,40 @@ const canais = [
   { id: "tv-vila-real",    titulo: "TV Vila Real",            tipo: "AoVivo", poster: "https://i.imgur.com/Z1uWe7g.png",  video: "https://cdn.jmvstream.com/w/LVW-10841/LVW10841_mT77z9o2cP/playlist.m3u8" },
   { id: "tvcom-df",        titulo: "TVCOM DF",                tipo: "AoVivo", poster: "https://i.imgur.com/uxefHY3.png",  video: "https://5b7f3c45ab7c2.streamlock.net/8008/smil:8008.smil/playlist.m3u8?DVR=" },
 
+    // ── ESPORTES ─────────────────────────────────────────────
+  { id: "bandsports", titulo: "BandSports", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18852" },
+  { id: "espn", titulo: "ESPN", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18780" },
+  { id: "espn-brasil", titulo: "ESPN Brasil", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18781" },
+  { id: "combate", titulo: "Combate", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18784" },
+
+  // ── INFANTIL ─────────────────────────────────────────────
+  { id: "cartoon-network", titulo: "Cartoon Network", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18849" },
+  { id: "disney", titulo: "Disney Channel", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18782" },
+  { id: "discovery-kids", titulo: "Discovery Kids", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18843" },
+  { id: "boomerang", titulo: "Boomerang", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18851" },
+
+  // ── FILMES E SÉRIES ─────────────────────────────────────
+  { id: "axn", titulo: "AXN", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18854" },
+  { id: "amc", titulo: "AMC", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18857" },
+  { id: "cinemax", titulo: "Cinemax", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18848" },
+  { id: "fx", titulo: "FX", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18829" },
+
+  // ── DOCUMENTÁRIOS ───────────────────────────────────────
+  { id: "discovery", titulo: "Discovery Channel", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18783" },
+  { id: "animal-planet", titulo: "Animal Planet", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18856" },
+
+  // ── NOTÍCIAS ────────────────────────────────────────────
+  { id: "bandnews", titulo: "BandNews", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18853" },
+  { id: "cnn", titulo: "CNN Internacional", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/28054" },
+
+  // ── VARIEDADES ─────────────────────────────────────────
+  { id: "ae", titulo: "A&E", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18858" },
+  { id: "comedy-central", titulo: "Comedy Central", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18847" },
+  { id: "bis", titulo: "Bis", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18785" },
+
+  // ── ABERTOS ────────────────────────────────────────────
+  { id: "band", titulo: "Band", tipo: "AoVivo", poster: "https://i.imgur.com/placeholder.png", video: "http://psrv.io:80/9089247/coreurl.me/18786" },
+
   // ── NOTÍCIAS ───────────────────────────────────────────────────────────────
   { id: "canal-38",        titulo: "Canal 38",                tipo: "AoVivo", poster: "https://i.imgur.com/co7TCWC.png",  video: "https://cdn.jmvstream.com/w/LVW-8503/LVW8503_d0V5oduFlK/playlist.m3u8" },
   { id: "plena-tv",        titulo: "Plena TV",                tipo: "AoVivo", poster: "https://i.imgur.com/lH4RT7b.png",  video: "https://cdn.jmvstream.com/w/LVW-9591/LVW9591_PmXtgATnaS/playlist.m3u8" },
