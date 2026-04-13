@@ -8,6 +8,140 @@
   <link rel="manifest" href="pwa/manifest.json">
   <meta name="theme-color" content="#141414">
   <link rel="apple-touch-icon" href="pwa/icon-192.png">
+  <style>
+    /* ── Filtros de categoria ── */
+    .filtros-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+      padding: 0 4px;
+    }
+    .filtro-btn {
+      background: #222;
+      color: #ccc;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 7px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .filtro-btn:hover { background: #333; color: #fff; }
+    .filtro-btn.ativo  { background: #e50914; color: #fff; border-color: #e50914; }
+
+    /* ── Busca ── */
+    .busca-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .busca-bar input {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #fff;
+      padding: 10px 16px;
+      font-size: 14px;
+      outline: none;
+    }
+    .busca-bar input::placeholder { color: #555; }
+    .busca-bar input:focus { border-color: #e50914; }
+
+    /* ── Seção de categoria ── */
+    .categoria-secao {
+      margin-bottom: 40px;
+    }
+    .categoria-secao h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .categoria-secao h2 .icone { font-size: 20px; }
+    .categoria-secao h2 .count {
+      font-size: 12px;
+      color: #666;
+      font-weight: 400;
+      margin-left: 4px;
+    }
+    .linha-cat { width: 40px; height: 3px; background: #e50914; border-radius: 2px; }
+
+    /* ── Grid de canais ── */
+    .canais-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 600px) {
+      .canais-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+    }
+    .canal-card {
+      background: #1a1a1a;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      border: 1px solid #2a2a2a;
+    }
+    .canal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(229,9,20,.25);
+      border-color: #e50914;
+    }
+    .canal-card img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: contain;
+      background: #111;
+      padding: 8px;
+    }
+    .canal-card .canal-info {
+      padding: 8px 10px;
+    }
+    .canal-card .canal-info h3 {
+      font-size: 11px;
+      color: #ddd;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0 0 3px;
+    }
+    .canal-card .ao-vivo-badge {
+      color: #e50914;
+      font-size: 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .canal-card .ao-vivo-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: #e50914;
+      border-radius: 50%;
+      animation: pulsar .9s infinite;
+    }
+    @keyframes pulsar {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .3; }
+    }
+
+    /* ── Estado vazio / loading ── */
+    .estado-msg {
+      color: #555;
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 14px;
+    }
+    .secao-oculta { display: none; }
+  </style>
 </head>
 <body>
   <header class="topbar">
@@ -28,8 +162,37 @@
   </header>
 
   <main class="container">
-    <h1 class="section-title" style="margin-bottom:24px">Canais ao vivo</h1>
-    <div id="canaisGrid" class="poster-row"></div>
+    <h1 class="section-title" style="margin-bottom:20px">📺 Canais ao vivo</h1>
+
+    <!-- Busca -->
+    <div class="busca-bar">
+      <input type="text" id="buscaCanal" placeholder="🔍  Buscar canal...">
+    </div>
+
+    <!-- Filtros de categoria -->
+    <div class="filtros-bar" id="filtrosBar">
+      <button class="filtro-btn ativo" data-cat="todos">Todos</button>
+      <button class="filtro-btn" data-cat="Canais Abertos">📡 Abertos</button>
+      <button class="filtro-btn" data-cat="Canais Globo">🌐 Globo</button>
+      <button class="filtro-btn" data-cat="Notícias">📰 Notícias</button>
+      <button class="filtro-btn" data-cat="Esportes">⚽ Esportes</button>
+      <button class="filtro-btn" data-cat="Filmes e Séries">🎬 Filmes &amp; Séries</button>
+      <button class="filtro-btn" data-cat="Documentários">🔬 Documentários</button>
+      <button class="filtro-btn" data-cat="Variedades">🎭 Variedades</button>
+      <button class="filtro-btn" data-cat="Infantis">🧸 Infantis</button>
+      <button class="filtro-btn" data-cat="Internacionais">🌍 Internacionais</button>
+      <button class="filtro-btn" data-cat="Religiosos">✝ Religiosos</button>
+      <button class="filtro-btn" data-cat="4K">🎯 4K</button>
+      <button class="filtro-btn" data-cat="Reality & BBB">🏠 Reality &amp; BBB</button>
+    </div>
+
+    <!-- Container das seções por categoria -->
+    <div id="categoriasContainer"></div>
+
+    <!-- Resultado de busca -->
+    <div id="buscaResultado" style="display:none">
+      <div class="canais-grid" id="gridBusca"></div>
+    </div>
   </main>
 
   <script src="pwa/register-sw.js"></script>
@@ -63,34 +226,148 @@
       this.setAttribute("aria-expanded", aberto);
     });
 
+    // ── Configuração de categorias ───────────────────────────────────────────
+    const CATEGORIAS_CONFIG = [
+      { id: "Canais Abertos",   label: "Canais Abertos",    icone: "📡" },
+      { id: "Canais Globo",     label: "Canais Globo",      icone: "🌐" },
+      { id: "Notícias",         label: "Notícias",          icone: "📰" },
+      { id: "Esportes",         label: "Esportes",          icone: "⚽" },
+      { id: "Filmes e Séries",  label: "Filmes & Séries",   icone: "🎬" },
+      { id: "Documentários",    label: "Documentários",     icone: "🔬" },
+      { id: "Variedades",       label: "Variedades",        icone: "🎭" },
+      { id: "Infantis",         label: "Infantis",          icone: "🧸" },
+      { id: "Internacionais",   label: "Internacionais",    icone: "🌍" },
+      { id: "Religiosos",       label: "Religiosos",        icone: "✝" },
+      { id: "4K",               label: "Canais 4K",         icone: "🎯" },
+      { id: "Reality & BBB",    label: "Reality & BBB",     icone: "🏠" },
+    ];
+
+    let todosCanais = [];
+    let filtroAtivo = "todos";
+
+    // ── Criar card de canal ──────────────────────────────────────────────────
+    function criarCard(canal) {
+      const card = document.createElement("div");
+      card.className = "canal-card";
+      card.dataset.id = canal.id;
+      const poster = canal.poster || '';
+      const titulo = canal.titulo || canal.id;
+      card.innerHTML =
+        '<img src="' + poster + '" alt="' + titulo + '" loading="lazy" onerror="this.src=\'assets/posters/placeholder.jpg\'">' +
+        '<div class="canal-info"><h3>' + titulo + '</h3><span class="ao-vivo-badge">AO VIVO</span></div>';
+      card.addEventListener("click", () => {
+        window.location.href = "assistir.html?canal=" + encodeURIComponent(canal.id);
+      });
+      return card;
+    }
+
+    // ── Renderizar seções por categoria ──────────────────────────────────────
+    function renderizarCategorias(canais) {
+      const container = document.getElementById("categoriasContainer");
+      container.innerHTML = "";
+
+      const porCat = {};
+      canais.forEach(c => {
+        const cat = c.categoria || "Variedades";
+        if (!porCat[cat]) porCat[cat] = [];
+        porCat[cat].push(c);
+      });
+
+      CATEGORIAS_CONFIG.forEach(conf => {
+        const lista = porCat[conf.id];
+        if (!lista || !lista.length) return;
+
+        const secao = document.createElement("div");
+        secao.className = "categoria-secao";
+        secao.dataset.cat = conf.id;
+
+        const header = document.createElement("h2");
+        header.innerHTML =
+          '<span class="icone">' + conf.icone + '</span>' +
+          conf.label +
+          '<span class="count">(' + lista.length + ' canais)</span>';
+        secao.appendChild(header);
+
+        const linha = document.createElement("div");
+        linha.className = "linha-cat";
+        linha.style.marginBottom = "14px";
+        secao.appendChild(linha);
+
+        const grid = document.createElement("div");
+        grid.className = "canais-grid";
+        lista.forEach(canal => grid.appendChild(criarCard(canal)));
+        secao.appendChild(grid);
+
+        container.appendChild(secao);
+      });
+
+      if (!container.innerHTML) {
+        container.innerHTML = '<p class="estado-msg">Nenhum canal disponível.</p>';
+      }
+    }
+
+    // ── Filtro por categoria ─────────────────────────────────────────────────
+    document.getElementById("filtrosBar").addEventListener("click", e => {
+      const btn = e.target.closest(".filtro-btn");
+      if (!btn) return;
+      document.querySelectorAll(".filtro-btn").forEach(b => b.classList.remove("ativo"));
+      btn.classList.add("ativo");
+      filtroAtivo = btn.dataset.cat;
+
+      // Limpa busca
+      document.getElementById("buscaCanal").value = "";
+      document.getElementById("buscaResultado").style.display = "none";
+      document.getElementById("categoriasContainer").style.display = "";
+
+      const secoes = document.querySelectorAll(".categoria-secao");
+      secoes.forEach(s => {
+        if (filtroAtivo === "todos" || s.dataset.cat === filtroAtivo) {
+          s.classList.remove("secao-oculta");
+        } else {
+          s.classList.add("secao-oculta");
+        }
+      });
+    });
+
+    // ── Busca em tempo real ──────────────────────────────────────────────────
+    document.getElementById("buscaCanal").addEventListener("input", function() {
+      const q = this.value.trim().toLowerCase();
+      if (!q) {
+        document.getElementById("buscaResultado").style.display = "none";
+        document.getElementById("categoriasContainer").style.display = "";
+        return;
+      }
+      document.getElementById("categoriasContainer").style.display = "none";
+      document.getElementById("buscaResultado").style.display = "";
+
+      const grid = document.getElementById("gridBusca");
+      grid.innerHTML = "";
+      const encontrados = todosCanais.filter(c =>
+        (c.titulo || "").toLowerCase().includes(q) ||
+        (c.id || "").toLowerCase().includes(q)
+      );
+      if (!encontrados.length) {
+        grid.innerHTML = '<p class="estado-msg" style="grid-column:1/-1">Nenhum canal encontrado para "<strong>' + q + '</strong>"</p>';
+        return;
+      }
+      encontrados.forEach(c => grid.appendChild(criarCard(c)));
+    });
+
+    // ── Carregar canais do backend ───────────────────────────────────────────
     async function carregarCanais() {
-      const grid = document.getElementById("canaisGrid");
-      grid.innerHTML = "<p style='color:#aaa;padding:20px'>Carregando canais...</p>";
+      const container = document.getElementById("categoriasContainer");
+      container.innerHTML = '<p class="estado-msg">Carregando canais...</p>';
       try {
         const r = await fetch(BACKEND + "/canais", {
           headers: { "Authorization": "Bearer " + token }
         });
         if (!r.ok) throw new Error("Status " + r.status);
         const canais = await r.json();
-        if (!canais.length) {
-          grid.innerHTML = "<p style='color:#aaa'>Nenhum canal disponível.</p>";
-          return;
-        }
-        grid.innerHTML = "";
-        canais.forEach(canal => {
-          const card = document.createElement("div");
-          card.className = "poster-card";
-          card.innerHTML =
-            '<img src="' + (canal.poster || '') + '" alt="' + canal.titulo + '" loading="lazy" onerror="this.src=\'assets/posters/placeholder.jpg\'">' +
-            '<div class="info"><h3>' + canal.titulo + '</h3><p style="color:#e50914;font-size:12px;font-weight:bold;">&#9679; AO VIVO</p></div>';
-          card.addEventListener("click", function() {
-            window.location.href = "assistir.html?canal=" + encodeURIComponent(canal.id);
-          });
-          grid.appendChild(card);
-        });
+        todosCanais = canais;
+        renderizarCategorias(todosCanais);
       } catch (err) {
         console.error("Erro ao carregar canais:", err);
-        grid.innerHTML = "<p style='color:#e50914'>Erro ao carregar canais. Tente novamente.</p>";
+        container.innerHTML = '<p class="estado-msg" style="color:#e50914">Erro ao carregar canais. Tente novamente.</p>';
       }
     }
 
