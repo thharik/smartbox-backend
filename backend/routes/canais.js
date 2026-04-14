@@ -138,6 +138,44 @@ const canais = [
   // ── RELIGIOSOS (1 canais) ───────────────────────────────────────────
   { id: "tv-aparecida", titulo: "TV Aparecida", tipo: "AoVivo", poster: "https://i.imgur.com/kxrja0X.png", video: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8" },
 
+
+
+  // ── TV JAPONESA (21 canais) ────────────────────────────────────────
+  { id: "nhk-g", titulo: "NHK G", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/6/6f/NHK%E7%B7%8F%E5%90%88%E3%83%AD%E3%82%B42020-.png", video: "https://mt01.utako.moe/NHK_G/index.m3u8" },
+  { id: "nhk-e", titulo: "NHK E", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/a/aa/NHKE%E3%83%86%E3%83%AC%E3%83%AD%E3%82%B42020-.png", video: "https://mt01.utako.moe/NHK_E/index.m3u8" },
+  { id: "ntv", titulo: "NTV", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Nippon_TV_logo_2014.svg/2560px-Nippon_TV_logo_2014.svg.png", video: "https://mt01.utako.moe/Nippon_TV/index.m3u8" },
+  { id: "tbs-japan", titulo: "TBS Japan", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Tokyo_Broadcasting_System_logo_2020.svg/2560px-Tokyo_Broadcasting_System_logo_2020.svg.png", video: "https://mt01.utako.moe/TBS/index.m3u8" },
+  { id: "tokyo-mx1", titulo: "TOKYO MX1", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Tokyo_metropolitan_television_logo_%28rainbow%29.svg/2560px-Tokyo_metropolitan_television_logo_%28rainbow%29.svg.png", video: "https://mt01.utako.moe/Tokyo_MX1/index.m3u8" },
+  { id: "mbs", titulo: "MBS", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Mainichi_Broadcasting_System_logo.svg/1920px-Mainichi_Broadcasting_System_logo.svg.png", video: "https://mt01.utako.moe/mbs/index.m3u8" },
+  { id: "abc-japan", titulo: "ABC Japan", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Asahi_Broadcasting_Corporation_Logo.svg/261px-Asahi_Broadcasting_Corporation_Logo.svg.png", video: "https://mt01.utako.moe/abc/index.m3u8" },
+  { id: "tv-osaka", titulo: "TV Osaka", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Tv_osaka_logo.svg/178px-Tv_osaka_logo.svg.png", video: "https://mt01.utako.moe/tvo/index.m3u8" },
+  { id: "animax-japan", titulo: "Animax Japan", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Animax.svg/1920px-Animax.svg.png", video: "https://ca01.utako.moe/Animax/index.m3u8" },
+  { id: "at-x", titulo: "AT-X", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/AT-X_logo.svg/2560px-AT-X_logo.svg.png", video: "https://mt01.utako.moe/AT-X/index.m3u8" },
+  { id: "space-shower-tv", titulo: "Space Shower TV", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/0/05/SPACE_SHOWER_TV.jpg", video: "https://ca01.utako.moe/spaceshower/index.m3u8" },
+  { id: "mtv-japan", titulo: "MTV Japan", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://www.lyngsat.com/logo/tv/mm/mtv-us.svg", video: "https://ca01.utako.moe/mtv/index.m3u8" },
+  { id: "disney-channel-japan", titulo: "Disney Channel Japan", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/2019_Disney_Channel_logo.svg/250px-2019_Disney_Channel_logo.svg.png", video: "https://ca01.utako.moe/disneychan/index.m3u8" },
+  { id: "cartoon-network-japan", titulo: "Cartoon Network Japan", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://www.lyngsat.com/logo/tv/cc/cartoon-network-us.svg", video: "https://ca01.utako.moe/cartoon_network/index.m3u8" },
+  { id: "jsport-1", titulo: "JSport 1", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://www.starcat.co.jp/ch/upload/channel/69/jsports1_logo.jpg", video: "https://mt01.utako.moe/js1/index.m3u8" },
+  { id: "jsport-2", titulo: "JSport 2", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://www.starcat.co.jp/ch/upload/channel/70/jsports2_logo.jpg", video: "https://mt01.utako.moe/js2/index.m3u8" },
+  { id: "jsport-3", titulo: "JSport 3", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://www.starcat.co.jp/ch/upload/channel/71/jsports3_logo.jpg", video: "https://mt01.utako.moe/js3/index.m3u8" },
+  { id: "jsport-4", titulo: "JSport 4", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://www.starcat.co.jp/ch/upload/channel/74/jsports4_logo.jpg", video: "https://mt01.utako.moe/js4/index.m3u8" },
+  { id: "wowow-prime", titulo: "WOWOW Prime", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://www.lyngsat.com/logo/tv/ww/wowow_prime.png", video: "https://mt01.utako.moe/wprime/index.m3u8" },
+  { id: "bs-tbs", titulo: "BS TBS", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/BS-TBS_2020.svg/1920px-BS-TBS_2020.svg.png", video: "https://mt01.utako.moe/bstbs/index.m3u8" },
+  { id: "bs-fuji", titulo: "BS Fuji", tipo: "AoVivo", categoria: "TV Japonesa", poster: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/BSFuji2008Symbol.svg/1280px-BSFuji2008Symbol.svg.png", video: "https://mt01.utako.moe/bsfuji/index.m3u8" },
+
+  // ── TV COREANA (11 canais) ────────────────────────────────────────
+  { id: "tv", titulo: "연합뉴스TV", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KRBD1400001ED_20230524T004408SQUARE.png", video: "https://jmp2.uk/sam-KRBD1400001ED.m3u8" },
+  { id: "ytn", titulo: "YTN", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KRBD2400001XD_20250811T061417SQUARE.png", video: "https://jmp2.uk/sam-KRBD2400001XD.m3u8" },
+  { id: "fifa", titulo: "FIFA+", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KR2900002NO_20250521T005529SQUARE.png", video: "https://jmp2.uk/sam-KR2900002NO.m3u8" },
+  { id: "pga-tour-korea", titulo: "PGA Tour Korea", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KRBD3100007WB_20250402T010407SQUARE.png", video: "https://jmp2.uk/sam-KRBD3100007WB.m3u8" },
+  { id: "", titulo: "짱구는 못말려", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KR10000017U_20250402T010134SQUARE.png", video: "https://jmp2.uk/sam-KR10000017U.m3u8" },
+  { id: "m2", titulo: "M2", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KRBC3200023BG_20250402T010309SQUARE.png", video: "https://jmp2.uk/sam-KRBC3200023BG.m3u8" },
+  { id: "mbc", titulo: "MBC 무한도전", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KRBB5000069BS_20250827T010035SQUARE.png", video: "https://jmp2.uk/sam-KRBB5000069BS.m3u8" },
+  { id: "sbs", titulo: "SBS 런닝맨", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KRBB4200002MM_20250827T010101SQUARE.png", video: "https://jmp2.uk/sam-KRBB4200002MM.m3u8" },
+  { id: "tvn", titulo: "tvN 선재 업고 튀어", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KRBC3200018FU_20250827T010326SQUARE.png", video: "https://jmp2.uk/sam-KRBC3200018FU.m3u8" },
+  { id: "jtbc", titulo: "JTBC 재벌집 막내아들", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KR400003IP_20250514T082415SQUARE.png", video: "https://jmp2.uk/sam-KR400003IP.m3u8" },
+  { id: "cj-enm-movie", titulo: "CJ ENM MOVIE", tipo: "AoVivo", categoria: "TV Coreana", poster: "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/KRBC32000191N_20250402T010148SQUARE.png", video: "https://jmp2.uk/sam-KRBC32000191N.m3u8" },
+
 ];
 
 // GET /canais — retorna lista completa
