@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogos — Tvxbox</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="pwa/manifest.json">
+  <meta name="theme-color" content="#141414">
+  <link rel="apple-touch-icon" href="pwa/icon-192.png">
+  <style>
+    /* ── Jogos ── */
+    .jogos-hero {
+      padding: 28px 30px 10px;
+    }
+    .jogos-hero h1 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .jogos-hero p {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .jogos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      padding: 20px 30px;
+    }
+
+    .jogo-card {
+      background: #1b1b1b;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
+      border: 2px solid transparent;
+    }
+    .jogo-card:hover {
+      transform: scale(1.04);
+      box-shadow: 0 6px 24px rgba(0,0,0,.6);
+    }
+    .jogo-card.selecionado {
+      border-color: #e50914;
+    }
+    .jogo-thumb {
+      width: 100%;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+      background: #111;
+    }
+    .jogo-info {
+      padding: 12px;
+    }
+    .jogo-info h3 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .jogo-info p {
+      font-size: 12px;
+      color: #888;
+    }
+
+    /* ── Área do jogo ── */
+    .jogo-area-wrap {
+      padding: 0 30px 40px;
+      display: none;
+    }
+    .jogo-area-wrap.visivel {
+      display: block;
+    }
+
+    .jogo-titulo-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .jogo-titulo-bar h2 {
+      font-size: 22px;
+    }
+    .btn-fechar-jogo {
+      background: #222;
+      color: #fff;
+      border: 1px solid #333;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background .15s;
+    }
+    .btn-fechar-jogo:hover {
+      background: #e50914;
+      border-color: #e50914;
+    }
+
+    .jogo-shell {
+      background: #111;
+      border-radius: 16px;
+      border: 1px solid #222;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* score bar dentro do jogo */
+    .jogo-scorebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 18px;
+      background: #0d0d0d;
+      border-bottom: 1px solid #222;
+      font-size: 14px;
+    }
+    .jogo-scorebar span { color: #aaa; }
+    .jogo-scorebar strong { color: #fff; }
+    .btn-reiniciar {
+      background: transparent;
+      color: #ccc;
+      border: 1px solid #333;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background .15s;
+    }
+    .btn-reiniciar:hover { background: #2a2a2a; }
+
+    /* canvas centralizado */
+    .jogo-canvas-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 16px 0;
+      background: #111;
+    }
+    .jogo-dica {
+      text-align: center;
+      font-size: 12px;
+      color: #555;
+      padding: 8px;
+      background: #111;
+    }
+
+    /* memory grid */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 16px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .mem-card {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #1e1e1e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      user-select: none;
+    }
+    .mem-card:hover { background: #2a2a2a; }
+    .mem-card.virado { background: #1b1b1b; }
+    .mem-card.combinado { background: #1a2a1a; border-color: #639922; cursor: default; }
+
+    @media (max-width: 768px) {
+      .jogos-hero { padding: 20px 16px 8px; }
+      .jogos-grid { grid-template-columns: repeat(2, 1fr); padding: 14px 16px; gap: 12px; }
+      .jogo-area-wrap { padding: 0 16px 32px; }
+      .jogo-thumb { height: 90px; font-size: 38px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ── Topbar (igual ao index.html) ── -->
+  <header class="topbar">
+    <a href="index.html" class="logo">TVXBOX</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false">☰</button>
+    <nav class="main-nav" id="mainNav">
+      <a href="index.html">Início</a>
+      <a href="ao-vivo.html">Ao Vivo</a>
+      <a href="mangas.html">Mangás</a>
+      <a href="aulas.html">Aulas</a>
+      <a href="jogos.html" style="color:#e50914;font-weight:bold">Jogos</a>
+    </nav>
+    <div class="header-right">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Buscar...">
+      </div>
+      <div class="user-box">
+        <span id="usuarioNome"></span>
+        <button id="btnSair" type="button">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Hero ── -->
+  <div class="jogos-hero">
+    <h1>🎮 Jogos</h1>
+    <p>Escolha um jogo e divirta-se sem sair do Tvxbox</p>
+  </div>
+
+  <!-- ── Grid de jogos ── -->
+  <div class="jogos-grid">
+    <div class="jogo-card" onclick="abrirJogo('snake')" id="card-snake">
+      <div class="jogo-thumb">🐍</div>
+      <div class="jogo-info">
+        <h3>Snake</h3>
+        <p>Guie a cobra, coma as maçãs e não bata nas paredes</p>
+      </div>
+    </div>
+    <div class="jogo-card" onclick="abrirJogo('tetris')" id="card-tetris">
+      <div class="jogo-thumb">🧱</div>
+      <div class="jogo-info">
+        <h3>Tetris</h3>
+        <p>Encaixe as peças e complete as linhas</p>
+      </div>
+    </div>
+    <div class="jogo-card" onclick="abrirJogo('breakout')" id="card-breakout">
+      <div class="jogo-thumb">🏓</div>
+      <div class="jogo-info">
+        <h3>Breakout</h3>
+        <p>Use o paddle para quebrar todos os blocos</p>
+      </div>
+    </div>
+    <div class="jogo-card" onclick="abrirJogo('memoria')" id="card-memoria">
+      <div class="jogo-thumb">🃏</div>
+      <div class="jogo-info">
+        <h3>Memória</h3>
+        <p>Encontre todos os pares de emojis</p>
+      </div>
+    </div>
+    <div class="jogo-card" onclick="abrirJogo('2048')" id="card-2048">
+      <div class="jogo-thumb">🔢</div>
+      <div class="jogo-info">
+        <h3>2048</h3>
+        <p>Some os números e chegue ao 2048</p>
+      </div>
+    </div>
+    <div class="jogo-card" onclick="abrirJogo('dino')" id="card-dino">
+      <div class="jogo-thumb">🦕</div>
+      <div class="jogo-info">
+        <h3>Dino Run</h3>
+        <p>Pule os obstáculos e sobreviva o máximo possível</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Área do jogo ativo ── -->
+  <div class="jogo-area-wrap" id="jogoAreaWrap">
+    <div class="jogo-titulo-bar">
+      <h2 id="jogoTituloAtivo"></h2>
+      <button class="btn-fechar-jogo" onclick="fecharJogo()">✕ Fechar</button>
+    </div>
+    <div class="jogo-shell" id="jogoShell"></div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="pwa/register-sw.js"></script>
+  <script>
+    /* ── Controle de jogos ─────────────────────────────────────────── */
+    let jogoAtivo = null;
+    let animFrame = null;
+
+    const JOGOS_META = {
+      snake:    { nome: "Snake" },
+      tetris:   { nome: "Tetris" },
+      breakout: { nome: "Breakout" },
+      memoria:  { nome: "Memória" },
+      "2048":   { nome: "2048" },
+      dino:     { nome: "Dino Run" },
+    };
+
+    function abrirJogo(id) {
+      if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+      if (jogoAtivo && jogoAtivo.cleanup) jogoAtivo.cleanup();
+
+      document.querySelectorAll(".jogo-card").forEach(c => c.classList.remove("selecionado"));
+      document.getElementById("card-" + id).classList.add("selecionado");
+
+      document.getElementById("jogoTituloAtivo").textContent = JOGOS_META[id].nome;
+      const wrap = document.getElementById("jogoAreaWrap");
+      wrap.classList.add("visivel");
+      wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      const shell = document.getElementById("jogoShell");
+      shell.innerHTML = "";
+
+      if (id === "snake")    jogoAtivo = iniciarSnake(shell);
+      if (id === "tetris")   jogoAtivo = iniciarTetris(shell);
+      if (id === "breakout") jogoAtivo = iniciarBreakout(shell);
+      if (id === "memoria")  jogoAtivo = iniciarMemoria(shell);
+      if (id === "2048")     jogoAtivo = iniciar2048(shell);
+      if (id === "dino")     jogoAtivo = iniciarDino(shell);
+    }
+
+    function fecharJogo() {
+      if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+      if (jogoAtivo && jogoAtivo.cleanup) jogoAtivo.cleanup();
+      jogoAtivo = null;
+      document.getElementById("jogoAreaWrap").classList.remove("visivel");
+      document.querySelectorAll(".jogo-card").forEach(c => c.classList.remove("selecionado"));
+    }
+
+    /* ── helpers de layout ─────────────────────────────────────────── */
+    function larguraDisponivel() {
+      return Math.min(document.getElementById("jogoShell").clientWidth || 600, 600);
+    }
+
+    function criarScorebar(shell, scoreId, reiniciarFn) {
+      const bar = document.createElement("div");
+      bar.className = "jogo-scorebar";
+      bar.innerHTML = `<span>Pontuação: <strong id="${scoreId}">0</strong></span>
+                       <button class="btn-reiniciar" id="btnReinicio">Reiniciar</button>`;
+      shell.appendChild(bar);
+      shell.querySelector("#btnReinicio").onclick = reiniciarFn;
+    }
+
+    function criarDica(shell, texto) {
+      const d = document.createElement("div");
+      d.className = "jogo-dica";
+      d.textContent = texto;
+      shell.appendChild(d);
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       SNAKE
+    ════════════════════════════════════════════════════════════════ */
+    function iniciarSnake(shell) {
+      const SZ = 20, COLS = 20, ROWS = 20;
+      const W = SZ * COLS, H = SZ * ROWS;
+
+      criarScorebar(shell, "snakeScore", () => abrirJogo("snake"));
+      const wrap = document.createElement("div"); wrap.className = "jogo-canvas-wrap";
+      const canvas = document.createElement("canvas"); canvas.width = W; canvas.height = H;
+      canvas.style.cssText = "border-radius:8px;cursor:none;max-width:100%;";
+      wrap.appendChild(canvas); shell.appendChild(wrap);
+      criarDica(shell, "Use as setas do teclado para mover • Swipe no mobile");
+
+      const ctx = canvas.getContext("2d");
+      let snake = [{x:10,y:10}], dir={x:1,y:0}, nextDir={x:1,y:0};
+      let food = rndFood(), score = 0, vivo = true, last = 0;
+
+      function rndFood() {
+        return {x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS)};
+      }
+      function desenhar() {
+        ctx.fillStyle = "#0a0a0a"; ctx.fillRect(0,0,W,H);
+        ctx.fillStyle = "#e50914";
+        ctx.beginPath(); ctx.arc(food.x*SZ+SZ/2, food.y*SZ+SZ/2, SZ/2-2, 0, Math.PI*2); ctx.fill();
+        snake.forEach((s,i) => {
+          ctx.fillStyle = i===0 ? "#fff" : "#e50914";
+          ctx.beginPath(); ctx.roundRect(s.x*SZ+2, s.y*SZ+2, SZ-4, SZ-4, 4); ctx.fill();
+        });
+        if (!vivo) {
+          ctx.fillStyle="rgba(0,0,0,.7)"; ctx.fillRect(0,0,W,H);
+          ctx.fillStyle="#fff"; ctx.font="bold 26px Arial"; ctx.textAlign="center";
+          ctx.fillText("Game Over", W/2, H/2-10);
+          ctx.font="15px Arial"; ctx.fillStyle="#aaa";
+          ctx.fillText("Clique em Reiniciar", W/2, H/2+20);
+        }
+      }
+      function loop(ts) {
+        if (ts - last > 120) {
+          last = ts;
+          if (!vivo) { desenhar(); return; }
+          dir = nextDir;
+          const head = {x: snake[0].x+dir.x, y: snake[0].y+dir.y};
+          if (head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)) {
+            vivo = false; desenhar(); return;
+          }
+          snake.unshift(head);
+          if (head.x===food.x&&head.y===food.y) {
+            score += 10;
+            document.getElementById("snakeScore").textContent = score;
+            food = rndFood();
+          } else { snake.pop(); }
+          desenhar();
+        }
+        animFrame = requestAnimationFrame(loop);
+      }
+      function onKey(e) {
+        const m = {ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};
+        if (m[e.key] && !(m[e.key].x===-dir.x&&dir.x!==0) && !(m[e.key].y===-dir.y&&dir.y!==0)) {
+          nextDir = m[e.key]; e.preventDefault();
+        }
+      }
+      // swipe mobile
+      let tx0=0,ty0=0;
+      function onTouchStart(e){tx0=e.touches[0].clientX;ty0=e.touches[0].clientY;}
+      function onTouchEnd(e){
+        const dx=e.changedTouches[0].clientX-tx0, dy=e.changedTouches[0].clientY-ty0;
+        if(Math.abs(dx)>Math.abs(dy)){nextDir=dx>0?{x:1,y:0}:{x:-1,y:0};}
+        else{nextDir=dy>0?{x:0,y:1}:{x:0,y:-1};}
+      }
+      document.addEventListener("keydown", onKey);
+      canvas.addEventListener("touchstart", onTouchStart, {passive:true});
+      canvas.addEventListener("touchend", onTouchEnd, {passive:true});
+      animFrame = requestAnimationFrame(loop);
+      return { cleanup: () => { document.removeEventListener("keydown", onKey); } };
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       TETRIS
+    ════════════════════════════════════════════════════════════════ */
+    function iniciarTetris(shell) {
+      const SZ=24, COLS=10, ROWS=20, W=SZ*COLS, H=SZ*ROWS;
+      criarScorebar(shell, "tetrisScore", () => abrirJogo("tetris"));
+      const wrap=document.createElement("div"); wrap.className="jogo-canvas-wrap";
+      const canvas=document.createElement("canvas"); canvas.width=W; canvas.height=H;
+      canvas.style.cssText="border-radius:8px;max-width:100%;";
+      wrap.appendChild(canvas); shell.appendChild(wrap);
+      criarDica(shell,"← → mover  |  ↑ girar  |  ↓ descer rápido");
+
+      const ctx=canvas.getContext("2d");
+      const SHAPES=[
+        [[1,1,1,1]],
+        [[1,1],[1,1]],
+        [[0,1,0],[1,1,1]],
+        [[1,0,0],[1,1,1]],
+        [[0,0,1],[1,1,1]],
+        [[1,1,0],[0,1,1]],
+        [[0,1,1],[1,1,0]],
+      ];
+      const CORES=["#378ADD","#E24B4A","#7F77DD","#EF9F27","#1D9E75","#D4537E","#639922"];
+      let board=Array(ROWS).fill(null).map(()=>Array(COLS).fill(0));
+      let score=0,vivo=true,last=0,vel=500;
+      let cur=spawnar(), prox=spawnar();
+
+      function spawnar(){
+        const i=Math.floor(Math.random()*SHAPES.length);
+        return{shape:SHAPES[i].map(r=>[...r]),cor:CORES[i],x:3,y:0};
+      }
+      function cabe(p,ox,oy){
+        return p.shape.every((r,dy)=>r.every((v,dx)=>
+          !v||(p.y+oy+dy>=0&&p.y+oy+dy<ROWS&&p.x+ox+dx>=0&&p.x+ox+dx<COLS&&!board[p.y+oy+dy][p.x+ox+dx])
+        ));
+      }
+      function girar(p){const m=p.shape[0].map((_,i)=>p.shape.map(r=>r[i]).reverse());return{...p,shape:m};}
+      function fixar(){
+        cur.shape.forEach((r,dy)=>r.forEach((v,dx)=>{if(v)board[cur.y+dy][cur.x+dx]=cur.cor;}));
+        let pts=0;
+        for(let r=ROWS-1;r>=0;r--){
+          if(board[r].every(v=>v)){board.splice(r,1);board.unshift(Array(COLS).fill(0));pts+=100;r++;}
+        }
+        score+=pts; document.getElementById("tetrisScore").textContent=score;
+        cur=prox; prox=spawnar();
+        if(!cabe(cur,0,0)) vivo=false;
+      }
+      function desenhar(){
+        ctx.fillStyle="#0a0a0a"; ctx.fillRect(0,0,W,H);
+        // grade sutil
+        ctx.strokeStyle="#161616"; ctx.lineWidth=0.5;
+        for(let x=0;x<=W;x+=SZ){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+        for(let y=0;y<=H;y+=SZ){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+        board.forEach((row,y)=>row.forEach((v,x)=>{
+          if(v){ctx.fillStyle=v;ctx.fillRect(x*SZ+1,y*SZ+1,SZ-2,SZ-2);}
+        }));
+        cur.shape.forEach((r,dy)=>r.forEach((v,dx)=>{
+          if(v){ctx.fillStyle=cur.cor;ctx.fillRect((cur.x+dx)*SZ+1,(cur.y+dy)*SZ+1,SZ-2,SZ-2);}
+        }));
+        if(!vivo){
+          ctx.fillStyle="rgba(0,0,0,.75)";ctx.fillRect(0,0,W,H);
+          ctx.fillStyle="#fff";ctx.font="bold 24px Arial";ctx.textAlign="center";
+          ctx.fillText("Game Over",W/2,H/2);
+          ctx.font="14px Arial";ctx.fillStyle="#aaa";ctx.fillText("Pontos: "+score,W/2,H/2+28);
+        }
+      }
+      function loop(ts){
+        if(ts-last>vel){last=ts;if(vivo){cabe(cur,0,1)?cur.y++:fixar();desenhar();}}
+        animFrame=requestAnimationFrame(loop);
+      }
+      function onKey(e){
+        if(!vivo)return;
+        if(e.key==="ArrowLeft"&&cabe(cur,-1,0))cur.x--;
+        if(e.key==="ArrowRight"&&cabe(cur,1,0))cur.x++;
+        if(e.key==="ArrowDown"&&cabe(cur,0,1))cur.y++;
+        if(e.key==="ArrowUp"){const r=girar(cur);if(cabe(r,0,0))cur=r;}
+        desenhar(); e.preventDefault();
+      }
+      document.addEventListener("keydown",onKey);
+      animFrame=requestAnimationFrame(loop);
+      return{cleanup:()=>document.removeEventListener("keydown",onKey)};
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       BREAKOUT
+    ════════════════════════════════════════════════════════════════ */
+    function iniciarBreakout(shell) {
+      const W=440,H=380;
+      criarScorebar(shell,"breakoutScore",()=>abrirJogo("breakout"));
+      const wrap=document.createElement("div"); wrap.className="jogo-canvas-wrap";
+      const canvas=document.createElement("canvas"); canvas.width=W; canvas.height=H;
+      canvas.style.cssText="border-radius:8px;cursor:none;max-width:100%;";
+      wrap.appendChild(canvas); shell.appendChild(wrap);
+      criarDica(shell,"Mova o mouse ou toque para controlar o paddle");
+
+      const ctx=canvas.getContext("2d");
+      let px=W/2,pw=80,ph=10,py=H-30;
+      let bx=W/2,by=H/2-40,br=9,bdx=3.5,bdy=-3.5;
+      let score=0,vivo=true,vitoria=false;
+      const C=9,R=4,BW=42,BH=14,GAP=4,OX=(W-C*(BW+GAP)+GAP)/2,OY=40;
+      const CORES_BLK=["#e50914","#378ADD","#7F77DD","#639922"];
+      let blocos=[];
+      for(let r=0;r<R;r++) for(let c=0;c<C;c++)
+        blocos.push({x:OX+c*(BW+GAP),y:OY+r*(BH+GAP),cor:CORES_BLK[r],vivo:true,pts:10*(R-r)});
+
+      function desenhar(){
+        ctx.fillStyle="#0a0a0a"; ctx.fillRect(0,0,W,H);
+        blocos.filter(b=>b.vivo).forEach(b=>{
+          ctx.fillStyle=b.cor;
+          ctx.beginPath();ctx.roundRect(b.x,b.y,BW,BH,4);ctx.fill();
+        });
+        // paddle
+        ctx.fillStyle="#fff";
+        ctx.beginPath();ctx.roundRect(px-pw/2,py,pw,ph,5);ctx.fill();
+        // bola
+        ctx.beginPath();ctx.arc(bx,by,br,0,Math.PI*2);ctx.fillStyle="#e50914";ctx.fill();
+        if(!vivo||vitoria){
+          ctx.fillStyle="rgba(0,0,0,.75)";ctx.fillRect(0,0,W,H);
+          ctx.fillStyle="#fff";ctx.font="bold 24px Arial";ctx.textAlign="center";
+          ctx.fillText(vitoria?"Parabéns! 🎉":"Game Over",W/2,H/2-10);
+          ctx.font="14px Arial";ctx.fillStyle="#aaa";ctx.fillText("Pontos: "+score,W/2,H/2+20);
+        }
+      }
+      function loop(){
+        if(!vivo||vitoria){desenhar();return;}
+        bx+=bdx; by+=bdy;
+        if(bx-br<0){bx=br;bdx=Math.abs(bdx);}
+        if(bx+br>W){bx=W-br;bdx=-Math.abs(bdx);}
+        if(by-br<0){by=br;bdy=Math.abs(bdy);}
+        if(by+br>H+br){vivo=false;}
+        if(by+br>py&&by-br<py+ph&&bx>px-pw/2-br&&bx<px+pw/2+br){
+          bdy=-Math.abs(bdy);
+          bdx+=(bx-px)/(pw*1.5);
+          bdx=Math.max(-6,Math.min(6,bdx));
+        }
+        blocos.forEach(b=>{
+          if(!b.vivo)return;
+          if(bx+br>b.x&&bx-br<b.x+BW&&by+br>b.y&&by-br<b.y+BH){
+            b.vivo=false;bdy=-bdy;
+            score+=b.pts;document.getElementById("breakoutScore").textContent=score;
+          }
+        });
+        if(blocos.every(b=>!b.vivo))vitoria=true;
+        desenhar();
+        animFrame=requestAnimationFrame(loop);
+      }
+      canvas.addEventListener("mousemove",e=>{const r=canvas.getBoundingClientRect();px=e.clientX-r.left;});
+      canvas.addEventListener("touchmove",e=>{e.preventDefault();const r=canvas.getBoundingClientRect();px=e.touches[0].clientX-r.left;},{passive:false});
+      animFrame=requestAnimationFrame(loop);
+      return{cleanup:()=>{}};
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       MEMÓRIA
+    ════════════════════════════════════════════════════════════════ */
+    function iniciarMemoria(shell) {
+      const EMOJIS=["🍎","🍊","🍋","🍇","🍓","🍒","🍑","🥝"];
+      let cards=[...EMOJIS,...EMOJIS].sort(()=>Math.random()-.5).map((e,i)=>({id:i,emoji:e,virado:false,combinado:false}));
+      let primeiro=null,bloqueado=false,movimentos=0,combinados=0;
+
+      const sbar=document.createElement("div"); sbar.className="jogo-scorebar";
+      sbar.innerHTML=`<span>Movimentos: <strong id="memMov">0</strong></span>
+                      <button class="btn-reiniciar" onclick="abrirJogo('memoria')">Reiniciar</button>`;
+      shell.appendChild(sbar);
+
+      const grid=document.createElement("div"); grid.className="memory-grid"; shell.appendChild(grid);
+      const msg=document.createElement("div"); msg.className="jogo-dica"; msg.id="memMsg"; shell.appendChild(msg);
+
+      function renderizar(){
+        grid.innerHTML="";
+        cards.forEach(c=>{
+          const el=document.createElement("div");
+          el.className="mem-card"+(c.virado?" virado":"")+(c.combinado?" combinado":"");
+          el.textContent=c.virado||c.combinado?c.emoji:"";
+          if(!c.combinado) el.onclick=()=>clicar(c.id);
+          grid.appendChild(el);
+        });
+        document.getElementById("memMov").textContent=movimentos;
+        const m=document.getElementById("memMsg");
+        if(combinados===8) m.textContent="🎉 Parabéns! Completado em "+movimentos+" movimentos!";
+      }
+      function clicar(id){
+        const c=cards[id];
+        if(bloqueado||c.virado||c.combinado)return;
+        c.virado=true;
+        if(!primeiro){primeiro=c;renderizar();return;}
+        movimentos++;
+        if(primeiro.emoji===c.emoji){c.combinado=true;primeiro.combinado=true;combinados++;primeiro=null;renderizar();}
+        else{bloqueado=true;renderizar();setTimeout(()=>{c.virado=false;primeiro.virado=false;primeiro=null;bloqueado=false;renderizar();},900);}
+      }
+      renderizar();
+      return{cleanup:()=>{}};
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       2048
+    ════════════════════════════════════════════════════════════════ */
+    function iniciar2048(shell) {
+      criarScorebar(shell,"s2048",()=>abrirJogo("2048"));
+      const SZ=90,GAP=10,N=4,W=N*SZ+(N+1)*GAP;
+      const wrap=document.createElement("div"); wrap.className="jogo-canvas-wrap";
+      const canvas=document.createElement("canvas"); canvas.width=W; canvas.height=W;
+      canvas.style.cssText="border-radius:10px;max-width:100%;";
+      wrap.appendChild(canvas); shell.appendChild(wrap);
+      criarDica(shell,"Setas do teclado para mover • Swipe no mobile");
+
+      const ctx=canvas.getContext("2d");
+      const CORES_2048={
+        0:"#1a1a1a",2:"#1e3a5f",4:"#1a4a2a",8:"#5a2a1a",16:"#6a1a1a",
+        32:"#7a1a6a",64:"#e50914",128:"#378ADD",256:"#7F77DD",
+        512:"#EF9F27",1024:"#D4537E",2048:"#fff"
+      };
+      let board=Array(N).fill(null).map(()=>Array(N).fill(0));
+      let score=0,vivo=true;
+
+      function addRand(){
+        const vazias=[];
+        board.forEach((r,y)=>r.forEach((v,x)=>{if(!v)vazias.push({x,y});}));
+        if(!vazias.length)return;
+        const {x,y}=vazias[Math.floor(Math.random()*vazias.length)];
+        board[y][x]=Math.random()<.9?2:4;
+      }
+      addRand();addRand();
+
+      function desenhar(){
+        ctx.fillStyle="#111"; ctx.beginPath(); ctx.roundRect(0,0,W,W,12); ctx.fill();
+        for(let y=0;y<N;y++) for(let x=0;x<N;x++){
+          const v=board[y][x];
+          const px=GAP+x*(SZ+GAP), py=GAP+y*(SZ+GAP);
+          ctx.fillStyle=CORES_2048[Math.min(v,2048)]||"#e50914";
+          ctx.beginPath(); ctx.roundRect(px,py,SZ,SZ,8); ctx.fill();
+          if(v){
+            ctx.fillStyle="#fff"; ctx.textAlign="center"; ctx.textBaseline="middle";
+            const fs=v<100?28:v<1000?22:16;
+            ctx.font=`bold ${fs}px Arial`;
+            ctx.fillText(v,px+SZ/2,py+SZ/2);
+          }
+        }
+        if(!vivo){
+          ctx.fillStyle="rgba(0,0,0,.75)"; ctx.fillRect(0,0,W,W);
+          ctx.fillStyle="#fff"; ctx.font="bold 28px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
+          ctx.fillText("Game Over",W/2,W/2);
+        }
+      }
+
+      function mover(dir){
+        if(!vivo)return;
+        const b=board.map(r=>[...r]);
+        let moveu=false;
+        function compactar(arr){
+          let a=arr.filter(v=>v);
+          for(let i=0;i<a.length-1;i++){if(a[i]===a[i+1]){a[i]*=2;score+=a[i];a.splice(i+1,1);}}
+          while(a.length<N)a.push(0);
+          return a;
+        }
+        if(dir==="left"||dir==="right"){
+          board=board.map(r=>{const c=dir==="right"?[...r].reverse():r;const s=compactar(c);return dir==="right"?s.reverse():s;});
+        } else {
+          for(let x=0;x<N;x++){
+            let col=board.map(r=>r[x]);
+            if(dir==="down")col.reverse();
+            col=compactar(col);
+            if(dir==="down")col.reverse();
+            board.forEach((r,y)=>r[x]=col[y]);
+          }
+        }
+        if(JSON.stringify(b)!==JSON.stringify(board)){moveu=true;addRand();}
+        document.getElementById("s2048").textContent=score;
+        // checar fim
+        let temMov=false;
+        for(let y=0;y<N&&!temMov;y++) for(let x=0;x<N&&!temMov;x++){
+          if(!board[y][x]){temMov=true;}
+          if(x<N-1&&board[y][x]===board[y][x+1])temMov=true;
+          if(y<N-1&&board[y][x]===board[y+1][x])temMov=true;
+        }
+        if(!temMov)vivo=false;
+        desenhar();
+      }
+
+      function onKey(e){
+        const m={ArrowLeft:"left",ArrowRight:"right",ArrowUp:"up",ArrowDown:"down"};
+        if(m[e.key]){mover(m[e.key]);e.preventDefault();}
+      }
+      let tx0=0,ty0=0;
+      function onTouchStart(e){tx0=e.touches[0].clientX;ty0=e.touches[0].clientY;}
+      function onTouchEnd(e){
+        const dx=e.changedTouches[0].clientX-tx0,dy=e.changedTouches[0].clientY-ty0;
+        if(Math.abs(dx)>Math.abs(dy)){mover(dx>0?"right":"left");}else{mover(dy>0?"down":"up");}
+      }
+      document.addEventListener("keydown",onKey);
+      canvas.addEventListener("touchstart",onTouchStart,{passive:true});
+      canvas.addEventListener("touchend",onTouchEnd,{passive:true});
+      desenhar();
+      return{cleanup:()=>document.removeEventListener("keydown",onKey)};
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       DINO RUN
+    ════════════════════════════════════════════════════════════════ */
+    function iniciarDino(shell) {
+      const W=500,H=180;
+      criarScorebar(shell,"dinoScore",()=>abrirJogo("dino"));
+      const wrap=document.createElement("div"); wrap.className="jogo-canvas-wrap";
+      const canvas=document.createElement("canvas"); canvas.width=W; canvas.height=H;
+      canvas.style.cssText="border-radius:8px;max-width:100%;";
+      wrap.appendChild(canvas); shell.appendChild(wrap);
+      criarDica(shell,"Espaço / toque para pular");
+
+      const ctx=canvas.getContext("2d");
+      const CHAO=H-30;
+      let dino={x:60,y:CHAO,w:30,h:40,vy:0,pulando:false};
+      let obstaculos=[],score=0,vel=4,vivo=true,frames=0,ultimo=0,melhor=ls.get("dinoMelhor")||0;
+
+      function spawnar(){
+        const h=20+Math.floor(Math.random()*30);
+        obstaculos.push({x:W,y:CHAO-h+dino.h,w:18,h:h});
+      }
+      function pular(){if(!dino.pulando&&vivo){dino.vy=-13;dino.pulando=true;}}
+
+      function desenhar(){
+        ctx.fillStyle="#0d0d0d"; ctx.fillRect(0,0,W,H);
+        // chão
+        ctx.strokeStyle="#333"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,CHAO+dino.h); ctx.lineTo(W,CHAO+dino.h); ctx.stroke();
+        // dino
+        ctx.fillStyle="#e50914";
+        ctx.beginPath(); ctx.roundRect(dino.x,dino.y,dino.w,dino.h,6); ctx.fill();
+        ctx.fillStyle="#fff"; ctx.font="bold 18px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
+        ctx.fillText("🦕",dino.x+dino.w/2,dino.y+dino.h/2);
+        // obstáculos
+        obstaculos.forEach(o=>{ctx.fillStyle="#555";ctx.fillRect(o.x,o.y,o.w,o.h);});
+        // score
+        ctx.fillStyle="#666"; ctx.font="13px Arial"; ctx.textAlign="right";
+        ctx.fillText(`${score}   Recorde: ${melhor}`,W-10,20);
+        if(!vivo){
+          ctx.fillStyle="rgba(0,0,0,.75)"; ctx.fillRect(0,0,W,H);
+          ctx.fillStyle="#fff"; ctx.font="bold 22px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
+          ctx.fillText("Game Over — "+score+"pts",W/2,H/2-12);
+          ctx.font="13px Arial"; ctx.fillStyle="#888";
+          ctx.fillText("Espaço ou toque para jogar de novo",W/2,H/2+16);
+        }
+      }
+      function loop(){
+        if(!vivo){desenhar();return;}
+        frames++;
+        dino.vy+=0.7; dino.y+=dino.vy;
+        if(dino.y>=CHAO){dino.y=CHAO;dino.vy=0;dino.pulando=false;}
+        if(frames%Math.max(60,110-score/50)===0) spawnar();
+        obstaculos.forEach(o=>o.x-=vel);
+        obstaculos=obstaculos.filter(o=>o.x>-50);
+        for(const o of obstaculos){
+          if(dino.x+dino.w-4>o.x&&dino.x+4<o.x+o.w&&dino.y+dino.h-4>o.y){
+            vivo=false;
+            if(score>melhor){melhor=score;ls.set("dinoMelhor",melhor);}
+            break;
+          }
+        }
+        if(frames%6===0){score++;vel=4+Math.floor(score/100)*0.5;}
+        document.getElementById("dinoScore").textContent=score;
+        desenhar();
+        animFrame=requestAnimationFrame(loop);
+      }
+      function reiniciar(){
+        if(vivo)return;
+        dino={x:60,y:CHAO,w:30,h:40,vy:0,pulando:false};
+        obstaculos=[];score=0;vel=4;frames=0;vivo=true;
+        animFrame=requestAnimationFrame(loop);
+      }
+      function onKey(e){if(e.code==="Space"){e.preventDefault();vivo?pular():reiniciar();}}
+      document.addEventListener("keydown",onKey);
+      canvas.addEventListener("click",()=>vivo?pular():reiniciar());
+      canvas.addEventListener("touchstart",e=>{e.preventDefault();vivo?pular():reiniciar();},{passive:false});
+      animFrame=requestAnimationFrame(loop);
+      return{cleanup:()=>document.removeEventListener("keydown",onKey)};
+    }
+    // ── Auto-abrir jogo vindo da home ──────────────────────────────
+    (function() {
+      const jogoParam = sessionStorage.getItem("jogoAbrir") || new URLSearchParams(location.search).get("jogo");
+      if (jogoParam) {
+        sessionStorage.removeItem("jogoAbrir");
+        // aguarda o DOM estar pronto
+        setTimeout(() => abrirJogo(jogoParam), 100);
+      }
+    })();
+  </script>
+</body>
+</html>
