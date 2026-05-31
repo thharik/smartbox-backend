@@ -1,6 +1,7 @@
 require("dotenv").config({ path: require("path").resolve(__dirname, "../../.env") });
+
 const { Pool } = require("pg");
- 
+
 const pool = new Pool({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
@@ -11,10 +12,15 @@ const pool = new Pool({
     rejectUnauthorized: false
   },
   max: 10,
-  idleTimeoutMillis: 30000
+  idleTimeoutMillis: 30000,
 });
- 
-pool.on("error", (err) => console.error("Erro no pool do PostgreSQL:", err));
- 
+
+pool.on("error", (err) => {
+  console.error("Erro no pool PostgreSQL:", err);
+});
+
+pool.query("SELECT NOW()")
+  .then(() => console.log("Banco conectado com sucesso"))
+  .catch(err => console.error("ERRO AO CONECTAR NO BANCO:", err));
+
 module.exports = pool;
- 
