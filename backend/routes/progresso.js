@@ -22,7 +22,7 @@ router.post("/", perfilMiddleware, async (req, res) => {
          perfil_id,
          episodio_id,
          conteudo_id,
-         "current_time",
+         tempo_atual,
          duration,
          concluido,
          atualizado_em
@@ -30,7 +30,7 @@ router.post("/", perfilMiddleware, async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, NOW())
        ON CONFLICT (perfil_id, episodio_id)
        DO UPDATE SET
-         "current_time" = EXCLUDED."current_time",
+         tempo_atual = EXCLUDED.tempo_atual,
          duration = EXCLUDED.duration,
          concluido = EXCLUDED.concluido,
          atualizado_em = NOW()`,
@@ -51,7 +51,7 @@ router.get("/continuar", perfilMiddleware, async (req, res) => {
       `SELECT DISTINCT ON (p.conteudo_id)
          p.episodio_id,
          p.conteudo_id,
-         p."current_time",
+         p.tempo_atual,
          p.duration,
          e.titulo AS ep_titulo,
          e.capa,
@@ -63,7 +63,7 @@ router.get("/continuar", perfilMiddleware, async (req, res) => {
        JOIN conteudos c ON c.id = p.conteudo_id
        WHERE p.perfil_id = $1
          AND p.concluido = FALSE
-         AND p."current_time" > 5
+         AND p.tempo_atual > 5
        ORDER BY p.conteudo_id, p.atualizado_em DESC
        LIMIT 10`,
       [req.perfilId]
