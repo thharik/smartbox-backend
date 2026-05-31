@@ -58,7 +58,7 @@ if (loginForm) {
       }
  
       // Salva token
-      localStorage.setItem("sb_token", JSON.stringify(dados.token));
+      localStorage.setItem("sb_token", dados.token);
       localStorage.setItem("usuarioEmail", dados.email || email);
       localStorage.removeItem("sb_perfil_id");
       localStorage.removeItem("sb_perfil_nome");
