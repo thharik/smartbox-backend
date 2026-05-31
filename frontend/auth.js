@@ -15,7 +15,7 @@ const cadastroForm = document.getElementById("cadastroForm");
 const copyPixBtn   = document.getElementById("copyPixBtn");
 const pixCode      = document.getElementById("pixCode");
  
-const BACKEND = "https://tvxbox-backend-1.onrender.com";
+const BACKEND = "https://tvxbox-backend.onrender.com";
  
 // Botão copiar chave Pix
 if (copyPixBtn && pixCode) {
