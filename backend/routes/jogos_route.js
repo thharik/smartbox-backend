@@ -18,6 +18,10 @@ let downloadUrl = "";
 
 async function autorizarB2() {
   if (!autorizado) {
+    console.log("ID =", process.env.B2_APPLICATION_KEY_ID);
+    console.log("KEY EXISTE =", !!process.env.B2_APPLICATION_KEY);
+    console.log("BUCKET =", process.env.B2_BUCKET_NAME);
+    
     const resp = await b2.authorize();
     autorizado   = true;
     downloadUrl  = resp.data.downloadUrl;
