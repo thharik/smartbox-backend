@@ -9,7 +9,7 @@ const B2      = require("backblaze-b2");
 const router  = express.Router();
 
 const b2 = new B2({
-  applicationKeyId: process.env.B2_KEY_ID,
+  applicationKeyId: process.env.B2_APPLICATION_KEY_ID,
   applicationKey:   process.env.B2_APPLICATION_KEY,
 });
 
