@@ -86,6 +86,16 @@ CREATE TABLE IF NOT EXISTS progresso (
   PRIMARY KEY (perfil_id, episodio_id)
 );
 
+CREATE TABLE IF NOT EXISTS jogos (
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    poster TEXT,
+    sistema VARCHAR(50) NOT NULL,
+    rom_url TEXT NOT NULL,
+    criado_em TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Progresso de leitura de mangá
 CREATE TABLE IF NOT EXISTS progresso_manga (
   perfil_id    UUID NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,

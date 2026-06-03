@@ -40,7 +40,7 @@ app.use("/progresso", require("./backend/routes/progresso"));
 app.use("/favoritos", require("./backend/routes/favoritos"));
 app.use("/mangas", require("./backend/routes/mangas"));
 app.use("/canais", require("./backend/routes/canais"));
-app.use("/video", require("./backend/routes/video"));
+app.use("/video", require("./backend/routes/video_com_rom"));
 app.use("/assinatura", require("./backend/routes/assinatura"));
 
 app.get("/health", (_req, res) => {
