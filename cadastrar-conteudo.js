@@ -10,11 +10,12 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-const FILE_BASE = "https://tvxbox-b2.tharikluan-miguel.workers.dev";
-const VIDEO_BASE = FILE_BASE;
-const POSTER_BASE = FILE_BASE;
-const PDF_BASE = FILE_BASE;
+const VIDEO_BASE  = "https://tvxbox-backend-1.onrender.com/video";
+const POSTER_BASE = "https://tvxbox-b2.tharikluan-miguel.workers.dev";
+const PDF_BASE    = "https://tvxbox-backend-1.onrender.com/video/pdf";
 
+// Compatibilidade
+const FILE_BASE = POSTER_BASE;
 const conteudos = [
    {
     conteudo_id: "a-face-da-vinganca",
