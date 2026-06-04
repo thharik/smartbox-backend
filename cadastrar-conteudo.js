@@ -356,7 +356,7 @@ const conteudos = [
           temporada_id: "a5555555-5555-5555-5555-555555555555",
           numero: 1,
           episodios: [
-            { id: "eva_ep1",  titulo: "Neon Genesis Evangelion - Episódio 1",  numero: 1,  duracao_seg: 1500, arquivo: "EvanelionEP1.mp4" },
+            { id: "eva_ep1",  titulo: "Neon Genesis Evangelion - Episódio 1",  numero: 1,  duracao_seg: 1500, arquivo: "EvanelionEp1.mp4" },
             { id: "eva_ep2",  titulo: "Neon Genesis Evangelion - Episódio 2",  numero: 2,  duracao_seg: 1500, arquivo: "EvanelionEP2.mp4" },
             { id: "eva_ep3",  titulo: "Neon Genesis Evangelion - Episódio 3",  numero: 3,  duracao_seg: 1500, arquivo: "EvanelionEP3.mp4" },
             { id: "eva_ep4",  titulo: "Neon Genesis Evangelion - Episódio 4",  numero: 4,  duracao_seg: 1500, arquivo: "EvanelionEP4.mp4" },
