@@ -15,9 +15,17 @@ let downloadUrl = "";
 
 async function autorizarB2() {
   if (!autorizado) {
+
+    console.log("=================================");
+    console.log("B2_APPLICATION_KEY_ID =", process.env.B2_APPLICATION_KEY_ID);
+    console.log("B2_APPLICATION_KEY existe =", !!process.env.B2_APPLICATION_KEY);
+    console.log("B2_BUCKET_NAME =", process.env.B2_BUCKET_NAME);
+    console.log("=================================");
+
     const resp = await b2.authorize();
-    autorizado   = true;
-    downloadUrl  = resp.data.downloadUrl;
+
+    autorizado = true;
+    downloadUrl = resp.data.downloadUrl;
   }
 }
 
