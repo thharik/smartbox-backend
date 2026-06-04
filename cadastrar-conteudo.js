@@ -16,6 +16,265 @@ const POSTER_BASE = FILE_BASE;
 const PDF_BASE = FILE_BASE;
 
 const conteudos = [
+   {
+    conteudo_id: "a-face-da-vinganca",
+    titulo: "A Face da Vingança",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/afacedavinganca.jpg`,
+    descricao: "Um ex-agente do governo, marcado por uma tragédia pessoal, sai das sombras para acertar as contas com os responsáveis por destruir sua família. Em uma corrida implacável contra o tempo, ele usa cada habilidade adquirida para executar uma vingança precisa e brutal.",
+    generos: ["Ação", "Thriller"],
+    classificacao: "16",
+    ano: 2023,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000001",
+        numero: 1,
+        episodios: [
+          { id: "afacedavinganca_filme", titulo: "A Face da Vingança", numero: 1, duracao_seg: 7200, arquivo: "AFacedaVinganca.mp4" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "agente-infiltrado",
+    titulo: "Agente Infiltrado",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/agenteinfiltrado.jpg`,
+    descricao: "Um agente da CIA é enviado para se infiltrar em uma das organizações criminosas mais perigosas do mundo. Com sua identidade sempre à beira do colapso, ele precisa equilibrar lealdade, sobrevivência e a linha tênue entre o bem e o mal.",
+    generos: ["Ação", "Suspense"],
+    classificacao: "16",
+    ano: 2024,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000002",
+        numero: 1,
+        episodios: [
+          { id: "agente_infiltrado_filme", titulo: "Agente Infiltrado", numero: 1, duracao_seg: 6840, arquivo: "AgenteInfiltrado.mp4" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "alien-vs-predador",
+    titulo: "Alien vs. Predador",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/alienvspredator.webp`,
+    descricao: "Nas profundezas da Antártida, uma equipe de cientistas descobre uma pirâmide antiga enterrada sob o gelo. Ao adentrá-la, acabam presos no meio de uma batalha épica entre as duas criaturas extraterrestres mais letais do universo: os Aliens e os Predadores.",
+    generos: ["Ação", "Ficção Científica", "Terror"],
+    classificacao: "14",
+    ano: 2004,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000003",
+        numero: 1,
+        episodios: [
+          { id: "alien_vs_predador_filme", titulo: "Alien vs. Predador", numero: 1, duracao_seg: 6000, arquivo: "Alienvspredador.mp4" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "encanto",
+    titulo: "Encanto",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/encanto.webp`,
+    descricao: "Na Colômbia mágica, a família Madrigal vive numa casa encantada onde cada membro possui um dom especial — exceto Mirabel. Quando a magia começa a desaparecer, ela é a única esperança de salvar o lar da família e descobrir o segredo que une a todos.",
+    generos: ["Animação", "Aventura", "Família"],
+    classificacao: "Livre",
+    ano: 2021,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000004",
+        numero: 1,
+        episodios: [
+          { id: "encanto_filme", titulo: "Encanto", numero: 1, duracao_seg: 6120, arquivo: "Encanto.mp4" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "mulan",
+    titulo: "Mulan",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/mulanAnima.jpg`,
+    descricao: "Para salvar o pai doente de lutar na guerra, a corajosa Mulan se disfarça de homem e assume seu lugar no exército imperial. Em uma jornada repleta de perigos, ela descobre que a verdadeira força vem de dentro — e que honra e coragem não conhecem gênero.",
+    generos: ["Animação", "Aventura", "Família"],
+    classificacao: "Livre",
+    ano: 1998,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000005",
+        numero: 1,
+        episodios: [
+          { id: "mulan_filme", titulo: "Mulan", numero: 1, duracao_seg: 5520, arquivo: "Mulan.mp4" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "zootopia",
+    titulo: "Zootopia",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/zootopia.jpg`,
+    descricao: "Na metrópole animal de Zootopia, a jovem coelha Judy Hopps realiza o sonho de se tornar policial. Junto ao astuto raposo Nick Wilde, ela precisa desvendar uma conspiração que ameaça toda a cidade — e aprender que os preconceitos são o maior inimigo de qualquer sociedade.",
+    generos: ["Animação", "Aventura", "Comédia"],
+    classificacao: "Livre",
+    ano: 2016,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000006",
+        numero: 1,
+        episodios: [
+          { id: "zootopia_filme", titulo: "Zootopia", numero: 1, duracao_seg: 6480, arquivo: "Zootopia (2016) 5.1 CH Dublado 1080p (By-LuanHarper).mp4" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "zootopia-2",
+    titulo: "Zootopia 2",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/Zootopia2.webp`,
+    descricao: "Judy Hopps e Nick Wilde estão de volta em uma nova aventura pela cidade animal mais vibrante do mundo. Desta vez, um misterioso plano ameaça a frágil paz entre predadores e presas, e a dupla inseparável precisará unir forças novamente para salvar Zootopia.",
+    generos: ["Animação", "Aventura", "Comédia"],
+    classificacao: "Livre",
+    ano: 2025,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000007",
+        numero: 1,
+        episodios: [
+          { id: "zootopia2_filme", titulo: "Zootopia 2", numero: 1, duracao_seg: 6300, arquivo: "Zootopia 2.mp4" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "wifi-ralph",
+    titulo: "WiFi Ralph: Quebrando a Internet",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/wifi_ralp.webp`,
+    descricao: "Ralph e Vanellope deixam o conforto dos fliperama e mergulham no caótico mundo da internet para encontrar uma peça que salve o jogo da amiga. Entre vírus, algoritmos e as maravilhas da web, eles descobrem que a verdadeira amizade supera qualquer firewall.",
+    generos: ["Animação", "Aventura", "Comédia"],
+    classificacao: "Livre",
+    ano: 2018,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000008",
+        numero: 1,
+        episodios: [
+          { id: "wifi_ralph_filme", titulo: "WiFi Ralph: Quebrando a Internet", numero: 1, duracao_seg: 6480, arquivo: "WIFI RALPH - QUEBRANDO A INTERNET.mkv" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "tinker-bell-piratas",
+    titulo: "Tinker Bell e os Piratas",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/tinkerbellepiratas.jpg`,
+    descricao: "Tinker Bell e suas amigas fadas enfrentam um temível pirata que ameaça o mundo mágico de Pixie Hollow. Em uma aventura cheia de voos emocionantes, lealdade e amizade, elas provam que até as menores fadas podem ter a coragem de gigantes.",
+    generos: ["Animação", "Aventura", "Família"],
+    classificacao: "Livre",
+    ano: 2014,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000009",
+        numero: 1,
+        episodios: [
+          { id: "tinker_bell_piratas_filme", titulo: "Tinker Bell e os Piratas", numero: 1, duracao_seg: 4800, arquivo: "TINKER BELL FADAS E PIRATAS1.1 GB" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "avioes",
+    titulo: "Aviões",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/Avioes.webp`,
+    descricao: "Dusty é um avião de pulverização agrícola que sonha em competir nas grandes corridas aéreas internacionais. Com a ajuda de um veterano de guerra, ele supera seus medos e limitações para mostrar que não importa de onde você vem — o que importa é onde você sonha chegar.",
+    generos: ["Animação", "Aventura", "Família"],
+    classificacao: "Livre",
+    ano: 2013,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000010",
+        numero: 1,
+        episodios: [
+          { id: "avioes_filme", titulo: "Aviões", numero: 1, duracao_seg: 5400, arquivo: "AVIÔES.mkv" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "avioes-2",
+    titulo: "Aviões 2: Heróis do Fogo ao Resgate",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/avioes2.jpg`,
+    descricao: "Após um acidente que danifica seu motor, Dusty precisa se reinventar e se junta a uma equipe de resgate de incêndio florestal. Entre chamas e tempestades, ele descobre que ser herói vai muito além de velocidade — exige coragem, sacrifício e espírito de equipe.",
+    generos: ["Animação", "Aventura", "Família"],
+    classificacao: "Livre",
+    ano: 2014,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000011",
+        numero: 1,
+        episodios: [
+          { id: "avioes2_filme", titulo: "Aviões 2: Heróis do Fogo ao Resgate", numero: 1, duracao_seg: 5160, arquivo: "AVIOES2.mkv" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "chainsaw-man-filme",
+    titulo: "Chainsaw Man – O Filme: Arco da Reze",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/ChainsawFilm.jpg`,
+    descricao: "Denji enfrenta a poderosa Reze, uma espiã com poderes bombásticos que se aproxima dele com intenções obscuras. Em meio a combates brutais e uma conexão inesperada, Denji é posto à prova em um dos arcos mais intensos e emocionantes de Chainsaw Man.",
+    generos: ["Anime", "Ação", "Sobrenatural"],
+    classificacao: "18",
+    ano: 2025,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000012",
+        numero: 1,
+        episodios: [
+          { id: "chainsaw_filme", titulo: "Chainsaw Man – O Filme: Arco da Reze", numero: 1, duracao_seg: 7200, arquivo: "Chainsaw_Man_–_O_Filme_Arco_da_Reze_2025_WEB_DL_1080p_x264_FULLHD.mp4" }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    conteudo_id: "inuyasha-sentimentos",
+    titulo: "InuYasha: Sentimentos que Transcendem o Tempo",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/inuyashaSentimentostempo.jpg`,
+    descricao: "InuYasha e Kagome são transportados para um Japão feudal ainda mais antigo, onde enfrentam um demônio imortal que surgiu muito antes dos acontecimentos da série. Uma história de amor e batalha que vai além das fronteiras do tempo.",
+    generos: ["Anime", "Aventura", "Romance", "Fantasia"],
+    classificacao: "12",
+    ano: 2001,
+    temporadas: [
+      {
+        temporada_id: "f0000001-0000-0000-0000-000000000013",
+        numero: 1,
+        episodios: [
+          { id: "inuyasha_filme", titulo: "InuYasha: Sentimentos que Transcendem o Tempo", numero: 1, duracao_seg: 5400, arquivo: "InuYasha - Sentimentos que Transcendem o Tempo.mkv" }
+        ]
+      }
+    ]
+  },
   {
     conteudo_id: "gashbell",
     titulo: "Konjiki no Gash Bell",
@@ -115,7 +374,14 @@ const conteudos = [
             { id: "eva_ep17", titulo: "Neon Genesis Evangelion - Episódio 17", numero: 17, duracao_seg: 1500, arquivo: "document_5089449135233303517.mp4" },
             { id: "eva_ep18", titulo: "Neon Genesis Evangelion - Episódio 18", numero: 18, duracao_seg: 1500, arquivo: "document_5089449135233303523.mp4" },
             { id: "eva_ep19", titulo: "Neon Genesis Evangelion - Episódio 19", numero: 19, duracao_seg: 1500, arquivo: "document_5089449135233303524.mp4" },
-            { id: "eva_ep20", titulo: "Neon Genesis Evangelion - Episódio 20", numero: 20, duracao_seg: 1500, arquivo: "document_5089449135233303526.mp4" }   
+            { id: "eva_ep20", titulo: "Neon Genesis Evangelion - Episódio 20", numero: 20, duracao_seg: 1500, arquivo: "document_5089449135233303526.mp4" },
+            { id: "eva_ep21", titulo: "Neon Genesis Evangelion - Episódio 21", numero: 21, duracao_seg: 1500, arquivo: "EvanelionEP2.mp4" },
+            { id: "eva_ep22", titulo: "Neon Genesis Evangelion - Episódio 22", numero: 22, duracao_seg: 1500, arquivo: "EvanelionEP22.mp4" },
+            { id: "eva_ep23", titulo: "Neon Genesis Evangelion - Episódio 23", numero: 23, duracao_seg: 1500, arquivo: "EvanelionEP23.mp4" },
+            { id: "eva_ep24", titulo: "Neon Genesis Evangelion - Episódio 24", numero: 24, duracao_seg: 1500, arquivo: "EvanelionEP24.mp4" },
+            { id: "eva_ep25", titulo: "Neon Genesis Evangelion - Episódio 25", numero: 25, duracao_seg: 1500, arquivo: "EvanelionEP25.mp4" },
+            { id: "eva_ep26", titulo: "Neon Genesis Evangelion - Episódio 26", numero: 26, duracao_seg: 1500, arquivo: "EvanelionEP26.mp4" },
+            
           ]
         }
       ]
