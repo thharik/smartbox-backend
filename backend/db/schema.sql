@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS perfis (
   criado_em  TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Tipos válidos: Filme | Série | Anime | AoVivo | Manga | Aula
 CREATE TABLE IF NOT EXISTS conteudos (
   id            TEXT PRIMARY KEY,
   titulo        TEXT NOT NULL,
@@ -54,7 +53,6 @@ CREATE TABLE IF NOT EXISTS episodios (
   criado_em    TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Capítulos de mangá (PDFs no B2)
 CREATE TABLE IF NOT EXISTS capitulos (
   id           TEXT PRIMARY KEY,
   conteudo_id  TEXT NOT NULL REFERENCES conteudos(id) ON DELETE CASCADE,
@@ -74,42 +72,49 @@ CREATE TABLE IF NOT EXISTS favoritos (
   PRIMARY KEY (perfil_id, conteudo_id)
 );
 
--- CORRIGIDO: campos current_time e duration (alinhados com o schema original)
+-- ✅ CORRIGIDO: adicionados campos de metadados para o "continuar assistindo"
+--    titulo, ep_titulo, poster, capa são salvos diretamente no progresso
+--    para evitar JOINs pesados e funcionar mesmo com conteúdo externo/builtin
 CREATE TABLE IF NOT EXISTS progresso (
-  perfil_id     UUID NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,
-  episodio_id   TEXT NOT NULL REFERENCES episodios(id) ON DELETE CASCADE,
-  conteudo_id   TEXT NOT NULL,
-  current_time  INT DEFAULT 0,
-  duration      INT DEFAULT 0,
-  concluido     BOOLEAN DEFAULT FALSE,
+  perfil_id     UUID        NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,
+  episodio_id   TEXT        NOT NULL,   -- ⚠️  SEM foreign key: episódios builtin não estão na tabela episodios
+  conteudo_id   TEXT        NOT NULL,
+  current_time  INT         DEFAULT 0,
+  duration      INT         DEFAULT 0,
+  titulo        TEXT        DEFAULT '', -- título da série/filme
+  ep_titulo     TEXT        DEFAULT '', -- título do episódio
+  poster        TEXT        DEFAULT '', -- poster da série
+  capa          TEXT        DEFAULT '', -- capa/thumbnail do episódio (cena onde parou)
+  concluido     BOOLEAN     DEFAULT FALSE,
   atualizado_em TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (perfil_id, episodio_id)
 );
 
 CREATE TABLE IF NOT EXISTS jogos (
-    id SERIAL PRIMARY KEY,
-    titulo VARCHAR(255) NOT NULL,
-    descricao TEXT,
-    poster TEXT,
-    sistema VARCHAR(50) NOT NULL,
-    rom_url TEXT NOT NULL,
-    criado_em TIMESTAMPTZ DEFAULT NOW()
+  id        SERIAL PRIMARY KEY,
+  titulo    VARCHAR(255) NOT NULL,
+  descricao TEXT,
+  poster    TEXT,
+  sistema   VARCHAR(50) NOT NULL,
+  rom_url   TEXT NOT NULL,
+  criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Progresso de leitura de mangá
 CREATE TABLE IF NOT EXISTS progresso_manga (
-  perfil_id    UUID NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,
-  capitulo_id  TEXT NOT NULL REFERENCES capitulos(id) ON DELETE CASCADE,
-  conteudo_id  TEXT NOT NULL,
-  pagina_atual INT DEFAULT 1,
-  concluido    BOOLEAN DEFAULT FALSE,
+  perfil_id     UUID NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,
+  capitulo_id   TEXT NOT NULL REFERENCES capitulos(id) ON DELETE CASCADE,
+  conteudo_id   TEXT NOT NULL,
+  pagina_atual  INT  DEFAULT 1,
+  concluido     BOOLEAN DEFAULT FALSE,
   atualizado_em TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (perfil_id, capitulo_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_perfis_usuario   ON perfis(usuario_id);
+-- Índices
+CREATE INDEX IF NOT EXISTS idx_perfis_usuario    ON perfis(usuario_id);
 CREATE INDEX IF NOT EXISTS idx_favoritos_perfil  ON favoritos(perfil_id);
 CREATE INDEX IF NOT EXISTS idx_progresso_perfil  ON progresso(perfil_id);
+CREATE INDEX IF NOT EXISTS idx_progresso_content ON progresso(conteudo_id);
 CREATE INDEX IF NOT EXISTS idx_ep_temporada      ON episodios(temporada_id);
 CREATE INDEX IF NOT EXISTS idx_capitulos_content ON capitulos(conteudo_id);
 CREATE INDEX IF NOT EXISTS idx_prog_manga_perfil ON progresso_manga(perfil_id);
