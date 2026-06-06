@@ -16,27 +16,35 @@ router.post("/", perfilMiddleware, async (req, res) => {
     const concluido  = duracao > 0 && tempoAtual / duracao >= 0.95;
 
     await pool.query(
-      `INSERT INTO progresso (
-         perfil_id, episodio_id, conteudo_id,
-         current_time, duration,
-         titulo, ep_titulo, poster, capa,
-         concluido, atualizado_em
-       )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
-       ON CONFLICT (perfil_id, episodio_id) DO UPDATE SET
-         current_time  = EXCLUDED.current_time,
-         duration      = EXCLUDED.duration,
-         titulo        = EXCLUDED.titulo,
-         ep_titulo     = EXCLUDED.ep_titulo,
-         poster        = EXCLUDED.poster,
-         capa          = EXCLUDED.capa,
-         concluido     = EXCLUDED.concluido,
-         atualizado_em = NOW()`,
-      [req.perfilId, episodioId, conteudoId,
-       tempoAtual, duracao,
-       titulo || "", ep_titulo || "", poster || "", capa || "",
-       concluido]
-    );
+    `INSERT INTO progresso (
+      perfil_id, episodio_id, conteudo_id,
+      "current_time", duration,
+      titulo, ep_titulo, poster, capa,
+      concluido, atualizado_em
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+    ON CONFLICT (perfil_id, episodio_id) DO UPDATE SET
+      "current_time" = EXCLUDED."current_time",
+      duration       = EXCLUDED.duration,
+      titulo         = EXCLUDED.titulo,
+      ep_titulo      = EXCLUDED.ep_titulo,
+      poster         = EXCLUDED.poster,
+      capa           = EXCLUDED.capa,
+      concluido      = EXCLUDED.concluido,
+      atualizado_em  = NOW()`,
+    [
+      req.perfilId,
+      episodioId,
+      conteudoId,
+      tempoAtual,
+      duracao,
+      titulo || "",
+      ep_titulo || "",
+      poster || "",
+      capa || "",
+      concluido
+    ]
+);
 
     return res.json({ ok: true });
   } catch (err) {
@@ -52,7 +60,7 @@ router.get("/continuar", perfilMiddleware, async (req, res) => {
       `SELECT DISTINCT ON (p.conteudo_id)
          p.episodio_id,
          p.conteudo_id,
-         p.current_time,
+         p."current_time",
          p.duration,
          p.titulo,
          p.ep_titulo,
@@ -62,7 +70,7 @@ router.get("/continuar", perfilMiddleware, async (req, res) => {
        FROM progresso p
        WHERE p.perfil_id = $1
          AND p.concluido   = FALSE
-         AND p.current_time > 5
+         AND p."current_time" > 5
        ORDER BY p.conteudo_id, p.atualizado_em DESC
        LIMIT 20`,
       [req.perfilId]
