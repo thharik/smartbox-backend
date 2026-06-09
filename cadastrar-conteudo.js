@@ -388,6 +388,266 @@ const conteudos = [
       ]
     },
   
+  // ── NOVOS FILMES ──────────────────────────────────────────────────────────────
+
+  {
+    conteudo_id: "soul",
+    titulo: "Soul",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/SoulAMG.jpg`,
+    descricao: "Joe Gardner é um professor de música que sempre sonhou em se tornar um grande músico de jazz. Quando finalmente tem a chance de realizar seu sonho, um acidente o leva a um lugar além da vida — onde terá que descobrir o que realmente importa na existência.",
+    generos: ["Animação", "Comédia", "Drama"],
+    classificacao: "Livre",
+    ano: 2020,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000020",
+      numero: 1,
+      episodios: [
+        { id: "soul_filme", titulo: "Soul", numero: 1, duracao_seg: 5940, arquivo: "Soul.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "toy-story-4",
+    titulo: "Toy Story 4",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/toy-story-4.jpg`,
+    descricao: "Woody, Buzz e os demais brinquedos embarcam em uma nova aventura quando Forky, o novo brinquedo favorito de Bonnie, foge. Durante a jornada, Woody reencontra um rosto familiar do passado e precisa decidir qual é o seu verdadeiro lugar no mundo.",
+    generos: ["Animação", "Aventura", "Família"],
+    classificacao: "Livre",
+    ano: 2019,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000021",
+      numero: 1,
+      episodios: [
+        { id: "toy_story4_filme", titulo: "Toy Story 4", numero: 1, duracao_seg: 5940, arquivo: "ToyStory4.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "wish-o-poder-dos-desejos",
+    titulo: "Wish: O Poder dos Desejos",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/Wish.jpg`,
+    descricao: "No reino de Rosas, a jovem Asha faz um desejo tão poderoso que é respondido por uma força cósmica — uma pequena e mágica estrela. Juntos, eles precisam enfrentar o rei Magnifico para proteger os sonhos de todos os habitantes do reino.",
+    generos: ["Animação", "Aventura", "Família"],
+    classificacao: "Livre",
+    ano: 2023,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000022",
+      numero: 1,
+      episodios: [
+        { id: "wish_filme", titulo: "Wish: O Poder dos Desejos", numero: 1, duracao_seg: 6420, arquivo: "Wish.O.Poder.dos.Desejos.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "rota-de-fuga",
+    titulo: "Rota de Fuga",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/ROTADEFUGA.jpg`,
+    descricao: "Ray Breslin é o maior especialista do mundo em segurança de prisões. Quando é jogado na instalação mais segura já construída, ele precisa usar todo o seu conhecimento para escapar — e descobrir quem o colocou ali.",
+    generos: ["Ação", "Thriller"],
+    classificacao: "16",
+    ano: 2013,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000023",
+      numero: 1,
+      episodios: [
+        { id: "rota_de_fuga_filme", titulo: "Rota de Fuga", numero: 1, duracao_seg: 7080, arquivo: "RotadeFuga.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "rota-de-fuga-2",
+    titulo: "Rota de Fuga 2",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/rota-de-fuga-2.jpg`,
+    descricao: "Ray Breslin monta uma equipe de elite para resgatar um de seus agentes preso numa prisão de alta tecnologia controlada por inteligência artificial. Em uma corrida contra o tempo, ele enfrenta obstáculos ainda maiores que no primeiro filme.",
+    generos: ["Ação", "Thriller"],
+    classificacao: "16",
+    ano: 2018,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000024",
+      numero: 1,
+      episodios: [
+        { id: "rota_de_fuga_2_filme", titulo: "Rota de Fuga 2", numero: 1, duracao_seg: 6420, arquivo: "ROTADEFuga2.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "rota-de-fuga-3",
+    titulo: "Rota de Fuga 3: O Resgate",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/rota-de-fuga-3-o-resgate-1.jpg`,
+    descricao: "Ray Breslin enfrenta sua missão mais perigosa ao tentar resgatar a filha de um empresário de uma prisão privada na China. Com novos aliados e inimigos implacáveis, ele precisa superar um labirinto de traições para sobreviver.",
+    generos: ["Ação", "Thriller"],
+    classificacao: "16",
+    ano: 2019,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000025",
+      numero: 1,
+      episodios: [
+        { id: "rota_de_fuga_3_filme", titulo: "Rota de Fuga 3: O Resgate", numero: 1, duracao_seg: 6300, arquivo: "Rota_de_Fuga_3_O_Resgate_.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "onde-os-fracos-nao-tem-vez",
+    titulo: "Onde os Fracos Não Têm Vez",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/ondeosfracosntemvez.webp`,
+    descricao: "No Texas de 1980, um caçador encontra acidentalmente o rastro de um massacre ligado ao narcotráfico e foge com uma mala cheia de dinheiro. O que se segue é uma perseguição implacável por um assassino frio e calculista, em um dos thrillers mais aclamados do cinema.",
+    generos: ["Thriller", "Drama", "Crime"],
+    classificacao: "18",
+    ano: 2007,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000026",
+      numero: 1,
+      episodios: [
+        { id: "onde_fracos_filme", titulo: "Onde os Fracos Não Têm Vez", numero: 1, duracao_seg: 7380, arquivo: "OndeosFracosNaoTemVez.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "ilha-dos-cachorros",
+    titulo: "Ilha dos Cachorros",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/ilhadoscachorros.webp`,
+    descricao: "Numa cidade japonesa do futuro, todos os cachorros são banidos para uma ilha de lixo por decreto do prefeito. Um garoto de 12 anos parte em uma missão corajosa para encontrar seu cão de estimação, iniciando uma aventura que mudará o destino de todos.",
+    generos: ["Animação", "Aventura", "Comédia"],
+    classificacao: "Livre",
+    ano: 2018,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000027",
+      numero: 1,
+      episodios: [
+        { id: "ilha_cachorros_filme", titulo: "Ilha dos Cachorros", numero: 1, duracao_seg: 6120, arquivo: "Ilhados Cachorro.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "super-mario-bros",
+    titulo: "Super Mario Bros.: O Filme",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/super_mario_bros_filme_poster__81029lb0.jpeg`,
+    descricao: "Mario e Luigi são encanadores de Brooklyn que são sugados para um mundo mágico e colorido. Mario precisa se tornar um herói para resgatar seu irmão e salvar o Reino dos Cogumelos das garras do poderoso Bowser.",
+    generos: ["Animação", "Aventura", "Família"],
+    classificacao: "Livre",
+    ano: 2023,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000028",
+      numero: 1,
+      episodios: [
+        { id: "mario_filme", titulo: "Super Mario Bros.: O Filme", numero: 1, duracao_seg: 5520, arquivo: "mario.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "your-name",
+    titulo: "Your Name",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/your-name.webp`,
+    descricao: "Dois adolescentes — um garoto da cidade grande e uma garota do interior — descobrem que trocam de corpo misteriosamente enquanto dormem. À medida que tentam se encontrar, uma verdade devastadora os separa além do espaço e do tempo.",
+    generos: ["Anime", "Romance", "Drama", "Fantasia"],
+    classificacao: "12",
+    ano: 2016,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000029",
+      numero: 1,
+      episodios: [
+        { id: "yourname_filme", titulo: "Your Name", numero: 1, duracao_seg: 6420, arquivo: "yourname.mp4" }
+      ]
+    }]
+  },
+
+  // ── DRAGON BALL — FILMES ───────────────────────────────────────────────────
+
+  {
+    conteudo_id: "dragon-ball-filmes",
+    titulo: "Dragon Ball: Coleção de Filmes",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/Dragon-Ball-franquia.jpg`,
+    descricao: "A coleção completa dos filmes clássicos de Dragon Ball e Dragon Ball Z, com batalhas épicas, transformações icônicas e histórias paralelas que expandem o universo de Goku e seus amigos.",
+    generos: ["Anime", "Ação", "Aventura"],
+    classificacao: "12",
+    ano: 1986,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000030",
+      numero: 1,
+      episodios: [
+        { id: "db_filme01", titulo: "Filme 01 - Devolva-me Gohan",                    numero: 1,  duracao_seg: 5400, arquivo: "Filme01Devolva-me Gohan.mkv" },
+        { id: "db_filme03", titulo: "Filme 03 - A Árvore do Poder",                   numero: 2,  duracao_seg: 5400, arquivo: "Filme3AÁrvoreDoPoder.mkv" },
+        { id: "db_filme04", titulo: "Filme 04 - Goku, o Super Saiyajin",              numero: 3,  duracao_seg: 5400, arquivo: "Filme4GokuOSuperSaiyajin.mkv" },
+        { id: "db_filme05", titulo: "Filme 05 - Uma Vingança para Freeza",            numero: 4,  duracao_seg: 5400, arquivo: "Filme 5UmaVingançaParaFreeza.mkv" },
+        { id: "db_filme07", titulo: "Filme 07 - O Retorno dos Andróides",             numero: 5,  duracao_seg: 5400, arquivo: "Filme 07ORetorno dosAndróides.mkv" },
+        { id: "db_filme08", titulo: "Filme 08 - O Poder Invencível",                  numero: 6,  duracao_seg: 5400, arquivo: "Filme08OPoderInvencível.mkv" },
+        { id: "db_filme09", titulo: "Filme 09 - A Batalha nos Dois Mundos",           numero: 7,  duracao_seg: 5400, arquivo: "Filme 9ABatalhaNosDoisMundos.mkv" },
+        { id: "db_filme10", titulo: "Filme 10 - O Retorno do Guerreiro Lendário",     numero: 8,  duracao_seg: 5400, arquivo: "Filme 10ORetornodoGerreiroLendário.mkv" },
+        { id: "db_filme11", titulo: "Filme 11 - O Combate Final: Bio-Broly",          numero: 9,  duracao_seg: 5400, arquivo: "Filme11OCombaeFinalBio-Broly.mkv" },
+        { id: "db_filme13", titulo: "Filme 13 - O Ataque do Dragão",                  numero: 10, duracao_seg: 5400, arquivo: "Filme 13-OAtaquedoDragão.mkv" },
+      ]
+    }]
+  },
+
+  // ── SÉRIES ────────────────────────────────────────────────────────────────────
+
+  {
+    conteudo_id: "o-tempo-tras-voce-pra-mim",
+    titulo: "O Tempo Trás Você Pra Mim",
+    tipo: "Série",
+    poster: `${FILE_BASE}/OTempoTrásVocêPraMim.jpg (2)`,
+    descricao: "Um drama coreano emocionante sobre dois jovens cujas vidas se entrelaçam através do tempo e das circunstâncias. Uma história de amor, saudade e reencontros que desafia as leis do tempo.",
+    generos: ["Drama", "Romance"],
+    classificacao: "12",
+    ano: 2022,
+    temporadas: [{
+      temporada_id: "s0000001-0000-0000-0000-000000000001",
+      numero: 1,
+      episodios: [
+        { id: "otempo_ep1",  titulo: "Episódio 1",  numero: 1,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP1.mp4" },
+        { id: "otempo_ep2",  titulo: "Episódio 2",  numero: 2,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP2.mp4" },
+        { id: "otempo_ep3",  titulo: "Episódio 3",  numero: 3,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP3.mp4" },
+        { id: "otempo_ep4",  titulo: "Episódio 4",  numero: 4,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP4.mp4" },
+        { id: "otempo_ep5",  titulo: "Episódio 5",  numero: 5,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP5.mp4" },
+        { id: "otempo_ep6",  titulo: "Episódio 6",  numero: 6,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP6.mp4" },
+        { id: "otempo_ep7",  titulo: "Episódio 7",  numero: 7,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP7.mp4" },
+        { id: "otempo_ep8",  titulo: "Episódio 8",  numero: 8,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP8.mp4" },
+        { id: "otempo_ep9",  titulo: "Episódio 9",  numero: 9,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP9.mp4" },
+        { id: "otempo_ep10", titulo: "Episódio 10", numero: 10, duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP10.mp4" },
+        { id: "otempo_ep11", titulo: "Episódio 11", numero: 11, duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP11.mp4" },
+        { id: "otempo_ep12", titulo: "Episódio 12", numero: 12, duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP12.mp4" },
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "w-dois-mundos",
+    titulo: "W - Dois Mundos",
+    tipo: "Série",
+    poster: `${FILE_BASE}/W_Dois_mundos.jpg (2)`,
+    descricao: "Uma médica é misteriosamente puxada para dentro de um webtoon onde conhece o protagonista da história. Enquanto os dois mundos — o real e o fictício — começam a se misturar, eles se apaixonam numa narrativa que desafia a fronteira entre realidade e ficção.",
+    generos: ["Drama", "Romance", "Fantasia"],
+    classificacao: "12",
+    ano: 2016,
+    temporadas: [{
+      temporada_id: "s0000001-0000-0000-0000-000000000002",
+      numero: 1,
+      episodios: [
+        { id: "w_ep1", titulo: "Episódio 1", numero: 1, duracao_seg: 4500, arquivo: "W_S01E01_Episode 1.mp4" },
+      ]
+    }]
+  },
+
   {
     conteudo_id: "konjiki_no_gash_2",
     titulo: "Konjiki no Gash!! 2",
