@@ -448,7 +448,7 @@ const conteudos = [
     conteudo_id: "rota-de-fuga",
     titulo: "Rota de Fuga",
     tipo: "Filme",
-    poster: `${FILE_BASE}/ROTADEFUGA.jpg`,
+    poster: `${FILE_BASE}/ROTADEFULGA.jpg`,
     descricao: "Ray Breslin é o maior especialista do mundo em segurança de prisões. Quando é jogado na instalação mais segura já construída, ele precisa usar todo o seu conhecimento para escapar — e descobrir quem o colocou ali.",
     generos: ["Ação", "Thriller"],
     classificacao: "16",
@@ -480,6 +480,7 @@ const conteudos = [
     }]
   },
 
+  
   {
     conteudo_id: "rota-de-fuga-3",
     titulo: "Rota de Fuga 3: O Resgate",
@@ -605,13 +606,13 @@ const conteudos = [
     conteudo_id: "o-tempo-tras-voce-pra-mim",
     titulo: "O Tempo Trás Você Pra Mim",
     tipo: "Série",
-    poster: `${FILE_BASE}/OTempoTrásVocêPraMim.jpg (2)`,
+    poster: `${FILE_BASE}/OTempoTrásVocêPraMim.jpg`,
     descricao: "Um drama coreano emocionante sobre dois jovens cujas vidas se entrelaçam através do tempo e das circunstâncias. Uma história de amor, saudade e reencontros que desafia as leis do tempo.",
     generos: ["Drama", "Romance"],
     classificacao: "12",
     ano: 2022,
     temporadas: [{
-      temporada_id: "s0000001-0000-0000-0000-000000000001",
+      temporada_id: "10000001-0000-0000-0000-000000000001",
       numero: 1,
       episodios: [
         { id: "otempo_ep1",  titulo: "Episódio 1",  numero: 1,  duracao_seg: 2700, arquivo: "OTempoTrásVocêPraMimEP1.mp4" },
@@ -640,7 +641,7 @@ const conteudos = [
     classificacao: "12",
     ano: 2016,
     temporadas: [{
-      temporada_id: "s0000001-0000-0000-0000-000000000002",
+      temporada_id: "00000001-0000-0000-0000-000000000002",
       numero: 1,
       episodios: [
         { id: "w_ep1", titulo: "Episódio 1", numero: 1, duracao_seg: 4500, arquivo: "W_S01E01_Episode 1.mp4" },
