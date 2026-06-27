@@ -16,7 +16,9 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE IF NOT EXISTS usuarios (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email      TEXT UNIQUE NOT NULL,
-  senha_hash TEXT NOT NULL,
+  senha_hash    TEXT NOT NULL,
+  ativo         BOOLEAN DEFAULT TRUE,
+  ultimo_acesso TIMESTAMPTZ,
   criado_em  TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -179,6 +181,9 @@ BEGIN
     RAISE NOTICE 'Coluna duration já existe, nada a fazer';
   END IF;
 END $$;
+
+ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT TRUE;
+ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS ultimo_acesso TIMESTAMPTZ;
 
 CREATE INDEX IF NOT EXISTS idx_capitulos_content ON capitulos(conteudo_id);
 CREATE INDEX IF NOT EXISTS idx_prog_manga_perfil ON progresso_manga(perfil_id);
