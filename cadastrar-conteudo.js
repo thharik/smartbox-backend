@@ -707,6 +707,188 @@ const conteudos = [
     classificacao: "14",
     ano: 2023,
     temporadas: []
+  },
+
+  // ─── Novos conteúdos adicionados do B2 ─────────────────────────────────────
+  {
+    conteudo_id: "demon-slayer-castelo-infinito",
+    titulo: "Demon Slayer: Castelo Infinito",
+    tipo: "Anime",
+    poster: `${FILE_BASE}/Demon-Slayer-Castelo-Infinito.webp`,
+    descricao: "Tanjiro e seus companheiros do Esquadrão de Caça aos Demônios invadem o Castelo Infinito para o confronto final contra Muzan Kibutsuji e a Lua Superior, em uma batalha que decidirá o destino da humanidade.",
+    generos: ["Anime", "Ação", "Sobrenatural"],
+    classificacao: "16",
+    ano: 2025,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000030",
+      numero: 1,
+      episodios: [
+        { id: "demonslayer_castelo_filme", titulo: "Demon Slayer: Castelo Infinito", numero: 1, duracao_seg: 7560, arquivo: "CasteloInfinito(Leg).mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "sword-art-online-filme",
+    titulo: "Sword Art Online: O Filme",
+    tipo: "Anime",
+    poster: `${FILE_BASE}/suord-art-online-filme.jpg`,
+    descricao: "Kirito e Asuna enfrentam um novo perigo que ameaça transbordar do mundo virtual para o real, num confronto que coloca à prova tudo o que conquistaram desde os dias presos no Sword Art Online.",
+    generos: ["Anime", "Ação", "Ficção Científica", "Romance"],
+    classificacao: "14",
+    ano: 2017,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000031",
+      numero: 1,
+      episodios: [
+        { id: "sao_filme", titulo: "Sword Art Online: O Filme", numero: 1, duracao_seg: 6840, arquivo: "Sword_Art_Onlinefml.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "yo-kai-watch-o-filme",
+    titulo: "Yo-Kai Watch: O Filme",
+    tipo: "Anime",
+    poster: `${FILE_BASE}/YOKWTCHOflm.jpg`,
+    descricao: "Keita e seus amigos Yo-kai embarcam em uma nova aventura cheia de mistérios e criaturas curiosas, enfrentando perigos que só podem ser resolvidos com a ajuda do Yo-kai Watch.",
+    generos: ["Anime", "Aventura", "Comédia"],
+    classificacao: "Livre",
+    ano: 2014,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000032",
+      numero: 1,
+      episodios: [
+        { id: "yokai_watch_filme", titulo: "Yo-Kai Watch: O Filme", numero: 1, duracao_seg: 5700, arquivo: "YOKWTCHOFLM.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "a-ratinha-valente",
+    titulo: "A Ratinha Valente",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/a-ratinha-valente.jpg`,
+    descricao: "Uma pequena ratinha cheia de coragem enfrenta perigos muito maiores do que ela em uma jornada animada repleta de aventura, amizade e superação.",
+    generos: ["Animação", "Aventura", "Família"],
+    classificacao: "Livre",
+    ano: 2024,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000033",
+      numero: 1,
+      episodios: [
+        { id: "ratinha_valente_parte1", titulo: "A Ratinha Valente - Parte 1", numero: 1, duracao_seg: 4800, arquivo: "aratinhavalente1.mp4" },
+        { id: "ratinha_valente_parte2", titulo: "A Ratinha Valente - Parte 2", numero: 2, duracao_seg: 4500, arquivo: "aratinhavalente2.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "kill-boksoon",
+    titulo: "Kill Boksoon",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/killBoksoon.jpg`,
+    descricao: "Gil Bok-soon é uma assassina de elite que trabalha para uma agência de execuções sob contrato. Enquanto tenta equilibrar a carreira mortal com a criação da filha adolescente, um conflito interno da agência ameaça sua vida e tudo que construiu.",
+    generos: ["Ação", "Drama", "Suspense"],
+    classificacao: "16",
+    ano: 2023,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000034",
+      numero: 1,
+      episodios: [
+        { id: "kill_boksoon_filme", titulo: "Kill Boksoon", numero: 1, duracao_seg: 7080, arquivo: "KillBoksoon2023.DUB.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "mestres-do-universo-2026",
+    titulo: "Mestres do Universo",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/MestreUniverso.jpg`,
+    descricao: "He-Man precisa descobrir seu verdadeiro poder e proteger Eternia contra Skeletor em uma adaptação live-action do clássico universo de fantasia e ação.",
+    generos: ["Ação", "Aventura", "Fantasia"],
+    classificacao: "12",
+    ano: 2026,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000035",
+      numero: 1,
+      episodios: [
+        { id: "mestres_universo_filme", titulo: "Mestres do Universo", numero: 1, duracao_seg: 6600, arquivo: "MestresdoUniverso2026(LEGENDADO).mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "mune-o-guardiao-da-lua",
+    titulo: "Mune: O Guardião da Lua",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/mune-guardia-da-lua.jpg`,
+    descricao: "Mune é escolhido para se tornar o novo Guardião da Lua, mas precisa provar seu valor numa jornada mágica para impedir que o mundo mergulhe na escuridão eterna.",
+    generos: ["Animação", "Aventura", "Fantasia"],
+    classificacao: "Livre",
+    ano: 2015,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000036",
+      numero: 1,
+      episodios: [
+        { id: "mune_guardiao_lua_filme", titulo: "Mune: O Guardião da Lua", numero: 1, duracao_seg: 5400, arquivo: "MuneOGuardiãodaLua.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "fogo-contra-fogo",
+    titulo: "Fogo Contra Fogo",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/fogo-contra-fogo.jpg`,
+    descricao: "Um confronto explosivo entre dois lados decididos a não recuar, numa trama de ação onde estratégia e instinto de sobrevivência determinam quem sai vivo.",
+    generos: ["Ação", "Suspense"],
+    classificacao: "16",
+    ano: 2024,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000037",
+      numero: 1,
+      episodios: [
+        { id: "fogo_contra_fogo_filme", titulo: "Fogo Contra Fogo", numero: 1, duracao_seg: 5760, arquivo: "FogoContraFogo.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "rain-man",
+    titulo: "Rain Man",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/rain-man.webp`,
+    descricao: "Um jovem golpista descobre que tem um irmão mais velho autista savant internado numa instituição e, ao tentar tirar proveito da herança da família, embarca com ele numa viagem que muda sua vida para sempre.",
+    generos: ["Drama"],
+    classificacao: "12",
+    ano: 1988,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000038",
+      numero: 1,
+      episodios: [
+        { id: "rain_man_filme", titulo: "Rain Man", numero: 1, duracao_seg: 7320, arquivo: "rain-man.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "oppenheimer",
+    titulo: "Oppenheimer",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/oppenheimer-poster.avif`,
+    descricao: "A história do físico J. Robert Oppenheimer e seu papel no desenvolvimento da bomba atômica durante o Projeto Manhattan, e as consequências morais e políticas que o perseguiram pelo resto da vida.",
+    generos: ["Drama", "Biografia", "História"],
+    classificacao: "16",
+    ano: 2023,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000039",
+      numero: 1,
+      episodios: [
+        { id: "oppenheimer_filme", titulo: "Oppenheimer", numero: 1, duracao_seg: 10800, arquivo: "oppenheimer.mp4" }
+      ]
+    }]
   }
 ];
 
