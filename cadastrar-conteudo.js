@@ -889,6 +889,42 @@ const conteudos = [
         { id: "oppenheimer_filme", titulo: "Oppenheimer", numero: 1, duracao_seg: 10800, arquivo: "oppenheimer.mp4" }
       ]
     }]
+  },
+
+  {
+    conteudo_id: "bunny-girl-senpai-sonha-com-garota",
+    titulo: "Seishun Buta Yarou wa Yumemiru Shoujo no Yume wo Minai",
+    tipo: "Anime",
+    poster: `${FILE_BASE}/SeishunButaYarouwaYumemiruShoujonoYumewoMinai.jpg`,
+    descricao: "Sakuta Azusagawa precisa ajudar uma garota afetada pela Síndrome da Puberdade, enquanto enfrenta dilemas que envolvem memória, identidade e o peso de escolhas do passado que ameaçam o futuro dela.",
+    generos: ["Anime", "Romance", "Drama", "Sobrenatural"],
+    classificacao: "12",
+    ano: 2023,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000041",
+      numero: 1,
+      episodios: [
+        { id: "bunnygirl_sonha_filme", titulo: "Seishun Buta Yarou wa Yumemiru Shoujo no Yume wo Minai", numero: 1, duracao_seg: 5400, arquivo: "SeishunButaYarouwaYumemiruShoujonoYumewoMinai.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "bunny-girl-senpai-odekake-sister",
+    titulo: "Seishun Buta Yarou wa Odekake Sister no Yume wo Minai",
+    tipo: "Anime",
+    poster: `${FILE_BASE}/SeishunButaYarouwaodekakesister.jpg`,
+    descricao: "Em uma nova fase de sua vida, Sakuta acompanha a irmã mais nova de Mai em um capítulo cheio de descobertas, laços familiares e mais um mistério ligado à Síndrome da Puberdade.",
+    generos: ["Anime", "Romance", "Drama", "Slice of Life"],
+    classificacao: "12",
+    ano: 2025,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000042",
+      numero: 1,
+      episodios: [
+        { id: "bunnygirl_odekake_filme", titulo: "Seishun Buta Yarou wa Odekake Sister no Yume wo Minai", numero: 1, duracao_seg: 4500, arquivo: "SeishunButaYarouwaodekakesister.mp4" }
+      ]
+    }]
   }
 ];
 
