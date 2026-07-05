@@ -1,6 +1,6 @@
 node_modules/
 
-
+.env
 postgresql_17.exe
 #frontend/
 *.log
