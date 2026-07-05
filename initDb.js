@@ -1,3 +1,6 @@
+require("dotenv").config();
+const { Pool } = require("pg");
+
 const usarSSL = process.env.DATABASE_URL && process.env.DATABASE_URL.includes("render.com");
 
 const pool = new Pool({
