@@ -14,39 +14,36 @@ const { authMiddleware } = require("../middleware/auth");
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+// Plano único mensal
+const PLANO_PRICE_ID = process.env.STRIPE_PRICE_MENSAL;
+
 // ─── POST /assinatura/checkout ────────────────────────────────────────────────
 router.post("/checkout", authMiddleware, async (req, res) => {
   try {
     const usuarioId = req.usuario.id;
-    const email = req.usuario.email || null;
+    const email     = req.usuario.email || null;
+
+    if (!PLANO_PRICE_ID) {
+      console.error("Variável STRIPE_PRICE_MENSAL não configurada");
+      return res.status(500).json({ mensagem: "Plano não configurado. Contate o suporte." });
+    }
 
     // Verifica se já tem assinatura ativa
     const { rows } = await pool.query(
       "SELECT usuario_id FROM assinaturas WHERE usuario_id=$1 AND status='ativa' AND valida_ate > NOW()",
       [usuarioId]
     );
-
     if (rows.length) {
-      return res.json({
-        ja_ativo: true,
-        mensagem: "Você já tem uma assinatura ativa."
-      });
+      return res.json({ ja_ativo: true, mensagem: "Você já tem uma assinatura ativa." });
     }
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: email || undefined,
-      line_items: [
-        {
-          price: process.env.STRIPE_PRICE_ID,
-          quantity: 1
-        }
-      ],
-      metadata: {
-        usuario_id: String(usuarioId)
-      },
-      success_url: `${process.env.FRONTEND_URL}/index.html?assinatura=ok`,
-      cancel_url: `${process.env.FRONTEND_URL}/login.html?assinatura=cancelada`
+      line_items: [{ price: PLANO_PRICE_ID, quantity: 1 }],
+      metadata: { usuario_id: String(usuarioId) },
+      success_url: `${process.env.FRONTEND_URL}/planos.html?assinatura=ok`,
+      cancel_url:  `${process.env.FRONTEND_URL}/planos.html?assinatura=cancelada`,
     });
 
     return res.json({ url: session.url });
