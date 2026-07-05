@@ -1,11 +1,12 @@
-require("dotenv").config();
-const { Pool } = require("pg");
+const usarSSL = process.env.DATABASE_URL && process.env.DATABASE_URL.includes("render.com");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: usarSSL
+    ? {
+        rejectUnauthorized: false,
+      }
+    : false,
   connectionTimeoutMillis: 15000,
 });
 
