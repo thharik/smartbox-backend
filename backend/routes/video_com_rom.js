@@ -1,5 +1,5 @@
-// backend/routes/video.js — versão ATUALIZADA
-// Adicionada rota GET /video/rom/:fileName para servir ROMs do B2
+// backend/routes/video.js — versão CORRIGIDA (estabilidade de streaming)
+// Rotas: GET /video/:fileName, GET /video/pdf/:fileName, GET /video/rom/:fileName
 
 const express = require("express");
 const B2      = require("backblaze-b2");
@@ -15,7 +15,6 @@ let downloadUrl = "";
 
 async function autorizarB2() {
   if (!autorizado) {
-
     console.log("=================================");
     console.log("B2_APPLICATION_KEY_ID =", process.env.B2_APPLICATION_KEY_ID);
     console.log("B2_APPLICATION_KEY existe =", !!process.env.B2_APPLICATION_KEY);
@@ -29,16 +28,43 @@ async function autorizarB2() {
   }
 }
 
+// ── Cache de tamanho de arquivo ────────────────────────────────────────────────
+// Evita bater no B2 duas vezes por chunk pedido (uma só pra descobrir o tamanho,
+// outra pra baixar o range de verdade). Um player de vídeo faz DEZENAS de
+// requisições Range por sessão (buffer, seek, troca de qualidade), então sem
+// esse cache o servidor abre o dobro de conexões com o B2 do que precisa.
+const cacheTamanhos = new Map(); // fileName -> tamanho em bytes
+
+function destruirStreamAoDesconectar(res, streamB2) {
+  const destruir = () => {
+    if (streamB2 && !streamB2.destroyed) streamB2.destroy();
+  };
+  res.on("close", destruir);
+  res.on("error", destruir);
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 async function getTamanhoArquivo(bucketName, fileName) {
+  if (cacheTamanhos.has(fileName)) return cacheTamanhos.get(fileName);
+
   try {
     const info = await b2.downloadFileByName({
       bucketName, fileName,
       responseType: "stream",
       axiosOverride: { headers: { Range: "bytes=0-0" } },
     });
-    return parseInt(info.headers["content-range"]?.split("/")[1] || "0", 10);
-  } catch { return 0; }
+
+    // Esse stream só existe pra gente ler o header content-range.
+    // Tem que ser destruído explicitamente, senão fica pendurado
+    // consumindo memória/socket até o processo estourar.
+    info.data.destroy();
+
+    const tamanho = parseInt(info.headers["content-range"]?.split("/")[1] || "0", 10);
+    cacheTamanhos.set(fileName, tamanho);
+    return tamanho;
+  } catch {
+    return 0;
+  }
 }
 
 // ── GET /video/:fileName — vídeos com Range Requests ──────────────────────────
@@ -70,12 +96,16 @@ router.get("/:fileName", async (req, res) => {
         "Content-Length": chunkSize,
         "Content-Type":   response.headers["content-type"] || "video/mp4",
       });
+
+      destruirStreamAoDesconectar(res, response.data);
       response.data.pipe(res);
     } else {
       const response = await b2.downloadFileByName({ bucketName, fileName: fn, responseType: "stream" });
       const headers = { "Content-Type": response.headers["content-type"] || "video/mp4", "Accept-Ranges": "bytes" };
       if (contentLength > 0) headers["Content-Length"] = contentLength;
       res.writeHead(200, headers);
+
+      destruirStreamAoDesconectar(res, response.data);
       response.data.pipe(res);
     }
   } catch (error) {
@@ -97,6 +127,8 @@ router.get("/pdf/:fileName", async (req, res) => {
     res.setHeader("Content-Type",        "application/pdf");
     res.setHeader("Content-Disposition", "inline");
     res.setHeader("Accept-Ranges",       "bytes");
+
+    destruirStreamAoDesconectar(res, response.data);
     response.data.pipe(res);
   } catch (error) {
     if (error?.response?.status === 401) autorizado = false;
@@ -137,6 +169,8 @@ router.get("/rom/:fileName(*)", async (req, res) => {
         "Content-Type":                contentType,
         "Access-Control-Allow-Origin": "*",
       });
+
+      destruirStreamAoDesconectar(res, response.data);
       response.data.pipe(res);
     } else {
       const response = await b2.downloadFileByName({ bucketName, fileName, responseType: "stream" });
@@ -145,6 +179,8 @@ router.get("/rom/:fileName(*)", async (req, res) => {
       res.setHeader("Access-Control-Allow-Origin","*");
       const cl = response.headers["content-length"];
       if (cl) res.setHeader("Content-Length", cl);
+
+      destruirStreamAoDesconectar(res, response.data);
       response.data.pipe(res);
     }
   } catch (error) {

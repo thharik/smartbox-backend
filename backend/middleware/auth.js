@@ -1,14 +1,16 @@
 /**
  * middleware/auth.js
  *
- * authMiddleware     — verifica JWT
- * perfilMiddleware   — verifica JWT + perfil selecionado
- * assinaturaMiddleware — verifica se o usuário tem assinatura ativa
- *                        (use em rotas que exigem pagamento)
+ * authMiddleware        — verifica JWT
+ * perfilMiddleware      — verifica JWT + perfil selecionado
+ * assinaturaMiddleware  — verifica se o usuário tem assinatura ativa
+ *                         (use em rotas que exigem pagamento)
  */
 
 const jwt  = require("jsonwebtoken");
 const pool = require("../db/pool");
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // ─── JWT ──────────────────────────────────────────────────────────────────────
 function authMiddleware(req, res, next) {
@@ -25,17 +27,30 @@ function authMiddleware(req, res, next) {
 // ─── Perfil ───────────────────────────────────────────────────────────────────
 async function perfilMiddleware(req, res, next) {
   authMiddleware(req, res, async () => {
-    const perfilId = req.headers["x-perfil-id"];
-    if (!perfilId) return res.status(400).json({ mensagem: "Perfil não selecionado" });
+    try {
+      const perfilId = req.headers["x-perfil-id"];
 
-    const { rows } = await pool.query(
-      "SELECT id FROM perfis WHERE id=$1 AND usuario_id=$2",
-      [perfilId, req.usuario.id]
-    );
-    if (!rows.length) return res.status(403).json({ mensagem: "Perfil inválido" });
+      // Cobre undefined, "", "null" (string literal vinda do frontend) e
+      // qualquer valor que não seja um UUID válido — evita que o Postgres
+      // quebre com "invalid input syntax for type uuid" e derrube o processo.
+      if (!perfilId || perfilId === "null" || !UUID_RE.test(perfilId)) {
+        return res.status(400).json({ mensagem: "Perfil não selecionado" });
+      }
 
-    req.perfilId = perfilId;
-    next();
+      const { rows } = await pool.query(
+        "SELECT id FROM perfis WHERE id=$1 AND usuario_id=$2",
+        [perfilId, req.usuario.id]
+      );
+      if (!rows.length) return res.status(403).json({ mensagem: "Perfil inválido" });
+
+      req.perfilId = perfilId;
+      next();
+    } catch (err) {
+      console.error("Erro no perfilMiddleware:", err);
+      if (!res.headersSent) {
+        res.status(500).json({ mensagem: "Erro interno ao verificar perfil" });
+      }
+    }
   });
 }
 
@@ -71,7 +86,9 @@ async function assinaturaMiddleware(req, res, next) {
     next();
   } catch (err) {
     console.error("Erro no assinaturaMiddleware:", err);
-    res.status(500).json({ mensagem: "Erro interno ao verificar assinatura" });
+    if (!res.headersSent) {
+      res.status(500).json({ mensagem: "Erro interno ao verificar assinatura" });
+    }
   }
 }
 
