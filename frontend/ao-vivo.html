@@ -249,19 +249,29 @@
     let todosCanais = [];
     let filtroAtivo = "todos";
 
+   
     // ── Criar card de canal ──────────────────────────────────────────────────
     function criarCard(canal) {
       const card = document.createElement("div");
       card.className = "canal-card";
       card.dataset.id = canal.id;
-      const poster = canal.poster || '';
+
+      const poster = canal.poster || "";
       const titulo = canal.titulo || canal.id;
+
       card.innerHTML =
-        '<img src="' + poster + '" alt="' + titulo + '" loading="lazy" onerror="this.src=\'assets/posters/placeholder.jpg\'">' +
-        '<div class="canal-info"><h3>' + titulo + '</h3><span class="ao-vivo-badge">AO VIVO</span></div>';
+        '<img src="' + poster + '" alt="' + titulo + '" loading="lazy" ' +
+        'onerror="this.onerror=null; this.src=\'https://via.placeholder.com/300x450/141414/ffffff?text=TVXBOX\';">' +
+        '<div class="canal-info">' +
+          '<h3>' + titulo + '</h3>' +
+          '<span class="ao-vivo-badge">AO VIVO</span>' +
+        '</div>';
+
       card.addEventListener("click", () => {
-        window.location.href = "assistir.html?canal=" + encodeURIComponent(canal.id);
+        window.location.href =
+          "assistir.html?canal=" + encodeURIComponent(canal.id);
       });
+
       return card;
     }
 
