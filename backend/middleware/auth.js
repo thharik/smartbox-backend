@@ -1,10 +1,10 @@
 /**
  * middleware/auth.js
  *
- * authMiddleware        — verifica JWT
- * perfilMiddleware      — verifica JWT + perfil selecionado
- * assinaturaMiddleware  — verifica se o usuário tem assinatura ativa
- *                         (use em rotas que exigem pagamento)
+ * authMiddleware       — verifica JWT
+ * perfilMiddleware     — verifica JWT + perfil selecionado
+ * assinaturaMiddleware — verifica se o usuário tem assinatura ativa OU é
+ *                        uma conta isenta (isento_pagamento = true no banco)
  */
 
 const jwt  = require("jsonwebtoken");
@@ -55,9 +55,17 @@ async function perfilMiddleware(req, res, next) {
 }
 
 // ─── Assinatura ───────────────────────────────────────────────────────────────
-// Usa APÓS authMiddleware. Bloqueia com 402 se não houver assinatura ativa.
+// Usa APÓS authMiddleware. Bloqueia com 402 se não houver assinatura ativa —
+// exceto contas marcadas como isentas (isento_pagamento = true na tabela
+// usuarios), usada pra liberar acesso administrativo sem senha/código especial.
 async function assinaturaMiddleware(req, res, next) {
   try {
+    const { rows: userRows } = await pool.query(
+      "SELECT isento_pagamento FROM usuarios WHERE id=$1",
+      [req.usuario.id]
+    );
+    if (userRows[0]?.isento_pagamento) return next();
+
     const { rows } = await pool.query(
       "SELECT status, valida_ate FROM assinaturas WHERE usuario_id=$1",
       [req.usuario.id]
