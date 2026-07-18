@@ -18,6 +18,15 @@ function authMiddleware(req, res, next) {
   if (!token) return res.status(401).json({ mensagem: "Token não fornecido" });
   try {
     req.usuario = jwt.verify(token, process.env.JWT_SECRET);
+
+    // O login (routes/auth.js) assina o token com o campo "userId", mas todo
+    // o resto do backend (perfilMiddleware, assinaturaMiddleware, etc) lê
+    // "req.usuario.id". Sem essa normalização, req.usuario.id fica undefined
+    // pra QUALQUER conta — inclusive as isentas — e todo mundo cai no bloqueio.
+    if (!req.usuario.id && req.usuario.userId) {
+      req.usuario.id = req.usuario.userId;
+    }
+
     next();
   } catch {
     return res.status(401).json({ mensagem: "Token inválido ou expirado" });
