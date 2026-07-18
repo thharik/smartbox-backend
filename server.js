@@ -23,13 +23,6 @@ app.use(cors({
   credentials: true,
 }));
 
-// ── IMPORTANTE: webhook do Stripe precisa do body RAW antes do express.json()
-app.use(
-  "/assinatura/webhook",
-  express.raw({ type: "application/json" }),
-  require("./backend/routes/assinatura")
-);
-
 app.use(express.json());
 
 // ── Rotas ──────────────────────────────────────────────────────────────────

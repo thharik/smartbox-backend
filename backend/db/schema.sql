@@ -4,10 +4,13 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS usuarios (
-  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email      TEXT UNIQUE NOT NULL,
-  senha_hash TEXT NOT NULL,
-  criado_em  TIMESTAMPTZ DEFAULT NOW()
+  id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email             TEXT UNIQUE NOT NULL,
+  senha_hash        TEXT NOT NULL,
+  ativo             BOOLEAN DEFAULT TRUE,
+  isento_pagamento  BOOLEAN DEFAULT FALSE, -- contas isentas de assinatura (ex: admin)
+  ultimo_acesso     TIMESTAMPTZ,
+  criado_em         TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS perfis (

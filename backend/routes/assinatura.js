@@ -1,164 +1,143 @@
 /**
- * assinatura.js — Rotas de assinatura via Stripe
+ * assinatura.js — Rotas de assinatura via Mercado Pago (Orders API + Pix)
+ *
+ * Como funciona: gera uma "Order" com um pagamento Pix a cada ciclo de
+ * cobrança (mensal). O usuário paga escaneando o QR code ou colando o
+ * código "copia e cola", e o webhook confirma o pagamento e estende a
+ * validade da assinatura por 31 dias.
  *
  * Endpoints:
- *   POST /assinatura/checkout   → cria Checkout Session (retorna { url })
- *   POST /assinatura/webhook    → recebe eventos do Stripe (raw body)
- *   GET  /assinatura/status     → verifica se o usuário tem assinatura ativa
+ *   POST /assinatura/pix                  → cria uma Order com pagamento Pix (QR code + copia-e-cola)
+ *   GET  /assinatura/verificar/:orderId   → consulta status de uma Order específica (polling)
+ *   POST /assinatura/webhook              → recebe notificações "order" do Mercado Pago (com validação de assinatura)
+ *   GET  /assinatura/status               → verifica se o usuário tem assinatura ativa
  */
 
+const crypto = require("crypto");
 const router = require("express").Router();
-const Stripe = require("stripe");
+const { MercadoPagoConfig, Order } = require("mercadopago");
 const pool = require("../db/pool");
 const { authMiddleware } = require("../middleware/auth");
 
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const mpClient = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+const orderClient = new Order(mpClient);
 
-// Plano único mensal
-const PLANO_PRICE_ID = process.env.STRIPE_PRICE_MENSAL;
+const PRECO_MENSAL  = Number(process.env.MP_PRECO_MENSAL || 9.99).toFixed(2);
+const VALIDADE_DIAS = 31;
 
-// ─── POST /assinatura/checkout ────────────────────────────────────────────────
-router.post("/checkout", authMiddleware, async (req, res) => {
+// ─── POST /assinatura/pix ──────────────────────────────────────────────────
+router.post("/pix", authMiddleware, async (req, res) => {
   try {
     const usuarioId = req.usuario.id;
-    const email     = req.usuario.email || null;
+    const email = req.usuario.email;
 
-    if (!PLANO_PRICE_ID) {
-      console.error("Variável STRIPE_PRICE_MENSAL não configurada");
-      return res.status(500).json({ mensagem: "Plano não configurado. Contate o suporte." });
+    if (!email) {
+      return res.status(400).json({ mensagem: "E-mail do usuário não encontrado no token." });
     }
 
-    // Verifica se já tem assinatura ativa
-    const { rows } = await pool.query(
-      "SELECT usuario_id FROM assinaturas WHERE usuario_id=$1 AND status='ativa' AND valida_ate > NOW()",
-      [usuarioId]
-    );
-    if (rows.length) {
-      return res.json({ ja_ativo: true, mensagem: "Você já tem uma assinatura ativa." });
-    }
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      customer_email: email || undefined,
-      line_items: [{ price: PLANO_PRICE_ID, quantity: 1 }],
-      metadata: { usuario_id: String(usuarioId) },
-      success_url: `${process.env.FRONTEND_URL}/planos.html?assinatura=ok`,
-      cancel_url:  `${process.env.FRONTEND_URL}/planos.html?assinatura=cancelada`,
+    const order = await orderClient.create({
+      body: {
+        type: "online",
+        total_amount: String(PRECO_MENSAL),
+        external_reference: String(usuarioId),
+        processing_mode: "automatic",
+        transactions: {
+          payments: [
+            {
+              amount: String(PRECO_MENSAL),
+              payment_method: { id: "pix", type: "bank_transfer" },
+              expiration_time: "PT30M", // 30 minutos — Pix "avulso", renovado a cada ciclo
+            },
+          ],
+        },
+        payer: { email },
+      },
+      requestOptions: {
+        idempotencyKey: crypto.randomUUID(),
+      },
     });
 
-    return res.json({ url: session.url });
-  } catch (err) {
-    console.error("Erro ao criar checkout:", err);
-    return res.status(500).json({ mensagem: "Erro ao iniciar pagamento." });
-  }
-});
+    const pagamento = order.transactions?.payments?.[0];
+    const dadosPix = pagamento?.payment_method;
 
-// ─── POST /assinatura/webhook ─────────────────────────────────────────────────
-router.post("/webhook", async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  let evento;
-
-  try {
-    evento = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    console.error("Webhook inválido:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  const objeto = evento.data.object;
-  const usuarioId = objeto?.metadata?.usuario_id || null;
-  const stripeSubId =
-    objeto?.subscription ||
-    objeto?.id ||
-    objeto?.data?.object?.subscription ||
-    null;
-  const stripeCustomerId = objeto?.customer || null;
-
-  try {
-    switch (evento.type) {
-      // Pagamento aprovado / renovação
-      case "checkout.session.completed":
-      case "invoice.payment_succeeded": {
-        if (!usuarioId && !stripeCustomerId) break;
-
-        // validade provisória de 31 dias
-        const validaAte = new Date();
-        validaAte.setDate(validaAte.getDate() + 31);
-
-        let uid = usuarioId;
-
-        // Se não veio usuario_id no metadata, tenta achar pelo customer
-        if (!uid && stripeCustomerId) {
-          const { rows } = await pool.query(
-            "SELECT usuario_id FROM assinaturas WHERE stripe_customer_id=$1 LIMIT 1",
-            [stripeCustomerId]
-          );
-          uid = rows[0]?.usuario_id || null;
-        }
-
-        if (!uid) break;
-
-        await pool.query(
-          `INSERT INTO assinaturas (
-             usuario_id,
-             stripe_subscription_id,
-             stripe_customer_id,
-             status,
-             valida_ate
-           )
-           VALUES ($1, $2, $3, 'ativa', $4)
-           ON CONFLICT (usuario_id)
-           DO UPDATE SET
-             stripe_subscription_id = EXCLUDED.stripe_subscription_id,
-             stripe_customer_id = EXCLUDED.stripe_customer_id,
-             status = 'ativa',
-             valida_ate = EXCLUDED.valida_ate,
-             atualizado_em = NOW()`,
-          [uid, stripeSubId, stripeCustomerId, validaAte]
-        );
-
-        console.log(
-          `Assinatura ativada para usuario ${uid} até ${validaAte.toISOString()}`
-        );
-        break;
-      }
-
-      // Atualização da assinatura
-      case "customer.subscription.updated": {
-        console.log("Assinatura atualizada:", stripeSubId);
-        break;
-      }
-
-      // Falha/cancelamento
-      case "invoice.payment_failed":
-      case "customer.subscription.deleted": {
-        if (!stripeSubId) break;
-
-        await pool.query(
-          "UPDATE assinaturas SET status='inativa', atualizado_em=NOW() WHERE stripe_subscription_id=$1",
-          [stripeSubId]
-        );
-
-        console.log(`Assinatura cancelada/falhou: ${stripeSubId}`);
-        break;
-      }
-
-      default:
-        console.log(`Evento ignorado: ${evento.type}`);
-        break;
+    if (!dadosPix?.qr_code) {
+      console.error("Resposta do Mercado Pago sem dados de Pix:", JSON.stringify(order));
+      return res.status(500).json({ mensagem: "Não foi possível gerar o Pix. Tente novamente." });
     }
-  } catch (dbErr) {
-    console.error("Erro ao processar webhook no banco:", dbErr);
-  }
 
-  return res.json({ received: true });
+    return res.json({
+      orderId:   order.id,               // usar este id pra consultar/polling
+      status:    order.status,
+      qrCode:    dadosPix.qr_code,        // "copia e cola"
+      qrCodeImg: dadosPix.qr_code_base64, // imagem base64 (PNG), sem prefixo data:
+      ticketUrl: dadosPix.ticket_url,     // link alternativo com QR + instruções prontas
+    });
+  } catch (err) {
+    console.error("Erro ao gerar Pix:", err);
+    return res.status(500).json({ mensagem: "Erro ao gerar cobrança Pix." });
+  }
 });
 
-// ─── GET /assinatura/status ───────────────────────────────────────────────────
+// ─── GET /assinatura/verificar/:orderId ────────────────────────────────────
+// Permite o frontend consultar diretamente o status de uma Order — útil pra
+// polling, já que o webhook pode levar alguns segundos pra chegar.
+router.get("/verificar/:orderId", authMiddleware, async (req, res) => {
+  try {
+    const order = await orderClient.get({ id: req.params.orderId });
+
+    // Segurança: garante que o usuário só consulta orders que são dele
+    if (String(order.external_reference) !== String(req.usuario.id)) {
+      return res.status(403).json({ mensagem: "Order não pertence a este usuário." });
+    }
+
+    if (order.status === "processed" && order.status_detail === "accredited") {
+      await ativarAssinatura(req.usuario.id, order.id);
+    }
+
+    return res.json({ status: order.status, statusDetail: order.status_detail });
+  } catch (err) {
+    console.error("Erro ao verificar order:", err);
+    return res.status(500).json({ mensagem: "Erro ao verificar pagamento." });
+  }
+});
+
+// ─── POST /assinatura/webhook ───────────────────────────────────────────────
+router.post("/webhook", async (req, res) => {
+  try {
+    // ── 1. Validar a assinatura (x-signature) usando o segredo do .env ──────
+    // A assinatura secreta NUNCA fica no código — só existe como variável de
+    // ambiente no Render (MP_WEBHOOK_SECRET) e é lida aqui, em tempo de execução.
+    const assinaturaValida = validarAssinatura(req);
+    if (!assinaturaValida) {
+      console.warn("Webhook do Mercado Pago com assinatura inválida — ignorado.");
+      return res.status(401).json({ mensagem: "Assinatura inválida." });
+    }
+
+    // ── 2. Só processa notificações do tipo "order" (o único evento marcado) ─
+    const tipo = req.body?.type || req.query?.type;
+    const orderId = req.query?.["data.id"] || req.body?.data?.id;
+
+    if (tipo !== "order" || !orderId) {
+      return res.status(200).json({ recebido: true }); // ignora outros tipos, mas responde 200
+    }
+
+    // Nunca confia no status que vier na notificação — sempre busca a Order
+    // de novo direto na API do Mercado Pago.
+    const order = await orderClient.get({ id: orderId });
+
+    if (order.status === "processed" && order.status_detail === "accredited" && order.external_reference) {
+      await ativarAssinatura(order.external_reference, order.id);
+    }
+
+    return res.status(200).json({ recebido: true });
+  } catch (err) {
+    console.error("Erro ao processar webhook do Mercado Pago:", err);
+    // Sempre responde 200 pro Mercado Pago não ficar reenviando indefinidamente
+    return res.status(200).json({ recebido: true, erro: true });
+  }
+});
+
+// ─── GET /assinatura/status ───────────────────────────────────────────────
 router.get("/status", authMiddleware, async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -179,12 +158,70 @@ router.get("/status", authMiddleware, async (req, res) => {
     return res.json({
       ativa,
       status: assinatura.status,
-      valida_ate: assinatura.valida_ate
+      valida_ate: assinatura.valida_ate,
     });
   } catch (err) {
     console.error("Erro ao verificar assinatura:", err);
     return res.status(500).json({ mensagem: "Erro ao verificar assinatura." });
   }
 });
+
+// ─── Helper: valida o header x-signature usando MP_WEBHOOK_SECRET ──────────
+// Algoritmo oficial do Mercado Pago: monta um "manifest" com o id da
+// notificação + o x-request-id + o timestamp, gera um HMAC-SHA256 com o
+// segredo, e compara com o valor "v1" recebido no header x-signature.
+function validarAssinatura(req) {
+  const secret = process.env.MP_WEBHOOK_SECRET;
+  if (!secret) {
+    console.error("MP_WEBHOOK_SECRET não configurado no .env / Render!");
+    return false;
+  }
+
+  const signatureHeader = req.headers["x-signature"];
+  const xRequestId       = req.headers["x-request-id"];
+  const dataId           = req.query?.["data.id"] || req.body?.data?.id;
+
+  if (!signatureHeader || !xRequestId || !dataId) return false;
+
+  const partes = signatureHeader.split(",").reduce((acc, parte) => {
+    const [chave, valor] = parte.split("=");
+    if (chave && valor) acc[chave.trim()] = valor.trim();
+    return acc;
+  }, {});
+
+  const ts = partes.ts;
+  const v1 = partes.v1;
+  if (!ts || !v1) return false;
+
+  const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+  const hashCalculado = crypto
+    .createHmac("sha256", secret)
+    .update(manifest)
+    .digest("hex");
+
+  return hashCalculado === v1;
+}
+
+// ─── Helper: ativa/renova a assinatura no banco ────────────────────────────
+async function ativarAssinatura(usuarioId, mpOrderId) {
+  const validaAte = new Date();
+  validaAte.setDate(validaAte.getDate() + VALIDADE_DIAS);
+
+  await pool.query(
+    `INSERT INTO assinaturas (usuario_id, mp_payment_id, status, valida_ate)
+     VALUES ($1, $2, 'ativa', $3)
+     ON CONFLICT (usuario_id)
+     DO UPDATE SET
+       mp_payment_id = EXCLUDED.mp_payment_id,
+       status        = 'ativa',
+       valida_ate    = EXCLUDED.valida_ate,
+       atualizado_em = NOW()`,
+    [usuarioId, String(mpOrderId), validaAte]
+  );
+
+  console.log(
+    `Assinatura ativada (Mercado Pago) para usuario ${usuarioId} até ${validaAte.toISOString()}`
+  );
+}
 
 module.exports = router;
