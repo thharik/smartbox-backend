@@ -29,10 +29,16 @@ const VALIDADE_DIAS = 31;
 router.post("/pix", authMiddleware, async (req, res) => {
   try {
     const usuarioId = req.usuario.id;
-    const email = req.usuario.email;
+
+    // O token JWT não carrega o e-mail (só o id) — busca direto no banco.
+    const { rows: usuarioRows } = await pool.query(
+      "SELECT email FROM usuarios WHERE id=$1",
+      [usuarioId]
+    );
+    const email = usuarioRows[0]?.email;
 
     if (!email) {
-      return res.status(400).json({ mensagem: "E-mail do usuário não encontrado no token." });
+      return res.status(400).json({ mensagem: "Não foi possível encontrar o e-mail desta conta." });
     }
 
     const order = await orderClient.create({
