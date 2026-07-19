@@ -49,3 +49,31 @@ process.on("unhandledRejection", (reason) => {
 process.on("uncaughtException", (err) => {
   console.error("Uncaught Exception:", err);
 });
+
+
+
+
+
+
+app.get("/debug/db", async (req, res) => {
+  try {
+    const usuarios = await pool.query(`
+      SELECT id, email
+      FROM usuarios
+    `);
+
+    const perfis = await pool.query(`
+      SELECT id, usuario_id, nome
+      FROM perfis
+    `);
+
+    res.json({
+      usuarios: usuarios.rows,
+      perfis: perfis.rows
+    });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: e.message });
+  }
+});
