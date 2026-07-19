@@ -199,7 +199,7 @@ function validarAssinatura(req) {
   const v1 = partes.v1;
   if (!ts || !v1) return false;
 
-  const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+  const manifest = `id:${dataId.toLowerCase()};request-id:${xRequestId};ts:${ts};`;
   const hashCalculado = crypto
     .createHmac("sha256", secret)
     .update(manifest)
