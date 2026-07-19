@@ -98,27 +98,32 @@ router.get("/continuar", perfilMiddleware, async (req, res) => {
       });
     }
 
+    // O LIMIT precisa vir DEPOIS de já ter escolhido o mais recente por
+    // conteúdo E ordenado por recência — senão, com mais de 20 títulos
+    // distintos no histórico, pode cortar um assistido recentemente antes
+    // mesmo de chegar na ordenação final.
     const { rows } = await pool.query(
-      `SELECT DISTINCT ON (p.conteudo_id)
-         p.episodio_id,
-         p.conteudo_id,
-         p."current_time",
-         p.duration,
-         p.titulo,
-         p.ep_titulo,
-         p.poster,
-         p.capa,
-         p.atualizado_em AS updated_at
-       FROM progresso p
-       WHERE p.perfil_id = $1
-         AND p.concluido = FALSE
-         AND p."current_time" > 5
-       ORDER BY p.conteudo_id, p.atualizado_em DESC
+      `SELECT * FROM (
+         SELECT DISTINCT ON (p.conteudo_id)
+           p.episodio_id,
+           p.conteudo_id,
+           p."current_time",
+           p.duration,
+           p.titulo,
+           p.ep_titulo,
+           p.poster,
+           p.capa,
+           p.atualizado_em AS updated_at
+         FROM progresso p
+         WHERE p.perfil_id = $1
+           AND p.concluido = FALSE
+           AND p."current_time" > 5
+         ORDER BY p.conteudo_id, p.atualizado_em DESC
+       ) ultimos
+       ORDER BY updated_at DESC
        LIMIT 20`,
       [perfilId]
     );
-
-    rows.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     return res.json(rows);
   } catch (err) {
