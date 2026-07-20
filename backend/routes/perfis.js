@@ -3,10 +3,34 @@ const bcrypt = require("bcryptjs");
 const pool = require("../db/pool");
 const { authMiddleware } = require("../middleware/auth");
 
-// Listar perfis
+
+// Listar perfis e corrigir automaticamente contas sem perfil
 router.get("/", authMiddleware, async (req, res) => {
+  let client;
+
   try {
-    const { rows } = await pool.query(
+    client = await pool.connect();
+    await client.query("BEGIN");
+
+    // Bloqueia temporariamente o usuário durante a verificação,
+    // evitando a criação simultânea de perfis duplicados.
+    const usuario = await client.query(
+      `SELECT id
+       FROM usuarios
+       WHERE id = $1
+       FOR UPDATE`,
+      [req.usuario.id]
+    );
+
+    if (usuario.rows.length === 0) {
+      await client.query("ROLLBACK");
+
+      return res.status(404).json({
+        mensagem: "Usuário não encontrado"
+      });
+    }
+
+    let { rows: perfis } = await client.query(
       `SELECT
          id,
          nome,
@@ -19,13 +43,52 @@ router.get("/", authMiddleware, async (req, res) => {
       [req.usuario.id]
     );
 
-    res.json(rows);
-  } catch (erro) {
-    console.error("Erro ao listar perfis:", erro);
+    // Cria o perfil Principal se a conta ainda não tiver nenhum
+    if (perfis.length === 0) {
+      const resultadoPerfil = await client.query(
+        `INSERT INTO perfis (
+           usuario_id,
+           nome,
+           avatar,
+           infantil,
+           pin_hash
+         )
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING
+           id,
+           nome,
+           avatar,
+           infantil,
+           (pin_hash IS NOT NULL) AS tem_pin`,
+        [
+          req.usuario.id,
+          "Principal",
+          "avatar1",
+          false,
+          null
+        ]
+      );
 
-    res.status(500).json({
-      mensagem: "Erro ao listar perfis"
+      perfis = resultadoPerfil.rows;
+    }
+
+    await client.query("COMMIT");
+
+    return res.json(perfis);
+  } catch (erro) {
+    if (client) {
+      await client.query("ROLLBACK").catch(() => {});
+    }
+
+    console.error("Erro ao listar ou criar perfis:", erro);
+
+    return res.status(500).json({
+      mensagem: "Erro ao carregar perfis"
     });
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 });
 
