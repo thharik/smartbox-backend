@@ -74,7 +74,7 @@ const conteudos = [
         temporada_id: "f0000001-0000-0000-0000-000000000003",
         numero: 1,
         episodios: [
-          { id: "alien_vs_predador_filme", titulo: "Alien vs. Predador", numero: 1, duracao_seg: 6000, arquivo: "Alienvspredador.mp4" }
+          { id: "alien_vs_predador_filme", titulo: "Alien vs. Predador", numero: 1, duracao_seg: 6000, arquivo: "AlienvsPredador.mp4" }
         ]
       }
     ]
@@ -174,27 +174,7 @@ const conteudos = [
         temporada_id: "f0000001-0000-0000-0000-000000000008",
         numero: 1,
         episodios: [
-          { id: "wifi_ralph_filme", titulo: "WiFi Ralph: Quebrando a Internet", numero: 1, duracao_seg: 6480, arquivo: "WIFI RALPH - QUEBRANDO A INTERNET.mkv" }
-        ]
-      }
-    ]
-  },
- 
-  {
-    conteudo_id: "tinker-bell-piratas",
-    titulo: "Tinker Bell e os Piratas",
-    tipo: "Filme",
-    poster: `${FILE_BASE}/tinkerbellepiratas.jpg`,
-    descricao: "Tinker Bell e suas amigas fadas enfrentam um temível pirata que ameaça o mundo mágico de Pixie Hollow. Em uma aventura cheia de voos emocionantes, lealdade e amizade, elas provam que até as menores fadas podem ter a coragem de gigantes.",
-    generos: ["Animação", "Aventura", "Família"],
-    classificacao: "Livre",
-    ano: 2014,
-    temporadas: [
-      {
-        temporada_id: "f0000001-0000-0000-0000-000000000009",
-        numero: 1,
-        episodios: [
-          { id: "tinker_bell_piratas_filme", titulo: "Tinker Bell e os Piratas", numero: 1, duracao_seg: 4800, arquivo: "TINKER BELL FADAS E PIRATAS.rar" }
+          { id: "wifi_ralph_filme", titulo: "WiFi Ralph: Quebrando a Internet", numero: 1, duracao_seg: 6480, arquivo: "WIFIRALPHQUEBRANDOAINTERNET.mp4" }
         ]
       }
     ]
@@ -214,7 +194,7 @@ const conteudos = [
         temporada_id: "f0000001-0000-0000-0000-000000000010",
         numero: 1,
         episodios: [
-          { id: "avioes_filme", titulo: "Aviões", numero: 1, duracao_seg: 5400, arquivo: "AVIÔES.mkv" }
+          { id: "avioes_filme", titulo: "Aviões", numero: 1, duracao_seg: 5400, arquivo: "AVIÔES.mp4" }
         ]
       }
     ]
@@ -234,7 +214,7 @@ const conteudos = [
         temporada_id: "f0000001-0000-0000-0000-000000000011",
         numero: 1,
         episodios: [
-          { id: "avioes2_filme", titulo: "Aviões 2: Heróis do Fogo ao Resgate", numero: 1, duracao_seg: 5160, arquivo: "AVIOES2.mkv" }
+          { id: "avioes2_filme", titulo: "Aviões 2: Heróis do Fogo ao Resgate", numero: 1, duracao_seg: 5160, arquivo: "AVIOES2.mp4" }
         ]
       }
     ]
@@ -244,7 +224,7 @@ const conteudos = [
     conteudo_id: "chainsaw-man-filme",
     titulo: "Chainsaw Man – O Filme: Arco da Reze",
     tipo: "Filme",
-    poster: `${FILE_BASE}/ChainsawFilm.jpg`,
+    poster: `${FILE_BASE}/chainsaw-man-o-filme.webp`,
     descricao: "Denji enfrenta a poderosa Reze, uma espiã com poderes bombásticos que se aproxima dele com intenções obscuras. Em meio a combates brutais e uma conexão inesperada, Denji é posto à prova em um dos arcos mais intensos e emocionantes de Chainsaw Man.",
     generos: ["Anime", "Ação", "Sobrenatural"],
     classificacao: "18",
@@ -274,7 +254,7 @@ const conteudos = [
         temporada_id: "f0000001-0000-0000-0000-000000000013",
         numero: 1,
         episodios: [
-          { id: "inuyasha_filme", titulo: "InuYasha: Sentimentos que Transcendem o Tempo", numero: 1, duracao_seg: 5400, arquivo: "InuYasha - Sentimentos que Transcendem o Tempo.mkv" }
+          { id: "inuyasha_filme", titulo: "InuYasha: Sentimentos que Transcendem o Tempo", numero: 1, duracao_seg: 5400, arquivo: "InuYasha - Sentimentos que Transcendem o Tempo.mp4" }
         ]
       }
     ]
@@ -361,8 +341,6 @@ const conteudos = [
           episodios: [
             { id: "eva_ep1",  titulo: "Neon Genesis Evangelion - Episódio 1",  numero: 1,  duracao_seg: 1500, arquivo: "EvanelionEp1.mp4" },
             { id: "eva_ep2",  titulo: "Neon Genesis Evangelion - Episódio 2",  numero: 2,  duracao_seg: 1500, arquivo: "EvanelionEP2.mp4" },
-            { id: "eva_ep3",  titulo: "Neon Genesis Evangelion - Episódio 3",  numero: 3,  duracao_seg: 1500, arquivo: "EvanelionEP3.mp4" },
-            { id: "eva_ep4",  titulo: "Neon Genesis Evangelion - Episódio 4",  numero: 4,  duracao_seg: 1500, arquivo: "EvanelionEP4.mp4" },
             { id: "eva_ep5",  titulo: "Neon Genesis Evangelion - Episódio 5",  numero: 5,  duracao_seg: 1500, arquivo: "EvanelionEP5.mp4" },
             { id: "eva_ep6",  titulo: "Neon Genesis Evangelion - Episódio 6",  numero: 6,  duracao_seg: 1500, arquivo: "EvanelionEP6.mp4" },
             { id: "eva_ep7",  titulo: "Neon Genesis Evangelion - Episódio 7",  numero: 7,  duracao_seg: 1500, arquivo: "EvanelionEP7.mp4" },
@@ -533,7 +511,7 @@ const conteudos = [
       temporada_id: "f0000001-0000-0000-0000-000000000027",
       numero: 1,
       episodios: [
-        { id: "ilha_cachorros_filme", titulo: "Ilha dos Cachorros", numero: 1, duracao_seg: 6120, arquivo: "Ilhados Cachorro.mp4" }
+        { id: "ilha_cachorros_filme", titulo: "Ilha dos Cachorros", numero: 1, duracao_seg: 6120, arquivo: "Ilha_dos_Cachorro.mp4" }
       ]
     }]
   },
@@ -589,16 +567,16 @@ const conteudos = [
       temporada_id: "f0000001-0000-0000-0000-000000000030",
       numero: 1,
       episodios: [
-        { id: "db_filme01", titulo: "Filme 01 - Devolva-me Gohan",                    numero: 1,  duracao_seg: 5400, arquivo: "Filme01Devolva-me Gohan.mkv" },
-        { id: "db_filme03", titulo: "Filme 03 - A Árvore do Poder",                   numero: 2,  duracao_seg: 5400, arquivo: "Filme3AÁrvoreDoPoder.mkv" },
-        { id: "db_filme04", titulo: "Filme 04 - Goku, o Super Saiyajin",              numero: 3,  duracao_seg: 5400, arquivo: "Filme4GokuOSuperSaiyajin.mkv" },
-        { id: "db_filme05", titulo: "Filme 05 - Uma Vingança para Freeza",            numero: 4,  duracao_seg: 5400, arquivo: "Filme 5UmaVingançaParaFreeza.mkv" },
-        { id: "db_filme07", titulo: "Filme 07 - O Retorno dos Andróides",             numero: 5,  duracao_seg: 5400, arquivo: "Filme 07ORetorno dosAndróides.mkv" },
-        { id: "db_filme08", titulo: "Filme 08 - O Poder Invencível",                  numero: 6,  duracao_seg: 5400, arquivo: "Filme08OPoderInvencível.mkv" },
-        { id: "db_filme09", titulo: "Filme 09 - A Batalha nos Dois Mundos",           numero: 7,  duracao_seg: 5400, arquivo: "Filme 9ABatalhaNosDoisMundos.mkv" },
-        { id: "db_filme10", titulo: "Filme 10 - O Retorno do Guerreiro Lendário",     numero: 8,  duracao_seg: 5400, arquivo: "Filme 10ORetornodoGerreiroLendário.mkv" },
-        { id: "db_filme11", titulo: "Filme 11 - O Combate Final: Bio-Broly",          numero: 9,  duracao_seg: 5400, arquivo: "Filme11OCombaeFinalBio-Broly.mkv" },
-        { id: "db_filme13", titulo: "Filme 13 - O Ataque do Dragão",                  numero: 10, duracao_seg: 5400, arquivo: "Filme 13-OAtaquedoDragão.mkv" },
+        { id: "db_filme01", titulo: "Filme 01 - Devolva-me Gohan",                    numero: 1,  duracao_seg: 5400, arquivo: "Filme01Devolva-me Gohan.mp4" },
+        { id: "db_filme03", titulo: "Filme 03 - A Árvore do Poder",                   numero: 2,  duracao_seg: 5400, arquivo: "Filme3AÁrvoreDoPoder.mp4" },
+        { id: "db_filme04", titulo: "Filme 04 - Goku, o Super Saiyajin",              numero: 3,  duracao_seg: 5400, arquivo: "Filme4GokuOSuperSaiyajin.mp4" },
+        { id: "db_filme05", titulo: "Filme 05 - Uma Vingança para Freeza",            numero: 4,  duracao_seg: 5400, arquivo: "Filme 5UmaVingançaParaFreeza.mp4" },
+        { id: "db_filme07", titulo: "Filme 07 - O Retorno dos Andróides",             numero: 5,  duracao_seg: 5400, arquivo: "Filme 07ORetorno dosAndróides.mp4" },
+        { id: "db_filme08", titulo: "Filme 08 - O Poder Invencível",                  numero: 6,  duracao_seg: 5400, arquivo: "Filme08OPoderInvencível.mp4" },
+        { id: "db_filme09", titulo: "Filme 09 - A Batalha nos Dois Mundos",           numero: 7,  duracao_seg: 5400, arquivo: "Filme 9ABatalhaNosDoisMundos.mp4" },
+        { id: "db_filme10", titulo: "Filme 10 - O Retorno do Guerreiro Lendário",     numero: 8,  duracao_seg: 5400, arquivo: "Filme 10ORetornodoGerreiroLendário.mp4" },
+        { id: "db_filme11", titulo: "Filme 11 - O Combate Final: Bio-Broly",          numero: 9,  duracao_seg: 5400, arquivo: "Filme11OCombaeFinalBio-Broly.mp4" },
+        { id: "db_filme13", titulo: "Filme 13 - O Ataque do Dragão",                  numero: 10, duracao_seg: 5400, arquivo: "Filme 13-OAtaquedoDragão.mp4" },
       ]
     }]
   },
@@ -638,7 +616,7 @@ const conteudos = [
     conteudo_id: "w-dois-mundos",
     titulo: "W - Dois Mundos",
     tipo: "Série",
-    poster: `${FILE_BASE}/W_Dois_mundos.jpg (2)`,
+    poster: `${FILE_BASE}/W_Dois_mundos.jpg`,
     descricao: "Uma médica é misteriosamente puxada para dentro de um webtoon onde conhece o protagonista da história. Enquanto os dois mundos — o real e o fictício — começam a se misturar, eles se apaixonam numa narrativa que desafia a fronteira entre realidade e ficção.",
     generos: ["Drama", "Romance", "Fantasia"],
     classificacao: "12",
@@ -648,6 +626,63 @@ const conteudos = [
       numero: 1,
       episodios: [
         { id: "w_ep1", titulo: "Episódio 1", numero: 1, duracao_seg: 4500, arquivo: "W_S01E01_Episode 1.mp4" },
+        { id: "w_ep2", titulo: "Episódio 2", numero: 2, duracao_seg: 4500, arquivo: "W_S01E02_Episode 2.mp4" },
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "fairy-tail",
+    titulo: "Fairy Tail",
+    tipo: "Anime",
+    poster: `${FILE_BASE}/FairyTail.jpg`,
+    descricao: "Lucy Heartfilia sonha em entrar para a guilda Fairy Tail. Ao conhecer Natsu Dragneel e Happy, ela inicia uma jornada repleta de magia, missões perigosas e amizades inesquecíveis.",
+    generos: ["Anime", "Ação", "Aventura", "Fantasia"],
+    classificacao: "12",
+    ano: 2009,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000043",
+      numero: 1,
+      episodios: [
+        { id: "fairy_tail_ep001", titulo: "Fairy Tail - Episódio 1", numero: 1, duracao_seg: 1500, arquivo: "001-FairyTail.mp4" },
+        { id: "fairy_tail_ep002", titulo: "Fairy Tail - Episódio 2", numero: 2, duracao_seg: 1500, arquivo: "002-FairyTail.mp4" },
+        { id: "fairy_tail_ep003", titulo: "Fairy Tail - Episódio 3", numero: 3, duracao_seg: 1500, arquivo: "003-FairyTail.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "kubo-e-as-cordas-magicas",
+    titulo: "Kubo e as Cordas Mágicas",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/kubo-e-as-cordas-magicas.jpg`,
+    descricao: "Kubo leva uma vida tranquila contando histórias com seu shamisen, até despertar um espírito do passado. Para proteger sua família, ele parte em busca de uma armadura lendária e descobre a força de suas próprias memórias.",
+    generos: ["Animação", "Aventura", "Fantasia"],
+    classificacao: "10",
+    ano: 2016,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000044",
+      numero: 1,
+      episodios: [
+        { id: "kubo_cordas_magicas_filme", titulo: "Kubo e as Cordas Mágicas", numero: 1, duracao_seg: 6120, arquivo: "Kubo_e_as_CordasMágicas.mp4" }
+      ]
+    }]
+  },
+
+  {
+    conteudo_id: "rio-2",
+    titulo: "Rio 2",
+    tipo: "Filme",
+    poster: `${FILE_BASE}/rio2.jpg`,
+    descricao: "Blu, Jade e seus filhos deixam o Rio de Janeiro para uma aventura na Amazônia. Em meio a novos desafios, eles encontram outras araras-azuis e aprendem o valor da família e da preservação da natureza.",
+    generos: ["Animação", "Aventura", "Comédia"],
+    classificacao: "Livre",
+    ano: 2014,
+    temporadas: [{
+      temporada_id: "f0000001-0000-0000-0000-000000000045",
+      numero: 1,
+      episodios: [
+        { id: "rio2_filme", titulo: "Rio 2", numero: 1, duracao_seg: 6060, arquivo: "Rio 2.mp4" }
       ]
     }]
   },
