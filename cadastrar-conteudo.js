@@ -37,15 +37,6 @@ const episodiosRemovidos = [
   "db_filme13",
 ];
 
-function slug(texto) {
-  return texto
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 function poster(nomeArquivo) {
   if (!nomeArquivo) return POSTER_PADRAO;
   if (nomeArquivo.startsWith("http")) return nomeArquivo;
@@ -120,6 +111,28 @@ function serie({
         episodios,
       },
     ],
+  };
+}
+
+function manga({
+  id,
+  titulo,
+  posterArquivo,
+  descricao,
+  generos = ["Mangá"],
+  classificacao = "12",
+  ano = 2026,
+}) {
+  return {
+    conteudo_id: id,
+    titulo,
+    tipo: "Manga",
+    poster: poster(posterArquivo),
+    descricao,
+    generos,
+    classificacao,
+    ano,
+    temporadas: [],
   };
 }
 
@@ -237,7 +250,8 @@ const conteudos = [
   filme({
     id: "chainsaw-man-filme",
     titulo: "Chainsaw Man – O Filme: Arco da Reze",
-    arquivo: "Chainsaw_Man_–_O_Filme_Arco_da_Reze_2025_WEB_DL_1080p_x264_FULLHD.mp4",
+    arquivo:
+      "Chainsaw_Man_–_O_Filme_Arco_da_Reze_2025_WEB_DL_1080p_x264_FULLHD.mp4",
     posterArquivo: "chainsaw-man-o-filme.webp",
     generos: ["Anime", "Ação", "Sobrenatural"],
     classificacao: "18",
@@ -380,7 +394,8 @@ const conteudos = [
   filme({
     id: "irmao-urso",
     titulo: "Irmão Urso",
-    arquivo: "1_Irmão_Ursos_2003_1080p_BRRip_DDP5_1_x264_DUAL_WWW_BLUDV_TV_TioKennedy.mp4",
+    arquivo:
+      "1_Irmão_Ursos_2003_1080p_BRRip_DDP5_1_x264_DUAL_WWW_BLUDV_TV_TioKennedy.mp4",
     posterArquivo: "imao_urso.jpg",
     generos: ["Animação", "Aventura", "Família"],
     classificacao: "Livre",
@@ -746,6 +761,39 @@ const conteudos = [
       ep("tempo", "O Tempo Traz Você Pra Mim", 12, "OTempoTrásVocêPraMimEP12.mp4"),
     ],
   }),
+
+  manga({
+    id: "gintama",
+    titulo: "Gintama",
+    posterArquivo: "gintama.avif",
+    descricao:
+      "Mangá de ação, comédia e ficção científica que acompanha Gintoki Sakata e seus companheiros em missões absurdas, batalhas intensas e situações cheias de humor.",
+    generos: ["Mangá", "Ação", "Comédia", "Aventura"],
+    classificacao: "12",
+    ano: 2003,
+  }),
+
+  manga({
+    id: "jojolion",
+    titulo: "JojoLion",
+    posterArquivo: "jojolion.jpg",
+    descricao:
+      "Parte da saga JoJo's Bizarre Adventure, JojoLion acompanha uma história misteriosa em Morioh, envolvendo identidades perdidas, famílias complexas e poderes Stand.",
+    generos: ["Mangá", "Ação", "Mistério", "Aventura"],
+    classificacao: "14",
+    ano: 2011,
+  }),
+
+  manga({
+    id: "jojolands",
+    titulo: "The JoJoLands",
+    posterArquivo: "jojolands.webp",
+    descricao:
+      "The JoJoLands acompanha uma nova geração da saga JoJo's Bizarre Adventure, com ambição, crime, aventura e poderes Stand em uma nova história.",
+    generos: ["Mangá", "Ação", "Aventura"],
+    classificacao: "14",
+    ano: 2023,
+  }),
 ];
 
 const capitulos = [
@@ -777,16 +825,18 @@ const capitulos = [
 
 async function removerAntigos(client) {
   if (episodiosRemovidos.length > 0) {
-    await client.query(`DELETE FROM episodios WHERE id = ANY($1::text[])`, [
+    await client.query("DELETE FROM episodios WHERE id = ANY($1::text[])", [
       episodiosRemovidos,
     ]);
+
     console.log("✅ Episódios removidos:", episodiosRemovidos.join(", "));
   }
 
   if (conteudosRemovidos.length > 0) {
-    await client.query(`DELETE FROM conteudos WHERE id = ANY($1::text[])`, [
+    await client.query("DELETE FROM conteudos WHERE id = ANY($1::text[])", [
       conteudosRemovidos,
     ]);
+
     console.log("✅ Conteúdos removidos:", conteudosRemovidos.join(", "));
   }
 }
@@ -852,7 +902,18 @@ async function salvarConteudo(client, item) {
       await client.query(
         `
         INSERT INTO episodios
-          (id, temporada_id, titulo, descricao, capa, video_url, duracao_seg, numero, intro_inicio, intro_fim)
+          (
+            id,
+            temporada_id,
+            titulo,
+            descricao,
+            capa,
+            video_url,
+            duracao_seg,
+            numero,
+            intro_inicio,
+            intro_fim
+          )
         VALUES
           ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         ON CONFLICT (id) DO UPDATE SET
@@ -940,6 +1001,7 @@ async function main() {
     console.log(`✅ PDFs cadastrados: ${capitulos.length}`);
   } catch (erro) {
     await client.query("ROLLBACK");
+
     console.error("");
     console.error("❌ Erro ao cadastrar conteúdos:");
     console.error(erro.message);
