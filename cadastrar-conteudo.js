@@ -446,7 +446,7 @@ const filmes = [
     id: "deu-a-louca-na-chapeuzinho-2",
     titulo: "Deu a Louca na Chapeuzinho 2",
     arquivo: "Deu_a_Louca_na_Chapeuzinho_Film.mp4",
-    posterArquivo: "deuALoucaNaCapeusino.jpg",
+    posterArquivo: "deuALoucaNaCapelsino2.jpg",
     generos: ["Animação", "Comédia", "Família"],
     classificacao: "Livre",
     ano: 2011,
@@ -679,7 +679,7 @@ conteudos.push(
   serie({
     id: "gashbell",
     titulo: "Konjiki no Gash Bell",
-    posterArquivo: "gash_capa1.jpg",
+    posterArquivo: "zatch-bell.avif",
     descricao:
       "A história acompanha Gash Bell e Kiyo Takamine em batalhas entre mamodos, misturando magia, amizade e coragem.",
     generos: ["Anime", "Aventura"],
