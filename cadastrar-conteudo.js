@@ -265,7 +265,7 @@ const filmes = [
     id: "homem-aranha-um-novo-dia",
     titulo: "Homem-Aranha: Um Novo Dia",
     arquivo: "Homem Aranha - Um Novo Dia (HDCAM) DUBLADO.mp4",
-    posterArquivo: "homem-aranha-novoDia.jpg (2)",
+    posterArquivo: "homem-aranha-novoDia.jpg",
     generos: ["Ação", "Aventura", "Super-herói"],
     classificacao: "12",
     ano: 2026,
