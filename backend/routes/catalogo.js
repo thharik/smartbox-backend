@@ -3,7 +3,10 @@ const pool   = require("../db/pool");
 const { authMiddleware, assinaturaMiddleware } = require("../middleware/auth");
 
 // GET /catalogo — protegido: exige login + assinatura ativa (ou conta isenta)
-router.get("/", authMiddleware, assinaturaMiddleware, async (req, res) => {
+// TEMPORÁRIO: assinaturaMiddleware comentado para liberar acesso geral
+// enquanto o novo conteúdo cadastrado é testado/exibido. Reative removendo
+// o comentário abaixo quando quiser voltar a exigir assinatura.
+router.get("/", authMiddleware, /* assinaturaMiddleware, */ async (req, res) => {
   try {
     const { rows: conteudos }  = await pool.query("SELECT * FROM conteudos ORDER BY criado_em DESC");
     const { rows: temporadas } = await pool.query("SELECT * FROM temporadas ORDER BY numero");
