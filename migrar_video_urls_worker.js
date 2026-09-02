@@ -7,7 +7,7 @@ const pool = new Pool({
 });
 
 // Troque se o nome do seu worker for diferente
-const DE   = "https://smartbox-backend.onrender.com/video/";
+const DE   = "https://tvxbox-backend-1.onrender.com/video/";
 const PARA = "https://tvxbox-b2.tharikluan-miguel.workers.dev/";
 
 async function migrar() {

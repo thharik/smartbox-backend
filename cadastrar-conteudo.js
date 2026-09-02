@@ -11,9 +11,9 @@ const pool = new Pool({
   connectionTimeoutMillis: 15000,
 });
 
-const VIDEO_BASE = "https://smartbox-backend.onrender.com/video";
+const VIDEO_BASE = "https://tvxbox-backend-1.onrender.com/video";
 const POSTER_BASE = "https://tvxbox-b2.tharikluan-miguel.workers.dev";
-const PDF_BASE = "https://smartbox-backend.onrender.com/video/pdf";
+const PDF_BASE = "https://tvxbox-backend-1.onrender.com/video/pdf";
 const FILE_BASE = POSTER_BASE;
 
 const POSTER_PADRAO =
