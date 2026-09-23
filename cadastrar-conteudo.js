@@ -170,6 +170,45 @@ function range(inicio, fim) {
 }
 
 const filmes = [
+    {
+    id: "evangelion-1-0",
+    titulo: "Evangelion: 1.0 You Are (Not) Alone",
+    arquivo: "Evangelion-1.0You Are(Not)Alone(2007).mp4",
+    posterArquivo: "EVANGELIONFILMES.jpg",
+    generos: ["Anime", "Ação", "Drama", "Mecha"],
+    classificacao: "14",
+    ano: 2007,
+  },
+
+  {
+    id: "evangelion-2-0",
+    titulo: "Evangelion: 2.0 You Can (Not) Advance",
+    arquivo: "Evangelion2.0You Can(Not).mp4",
+    posterArquivo: "EVANGELIONFILMES.jpg",
+    generos: ["Anime", "Ação", "Drama", "Mecha"],
+    classificacao: "14",
+    ano: 2009,
+  },
+
+  {
+    id: "evangelion-3-0",
+    titulo: "Evangelion: 3.0 You Can (Not) Redo",
+    arquivo: "Evangelion-3.0YouCan(Not)Redo(2012).mp4",
+    posterArquivo: "EVANGELIONFILMES.jpg",
+    generos: ["Anime", "Ação", "Drama", "Mecha"],
+    classificacao: "14",
+    ano: 2012,
+  },
+
+  {
+    id: "evangelion-3-0-1-0",
+    titulo: "Evangelion: 3.0+1.0 Thrice Upon a Time",
+    arquivo: "Evangelion-3.0+1.0Thrice Upon a Time(2021).mp4",
+    posterArquivo: "EVANGELIONFILMES.jpg",
+    generos: ["Anime", "Ação", "Drama", "Mecha"],
+    classificacao: "14",
+    ano: 2021,
+  },
   {
     id: "a-face-da-vinganca",
     titulo: "A Face da Vingança",
