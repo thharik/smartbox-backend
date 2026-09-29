@@ -1,46 +1,69 @@
 const { Pool } = require("pg");
 
-const pool = new Pool(
-  process.env.DATABASE_URL
-    ? {
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false },
-        max: 5,                  // máximo de conexões simultâneas
-        idleTimeoutMillis: 30000, // fecha conexão ociosa após 30s
-        connectionTimeoutMillis: 10000, // timeout de 10s para conectar
-      }
-    : {
-        host:     process.env.DB_HOST,
-        port:     Number(process.env.DB_PORT) || 5432,
-        user:     process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        ssl: {
-             rejectUnauthorized: false
-        },
-      }
-);
+if (!process.env.DATABASE_URL) {
+  console.error("❌ DATABASE_URL não foi encontrada no ambiente.");
+  throw new Error("DATABASE_URL não configurada");
+}
+
+// Mostra somente o host, sem revelar usuário, senha ou URL completa
+let dbHost = "";
+
+try {
+  const parsed = new URL(process.env.DATABASE_URL);
+  dbHost = parsed.hostname;
+
+  console.log("======================================");
+  console.log("🔎 DATABASE_URL encontrada");
+  console.log("🔎 Host PostgreSQL em uso:", dbHost);
+  console.log("======================================");
+} catch (err) {
+  console.error("❌ DATABASE_URL está em formato inválido.");
+  throw err;
+}
+
+// Proteção temporária para detectar o banco antigo
+if (dbHost === "dpg-d9plpvnlk1mc73ecipg0-a") {
+  console.error("❌ ERRO: O Render ainda está fornecendo o HOST ANTIGO!");
+}
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  max: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
+});
 
 pool.on("error", (err) => {
-  // ECONNRESET é normal no Render (banco dorme) — ignora silenciosamente
   if (err.code !== "ECONNRESET") {
-    console.error("Erro no pool PostgreSQL:", err.message);
+    console.error("❌ Erro no pool PostgreSQL:", err.message);
   }
 });
 
-// Testa conexão com retry (Render pode demorar para acordar)
 async function testarConexao(tentativas = 3) {
   for (let i = 1; i <= tentativas; i++) {
     try {
-      await pool.query("SELECT NOW()");
+      const resultado = await pool.query(
+        "SELECT NOW() AS agora, current_database() AS banco"
+      );
+
       console.log("✅ Banco conectado com sucesso");
+      console.log("✅ Database:", resultado.rows[0].banco);
       return;
     } catch (err) {
-      console.warn(`⚠️  Tentativa ${i}/${tentativas} falhou: ${err.message}`);
-      if (i < tentativas) await new Promise(r => setTimeout(r, 3000)); // espera 3s
+      console.warn(
+        `⚠️ Tentativa ${i}/${tentativas} falhou: ${err.message}`
+      );
+
+      if (i < tentativas) {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      }
     }
   }
-  console.error("❌ Não foi possível conectar ao banco. O servidor continua rodando e tentará reconectar nas próximas requisições.");
+
+  console.error("❌ Não foi possível conectar ao PostgreSQL.");
 }
 
 testarConexao();
